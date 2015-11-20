@@ -1,0 +1,27 @@
+# equal relations, symmetric
+1	5	equal
+5	1	equal
+1	10	equal
+10	1	equal
+2	7	equal
+7	2	equal
+3	9	equal
+9	3	equal
+5	10	equal
+10	5	equal
+9	12	equal
+12	9	equal
+# is-a relations
+4	2	isa
+2	1	isa
+3	1	isa
+7	6	isa
+7	8	isa
+6	5	isa
+8	5	isa
+9	8	isa
+14	13	isa
+15	13	isa
+13	12	isa
+11	10	isa
+12	10	isa
