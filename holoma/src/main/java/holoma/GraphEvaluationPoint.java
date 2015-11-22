@@ -1,8 +1,14 @@
 package holoma;
 
+import java.io.Serializable;
+
+import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
+import org.apache.flink.graph.library.ConnectedComponents;
 import org.apache.flink.graph.validation.InvalidVertexIdsValidator;
 
 /**
@@ -11,9 +17,10 @@ import org.apache.flink.graph.validation.InvalidVertexIdsValidator;
  * @author max
  *
  */
-public class GraphEvaluationPoint {
+@SuppressWarnings("serial")
+public class GraphEvaluationPoint implements Serializable {
 	/** The graph. */
-	private final Graph<String, String, Integer> GRAPH;
+	transient private final Graph<String, String, Integer> GRAPH;
 	
 	/**
 	 * Constructor.
@@ -78,11 +85,47 @@ public class GraphEvaluationPoint {
 	 */
 	public DataSet<Vertex<String, Long>> getConnectedComponents () {
 		DataSet<Vertex<String, Long>> verticesWithComponents = null;
-		// #1: initialise the each vertex value with its own component ID
+		int maxIterations = 10;
 		
-		// #2: create subgraph: undirected, only edges with value "equal"
-		
+		// #1: initialise each vertex value with its own and unique component ID
+		Graph<String, Long, Integer> componentGraph = this.GRAPH.mapVertices(
+				new MapFunction<Vertex<String, String>, Long>() {
+					public Long map (Vertex<String, String> value) {
+						// the component ID is the hashCode of the key
+						return (long) value.getId().hashCode();
+					}
+				});
+/*		try {
+			componentGraph.getVertices().print();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+*/		
+		// #2: create subgraph: only edges with value "equal"
+		componentGraph = componentGraph.filterOnEdges(
+				new FilterFunction<Edge<String, Integer>>() {
+					public boolean filter(Edge<String, Integer> edge) {
+						// keep only edges that denotes an equal relation
+						return (edge.getValue() == 0);
+					}
+				});
+/*		try {
+			componentGraph.getEdges().print();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+*/		
 		// #3: calculate the connected components
+		try {
+			verticesWithComponents = componentGraph.run(
+					new ConnectedComponents<String, Integer>(maxIterations)
+					);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		
 		return verticesWithComponents;
 	}
