@@ -51,12 +51,12 @@ public class GraphCreationPoint {
 	 * Manages the creation of the graph.
 	 * @return The graph with vertex ID type, vertex value type, and edge value type as String.
 	 */
-	public Graph<String, String, String> createGraph () {
+	public Graph<String, String, Integer> createGraph () {
 		// load vertices and edges
 		DataSet<Tuple2<String, String>> vertices = loadVertices();
-		DataSet<Tuple3<String, String, String>> edges = loadEdges();
+		DataSet<Tuple3<String, String, Integer>> edges = loadEdges();
 		// create graph with vertex ID type, vertex value type, and edge value type
-		Graph<String, String, String> graph = Graph.fromTupleDataSet(vertices, edges, env);
+		Graph<String, String, Integer> graph = Graph.fromTupleDataSet(vertices, edges, env);
 		return graph;
 		
 	}
@@ -79,12 +79,11 @@ public class GraphCreationPoint {
 	 * Loads the edges of the graph.
 	 * @return The edges of the graph. Format: (src, trg, type)
 	 */
-	private DataSet<Tuple3<String, String, String>> loadEdges() {
-		
-		DataSet<Tuple3<String, String, String>> edgeTuples = env.readCsvFile(this.EDGE_FILE)
+	private DataSet<Tuple3<String, String, Integer>> loadEdges() {		
+		DataSet<Tuple3<String, String, Integer>> edgeTuples = env.readCsvFile(this.EDGE_FILE)
 				.fieldDelimiter("\t")  // configures the delimiter ("\t") that separates the fields within a row.
 	            .ignoreComments("#")  // configures the string ('#') that starts comments
-	            .types(String.class, String.class, String.class); // specifies the types for the CSV fields
+	            .types(String.class, String.class, Integer.class); // specifies the types for the CSV fields
 		
 		return edgeTuples;
 	}
