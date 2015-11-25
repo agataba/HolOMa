@@ -1,20 +1,16 @@
 package holoma.parsing;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.apache.flink.graph.Edge;
+import org.apache.flink.graph.Vertex;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import org.apache.commons.io.IOUtils;
-
+import tools.io.OutputToFile;
 
 /**
  * Manages the parsing of the different JSON files.
@@ -23,58 +19,131 @@ import org.apache.commons.io.IOUtils;
  */
 public class ParsingPoint {
 
+	/** The path of the ontology (and the mapping) files. */
+	private final String PATH;
+	private final String MAP_FILE = "mapping_modTEST.csv";
+	/** The ontology JSON file names. */
+	private final String[] ONT_FILES;
+	
+	private List<Edge<String, Integer>> edges = new ArrayList<Edge<String, Integer>>();
+	private List<Vertex<String, String>> vertices = new ArrayList<Vertex<String, String>>();
 
-	public static void parseProfilesJson(File the_json) {
-		System.out.println(the_json);
+	
+	/**
+	 * Constructor.
+	 * @param path Path of the ontology files.
+	 * @param ontFiles Names of the ontology files.
+	 */
+	public ParsingPoint (String path, String[] ontFiles) {
+		this.PATH = path;
+		this.ONT_FILES = ontFiles;
+	}	
+	
+	
+	/**
+	 * Gets the edges within the specified ontology files.
+	 * @return Edges of all ontologies.
+	 */
+	public List<Edge<String, Integer>> getEdges () {
+		if (this.edges.isEmpty())
+			parseEdgesVertices();
+		return this.edges;
+	}
+	
+	/**
+	 * Gets the vertices within the specified ontology files.
+	 * @return Vertices of all ontologies.
+	 */
+	public List<Vertex<String, String>> getVertices () {
+		if (this.vertices.isEmpty())
+			parseEdgesVertices();
+		return this.vertices;
+	}
+	
+	
+	/**
+	 * Creates the edge file to the specified location.
+	 * @param location Location of the edge file.
+	 */
+	public void printEdgeVertexToFile (String locationEdge, String locationVertex) {
+		// create a new edge file
+		File fileEdge = new File (locationEdge);
+		if (fileEdge.exists()) fileEdge.delete();
+		// create a new vertex file
+		File fileVertex = new File (locationVertex);
+		if (fileVertex.exists()) fileVertex.delete();
+		
+		if (this.edges.isEmpty() || this.vertices.isEmpty())
+			parseEdgesVertices();
+		
+		// print edges
+		OutputToFile out = new OutputToFile (800, locationEdge);
+		for (Edge<String, Integer> edge : this.edges) {
+			String line = edge.f0+"\t"+edge.f1+"\t"+edge.f2;
+			out.addToBuff(line);
+		}
+		out.close();
+		// print vertices
+		out = new OutputToFile (800, locationVertex);
+		for (Vertex<String, String> vert : this.vertices) {
+			String line = vert.f0+"\t"+vert.f1;
+			out.addToBuff(line);
+		}
+		out.close();	
+	}
+	
+	/** Parses all ontology files and
+	 *  adds the vertices and edges to the list of vertices and edges of all ontologies, respectively.
+	 */
+	private void parseEdgesVertices () {
+		for (String ontology : this.ONT_FILES) {
+			// parse each ontology
+			System.out.println("Parsing "+this.PATH+ontology+" ... ");
+			File fileOntology = new File (this.PATH+ontology);
+			OntologyParserJSON parser = new OntologyParserJSON(getOntologyName(ontology), fileOntology);
+			parser.doParsing();
+			// add the edges and vertices of the current ontology to 'overall' collections
+			this.edges.addAll(parser.getEdgeList());
+			this.vertices.addAll(parser.getVertexList());
+		}
+		// add mapping correspondences to edges
+		System.out.println("\nReading "+this.PATH+this.MAP_FILE+" ... ");
+		BufferedReader reader = null;
 		try {
-			File f = the_json;
-			if (f.exists()){
-				InputStream is = new FileInputStream(the_json);
-
-				//the inputStream has to be converted to a String
-				String jsonTxt = IOUtils.toString(is);
-
-				//the String is converted to a JSON object
-				JSONObject json = new JSONObject(jsonTxt);
-
-				//graph structure converted to an array.
-				JSONArray jsonArray= json.getJSONArray("@graph");
-				int size = jsonArray.length();
-				
-				//arrays
-				ArrayList<JSONObject> arrays = new ArrayList<JSONObject>();
-				for (int i=0; i < size; i++){
-
-					JSONObject graph_dependency_object = jsonArray.getJSONObject(i);
-
-					System.out.println(graph_dependency_object);
-					String graphID = graph_dependency_object.get("@id").toString();
-					String subClassOf = graph_dependency_object.get("subClassOf").toString();
-
-					/*
-					
-						JSONArray jArray = graph_dependency_object.getJSONArray("subClassOf");
-						int jArraySize = jArray.length();
-
-						for (int j=0; j<jArraySize; j++){
-							JSONObject object3 = jArray.getJSONObject(j);
-							//String comp_id = object3.getString("companyid");
-							System.out.println("object3 " + object3);
-						}
-					
-					*/
-
-					System.out.println("id:  " + graphID + " subclassof: " + subClassOf);
-					System.out.println();
-				}
+			reader = new BufferedReader ( new FileReader(this.PATH+this.MAP_FILE));
+			String line;
+			while ( (line = reader.readLine()) != null ) {
+				String[] node = line.split("\t");
+				Edge<String, Integer> edge = new Edge<String, Integer>(node[0],node[1],0);
+				this.edges.add(edge);
 			}
-		} catch (JSONException e) {
-			e.printStackTrace();
+			reader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}	
+	
+	
+	
+	/**
+	 * Calculates the (abbreviated) name of the ontology by means of the file name.
+	 * @param fileName The name of the ontology file.
+	 * @return The name of the ontology.
+	 */
+	private String getOntologyName (String fileName) {
+		String ontologyName = fileName.substring(0, fileName.indexOf('.')).toLowerCase();
+		if (ontologyName.equals("full-galen"))
+			ontologyName = "galen";
+		else if (ontologyName.equals("ncitncbo"))
+			ontologyName = "ncit";
+		else if (ontologyName.equals("NPOntology01"))
+			ontologyName = "natpro";
+		else if (ontologyName.equals("radlex_3"))
+			ontologyName = "radlex";
+		return ontologyName;		
 	}
-
+	
+	
+	
 
 }
