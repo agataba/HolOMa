@@ -21,13 +21,16 @@ import org.apache.flink.graph.validation.InvalidVertexIdsValidator;
 public class GraphEvaluationPoint implements Serializable {
 	/** The graph. */
 	transient private final Graph<String, String, Integer> GRAPH;
+	/** Maximum number of iteration steps for connected components. */
+	private final int maxIterations;
 	
 	/**
 	 * Constructor.
 	 * @param graph The graph which shall be evaluated.
 	 */
-	public GraphEvaluationPoint (Graph<String, String, Integer> graph) {
+	public GraphEvaluationPoint (Graph<String, String, Integer> graph, int maxIterations) {
 		this.GRAPH = graph;
+		this.maxIterations = maxIterations;
 	}
 	
 	/**
@@ -85,7 +88,7 @@ public class GraphEvaluationPoint implements Serializable {
 	 */
 	public DataSet<Vertex<String, Long>> getConnectedComponents () {
 		DataSet<Vertex<String, Long>> verticesWithComponents = null;
-		int maxIterations = 10;
+		
 		
 		// #1: initialise each vertex value with its own and unique component ID
 		Graph<String, Long, Integer> componentGraph = this.GRAPH.mapVertices(
@@ -95,13 +98,7 @@ public class GraphEvaluationPoint implements Serializable {
 						return (long) value.getId().hashCode();
 					}
 				});
-/*		try {
-			componentGraph.getVertices().print();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-*/		
+	
 		// #2: create subgraph: only edges with value "equal"
 		componentGraph = componentGraph.filterOnEdges(
 				new FilterFunction<Edge<String, Integer>>() {
@@ -110,17 +107,11 @@ public class GraphEvaluationPoint implements Serializable {
 						return (edge.getValue() == 0);
 					}
 				});
-/*		try {
-			componentGraph.getEdges().print();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-*/		
+
 		// #3: calculate the connected components
 		try {
 			verticesWithComponents = componentGraph.run(
-					new ConnectedComponents<String, Integer>(maxIterations)
+					new ConnectedComponents<String, Integer>(this.maxIterations)
 					);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -129,8 +120,5 @@ public class GraphEvaluationPoint implements Serializable {
 		
 		return verticesWithComponents;
 	}
-	
-	
-	
 	
 }
