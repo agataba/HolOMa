@@ -5,7 +5,6 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.graph.Graph;
-import org.apache.log4j.Logger;
 
 /**
  * This class creates the graph which
@@ -23,8 +22,7 @@ import org.apache.log4j.Logger;
  */
 public class GraphCreationPoint {
 	
-	/** Log4j message logger. */
-	static Logger log = Logger.getLogger("GraphCreationPoint");
+	
 	
 	/** Context in which the program is currently executed. */
 	private ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
