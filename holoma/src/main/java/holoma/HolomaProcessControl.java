@@ -7,6 +7,9 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
+import org.apache.log4j.Logger;
+
+import holoma.parsing.ParsingPoint;
 
 /**
  * This class manages the overall workflow 
@@ -16,29 +19,61 @@ import org.apache.flink.graph.Vertex;
  */
 public class HolomaProcessControl {
 	
+	/** Log4j message logger. */
+	static Logger log = Logger.getLogger("HolomaProcessControl");
+	
+	/** Stop watch. */
+	private static final StopWatch stopWatch = new StopWatch();
+	
 	// TODO: file location the property file
-	private static final String edgeFileLoc = "/home/max/git/HolOMa/holoma/src/main/resources/example_edges.csv";
-	private static final String vertexFileLoc = "/home/max/git/HolOMa/holoma/src/main/resources/example_vertices.csv";
-	private static final String conCompFileLoc = "/home/max/git/HolOMa/holoma/src/main/resources/example_connectedComponents.csv";
+/*	private static final String edgeFileLoc = "./src/main/resources/example_edges.csv";
+	private static final String vertexFileLoc = "./src/main/resources/example_vertices.csv";
+	private static final String conCompFileLoc = "./src/main/resources/example_connectedComponents.csv";
+*/	
+	private static final String edgeFileLoc = "./src/main/resources/edges.csv";
+	private static final String vertexFileLoc = "./src/main/resources/vertices.csv";
+	private static final String conCompFileLoc = "./src/main/resources/connectedComponents.csv";
+	private static final String ontologyPath = "./src/main/resources/ont/";
+	private static final String[] ontologyFiles = {
+			"RXNORM.ttljsonLD.json",
+			"PDQ.ttljsonLD.json",
+			"NPOntology01.owljsonLD.json"
+	};
 
 	private static final boolean noSingletonComponents = true;
 	
 	
-	public static void main(String[] args) {
-		StopWatch stopWatch = new StopWatch();
-		
+	//##################################################################
+	//############### main #############################################
+	//##################################################################
+	public static void main(String[] args) {		
 		System.out.println("HolOMa (Holistic Ontology Mapping)\n"
 				+ "-------------------------------------------------------------");		
 		System.out.println("Properties:");
-		System.out.println("edge file location: "+edgeFileLoc);
-		System.out.println("vertex file location: "+vertexFileLoc);
+		System.out.println("edge file location:      "+edgeFileLoc);
+		System.out.println("vertex file location:    "+vertexFileLoc);
 		System.out.println("no singleton components: "+noSingletonComponents);
+		System.out.println();
 		
+		/*
+		 * #0: Load vertices and edges
+		 */
+		startTime();
+		ParsingPoint pp = new ParsingPoint (ontologyPath, ontologyFiles);
+		pp.printEdgeVertexToFile(edgeFileLoc, vertexFileLoc);
+		printTime();
+		
+		System.out.println("\n!!!!Quit program!!!!");System.exit(0);
+		
+		/*
+		 * #1: Creating the graph
+		 */
 		System.out.println("Creating the graph ... ");
-		stopWatch.start();
+		startTime();
 		GraphCreationPoint creationPoint = new GraphCreationPoint(edgeFileLoc, vertexFileLoc);
 		Graph<String, String, Integer> graph = creationPoint.createGraph();
-		stopWatch.stop(); System.out.println("\t in "+stopWatch.getTime()+"ms");
+		printTime();
+		
 		System.out.println("Showing the graph ... ");
 		GraphVisualisation.showEdgesVertices(graph);	
 		
@@ -76,19 +111,23 @@ public class HolomaProcessControl {
 	 */
 	private static void descriptEvaluate (Graph<String, String, Integer> graph) {
 		GraphEvaluationPoint eval = new GraphEvaluationPoint(graph);
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.reset();stopWatch.start();
+		startTime();
 		System.out.println("Validation: "+eval.validateGraph());
-		stopWatch.stop(); System.out.println("\t in "+stopWatch.getTime()+"ms");
-		stopWatch.reset();stopWatch.start();
+		printTime(); startTime();
 		System.out.println("#vertices: "+eval.getCountVertices());
-		stopWatch.stop(); System.out.println("\t in "+stopWatch.getTime()+"ms");
-		stopWatch.reset();stopWatch.start();
+		printTime(); startTime();
 		System.out.println("#edges: "+eval.getCountEdges());
-		stopWatch.stop(); System.out.println("\t in "+stopWatch.getTime()+"ms");	
+		printTime();
 	}
 	
+	/** Starts the stop watch. */
+	private static void startTime () { stopWatch.reset(); stopWatch.start(); }
 	
+	/** Prints the time since starting the stop watch to the console. */
+	private static void printTime () {
+		stopWatch.stop();
+		System.out.println("\t in "+stopWatch.getTime()+"ms");
+	}
 	
 
 }
