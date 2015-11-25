@@ -1,10 +1,14 @@
 package holoma;
 
+import java.util.List;
+
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
+import org.apache.flink.graph.Vertex;
 
 /**
  * This class creates the graph which
@@ -26,33 +30,37 @@ public class GraphCreationPoint {
 	
 	/** Context in which the program is currently executed. */
 	private ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-	/** Location of the edges' file. */
-	private final String EDGE_FILE;
-	/** Location of the vertices file. */
-	private final String VERTEX_FILE;
-	
 	
 	
 	
 	/**
 	 * Constructor.
 	 */
-	public GraphCreationPoint (String edgeFileLocation, String vertexFileLocation) {
-		this.EDGE_FILE = edgeFileLocation;
-		this.VERTEX_FILE = vertexFileLocation;
+	public GraphCreationPoint () {
+		
 	}
 	
-	
-	
+	/**
+	 * Creates a graph based on a list of edges and vertices.
+	 * @param edges List of edges.
+	 * @param vertices List of vertices.
+	 * @return The graph.
+	 */
+	public Graph<String, String, Integer> createGraph (List<Edge<String, Integer>> edges, List<Vertex<String, String>> vertices) {
+		Graph<String, String, Integer> graph = Graph.fromCollection(vertices, edges, env);
+		return graph;
+	}
 	
 	/** 
 	 * Manages the creation of the graph.
+	 * @param edgeFileLocation Location of the edge file.
+	 * @param vertexFileLocation Location of the vertex file.
 	 * @return The graph with vertex ID type, vertex value type, and edge value type as String.
 	 */
-	public Graph<String, String, Integer> createGraph () {
+	public Graph<String, String, Integer> createGraphFromFile (String edgeFileLocation, String vertexFileLocation) {
 		// load vertices and edges
-		DataSet<Tuple2<String, String>> vertices = loadVertices();
-		DataSet<Tuple3<String, String, Integer>> edges = loadEdges();
+		DataSet<Tuple2<String, String>> vertices = loadVertices(vertexFileLocation);
+		DataSet<Tuple3<String, String, Integer>> edges = loadEdges(edgeFileLocation);
 		// create graph with vertex ID type, vertex value type, and edge value type
 		Graph<String, String, Integer> graph = Graph.fromTupleDataSet(vertices, edges, env);
 		return graph;
@@ -61,10 +69,11 @@ public class GraphCreationPoint {
 	
 	/**
 	 * Loads the vertices of the graph.
+	 * @param vertexFileLocation Location of the vertex file.
 	 * @return The vertices of the graph. Format: (url, ont)
 	 */
-	private DataSet<Tuple2<String, String>> loadVertices() {
-		DataSet<Tuple2<String, String>> vertexTuples = env.readCsvFile(this.VERTEX_FILE)
+	private DataSet<Tuple2<String, String>> loadVertices(String vertexFileLocation) {
+		DataSet<Tuple2<String, String>> vertexTuples = env.readCsvFile(vertexFileLocation)
 				.fieldDelimiter("\t")  // configures the delimiter ("\t") that separates the fields within a row.
 				.ignoreComments("#")  // configures the string ('#') that starts comments
 				.types(String.class, String.class); // specifies the types for the CSV fields
@@ -75,10 +84,11 @@ public class GraphCreationPoint {
 	
 	/**
 	 * Loads the edges of the graph.
+	 * @param edgeFileLocation Location of the edge file.
 	 * @return The edges of the graph. Format: (src, trg, type)
 	 */
-	private DataSet<Tuple3<String, String, Integer>> loadEdges() {		
-		DataSet<Tuple3<String, String, Integer>> edgeTuples = env.readCsvFile(this.EDGE_FILE)
+	private DataSet<Tuple3<String, String, Integer>> loadEdges(String edgeFileLocation) {		
+		DataSet<Tuple3<String, String, Integer>> edgeTuples = env.readCsvFile(edgeFileLocation)
 				.fieldDelimiter("\t")  // configures the delimiter ("\t") that separates the fields within a row.
 	            .ignoreComments("#")  // configures the string ('#') that starts comments
 	            .types(String.class, String.class, Integer.class); // specifies the types for the CSV fields
