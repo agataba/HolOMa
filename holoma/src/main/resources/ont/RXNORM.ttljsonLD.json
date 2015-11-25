@@ -1,0 +1,389 @@
+{
+  "@graph" : [ {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T001",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T072"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T002",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T204"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T004",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T204"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T005",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T001"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T007",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T001"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T008",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T204"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T010",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T008"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T011",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T010"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T012",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T010"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T013",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T010"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T014",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T010"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T015",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T010"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T016",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T015"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T017",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T072"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T018",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T017"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T019",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T190"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T020",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T190"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T021",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T017"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T022",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T169"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T023",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T021"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T024",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T021"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T025",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T021"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T026",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T021"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T028",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T021"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T029",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T082"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T030",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T082"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T031",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T167"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T032",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T033",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T034",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T033"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T037",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T067"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T038",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T070"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T039",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T038"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T040",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T039"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T041",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T040"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T042",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T039"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T043",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T039"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T044",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T039"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T045",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T044"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T046",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T038"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T047",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T046"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T048",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T047"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T049",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T046"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T050",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T046"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T052",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T051"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T053",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T052"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T054",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T053"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T055",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T053"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T056",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T052"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T057",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T052"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T058",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T057"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T059",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T058"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T060",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T058"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T061",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T058"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T062",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T057"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T063",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T062"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T064",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T057"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T065",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T057"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T066",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T052"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T067",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T051"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T068",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T067"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T069",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T068"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T070",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T067"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T072",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T071"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T073",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T072"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T074",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T073"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T075",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T073"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T077",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T071"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T078",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T079",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T078"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T080",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T078"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T081",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T078"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T082",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T078"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T083",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T082"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T085",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T082"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T086",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T085"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T087",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T085"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T088",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T085"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T089",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T170"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T090",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T091",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T090"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T092",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T093",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T092"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T094",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T092"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T095",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T092"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T096",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T097",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T096"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T098",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T096"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T099",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T096"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T100",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T096"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T101",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T096"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T102",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T103",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T167"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T104",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T103"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T109",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T104"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T114",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T109"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T116",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T109"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T120",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T103"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T121",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T120"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T122",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T120"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T123",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T120"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T125",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T123"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T126",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T123"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T127",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T123"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T129",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T123"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T130",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T120"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T131",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T120"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T167",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T072"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T168",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T167"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T169",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T078"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T170",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T171",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T077"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T184",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T033"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T185",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T170"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T190",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T017"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T191",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T047"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T192",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T123"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T194",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T001"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T195",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T121"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T196",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T104"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T197",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T104"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T200",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T073"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T201",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T032"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T203",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T074"
+  }, {
+    "@id" : "http://purl.bioontology.org/ontology/STY/T204",
+    "subClassOf" : "http://purl.bioontology.org/ontology/STY/T001"
+  } ],
+  "@context" : {
+    "subClassOf" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+      "@type" : "@id"
+    },
+    "owl" : "http://www.w3.org/2002/07/owl#",
+    "xsd" : "http://www.w3.org/2001/XMLSchema#",
+    "skos" : "http://www.w3.org/2004/02/skos/core#",
+    "umls" : "http://bioportal.bioontology.org/ontologies/umls/",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"
+  }
+}
