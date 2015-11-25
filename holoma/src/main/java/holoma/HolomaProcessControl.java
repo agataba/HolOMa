@@ -5,6 +5,7 @@ import java.util.Map;
 //
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 import org.apache.log4j.Logger;
@@ -35,11 +36,19 @@ public class HolomaProcessControl {
 	private static final String conCompFileLoc = "./src/main/resources/connectedComponents.csv";
 	private static final String ontologyPath = "./src/main/resources/ont/";
 	private static final String[] ontologyFiles = {
-			"RXNORM.ttljsonLD.json",
+//			"chebi.owljsonLD.json",
+//			"fma.owljsonLD.json",
+//			"full-galen.owljsonLD.json",
+//			"MESH.ttljsonLD.json",
+//			"NCITNCBO.ttljsonLD.json",
+			"NPOntology01.owljsonLD.json",
+//			"OMIM.ttljsonLD.json",
 			"PDQ.ttljsonLD.json",
-			"NPOntology01.owljsonLD.json"
+//			"Radlex_3.12.owljsonLD.json",
+			"RXNORM.ttljsonLD.json"
 	};
 
+	private static final int maxIterations = 10;
 	private static final boolean noSingletonComponents = true;
 	
 	
@@ -52,6 +61,7 @@ public class HolomaProcessControl {
 		System.out.println("Properties:");
 		System.out.println("edge file location:      "+edgeFileLoc);
 		System.out.println("vertex file location:    "+vertexFileLoc);
+		System.out.println("max. iterations:         "+maxIterations);
 		System.out.println("no singleton components: "+noSingletonComponents);
 		System.out.println();
 		
@@ -60,26 +70,30 @@ public class HolomaProcessControl {
 		 */
 		startTime();
 		ParsingPoint pp = new ParsingPoint (ontologyPath, ontologyFiles);
+		System.out.println("Printing edges to file  ... ");
+		System.out.println("Printing vertices to file ... ");
 		pp.printEdgeVertexToFile(edgeFileLoc, vertexFileLoc);
+		List<Edge<String, Integer>> edges = pp.getEdges();
+		List<Vertex<String, String>> vertices = pp.getVertices();
 		printTime();
 		
-		System.out.println("\n!!!!Quit program!!!!");System.exit(0);
+		//System.out.println("\n!!!!Quit program!!!!");System.exit(0);
 		
 		/*
 		 * #1: Creating the graph
 		 */
-		System.out.println("Creating the graph ... ");
+		System.out.println("\nCreating the graph ... ");
 		startTime();
-		GraphCreationPoint creationPoint = new GraphCreationPoint(edgeFileLoc, vertexFileLoc);
-		Graph<String, String, Integer> graph = creationPoint.createGraph();
+		GraphCreationPoint creationPoint = new GraphCreationPoint();
+		Graph<String, String, Integer> graph = creationPoint.createGraph(edges, vertices);
 		printTime();
 		
-		System.out.println("Showing the graph ... ");
+/*		System.out.println("Showing the graph ... ");
 		GraphVisualisation.showEdgesVertices(graph);	
 		
 		System.out.println("\nEvaluating the graph ... ");
 		descriptEvaluate(graph);
-		
+*/		
 		System.out.println("\nConnected Components:");
 		Map<Long, List<String>> conCompts = calculateConnComponents(graph);
 //		GraphVisualisation.showConnectedComponents(conCompts);
@@ -99,7 +113,7 @@ public class HolomaProcessControl {
 	 * @return Connected Components.
 	 */
 	private static Map<Long, List<String>> calculateConnComponents (Graph<String, String, Integer> graph){
-		GraphEvaluationPoint eval = new GraphEvaluationPoint(graph);
+		GraphEvaluationPoint eval = new GraphEvaluationPoint(graph, maxIterations);
 		DataSet<Vertex<String, Long>> verticesWithComponents = eval.getConnectedComponents();
 		return GraphVisualisation.sortConnectedComponents(verticesWithComponents, noSingletonComponents);
 	}
@@ -110,15 +124,17 @@ public class HolomaProcessControl {
 	 * @param graph The graph.
 	 */
 	private static void descriptEvaluate (Graph<String, String, Integer> graph) {
-		GraphEvaluationPoint eval = new GraphEvaluationPoint(graph);
+		GraphEvaluationPoint eval = new GraphEvaluationPoint(graph, maxIterations);
 		startTime();
-		System.out.println("Validation: "+eval.validateGraph());
+/*		System.out.println("Validation: "+eval.validateGraph());
 		printTime(); startTime();
-		System.out.println("#vertices: "+eval.getCountVertices());
+*/		System.out.println("#vertices: "+eval.getCountVertices());
 		printTime(); startTime();
 		System.out.println("#edges: "+eval.getCountEdges());
 		printTime();
 	}
+	
+	
 	
 	/** Starts the stop watch. */
 	private static void startTime () { stopWatch.reset(); stopWatch.start(); }
