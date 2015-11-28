@@ -7,11 +7,6 @@
   <description>holistic ontology mapping</description>
   <dependencies>
   	<dependency>
-  		<groupId>org.testng</groupId>
-  		<artifactId>testng</artifactId>
-  		<version>6.9.9</version>
-  	</dependency>
-  	<dependency>
   		<groupId>org.apache.flink</groupId>
   		<artifactId>flink-gelly_2.11</artifactId>
   		<version>0.10.0</version>
@@ -25,6 +20,12 @@
   		<groupId>org.json</groupId>
   		<artifactId>json</artifactId>
   		<version>20140107</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.12</version>
+  		<scope>test</scope>
   	</dependency>
   </dependencies>
 </project>
