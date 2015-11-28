@@ -29,7 +29,7 @@ public class GraphCreationPoint {
 	
 	
 	/** Context in which the program is currently executed. */
-	private ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+	public ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 	
 	
 	
@@ -72,7 +72,7 @@ public class GraphCreationPoint {
 	 * @param vertexFileLocation Location of the vertex file.
 	 * @return The vertices of the graph. Format: (url, ont)
 	 */
-	private DataSet<Tuple2<String, String>> loadVertices(String vertexFileLocation) {
+	public DataSet<Tuple2<String, String>> loadVertices(String vertexFileLocation) {
 		DataSet<Tuple2<String, String>> vertexTuples = env.readCsvFile(vertexFileLocation)
 				.fieldDelimiter("\t")  // configures the delimiter ("\t") that separates the fields within a row.
 				.ignoreComments("#")  // configures the string ('#') that starts comments
@@ -87,7 +87,7 @@ public class GraphCreationPoint {
 	 * @param edgeFileLocation Location of the edge file.
 	 * @return The edges of the graph. Format: (src, trg, type)
 	 */
-	private DataSet<Tuple3<String, String, Integer>> loadEdges(String edgeFileLocation) {		
+	public DataSet<Tuple3<String, String, Integer>> loadEdges(String edgeFileLocation) {		
 		DataSet<Tuple3<String, String, Integer>> edgeTuples = env.readCsvFile(edgeFileLocation)
 				.fieldDelimiter("\t")  // configures the delimiter ("\t") that separates the fields within a row.
 	            .ignoreComments("#")  // configures the string ('#') that starts comments

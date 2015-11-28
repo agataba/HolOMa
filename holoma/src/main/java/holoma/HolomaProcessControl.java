@@ -104,8 +104,6 @@ public class HolomaProcessControl {
 		System.out.println("--- End ---");
 	}
 	
-	
-	
 	/**
 	 * Calculates the connected components and changes their format to a map
 	 * which has the component ID as key, and the nodes of this ID as value.
