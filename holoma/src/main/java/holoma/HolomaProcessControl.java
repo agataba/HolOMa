@@ -1,6 +1,6 @@
 package holoma;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 //
 import org.apache.commons.lang.time.StopWatch;
@@ -25,19 +25,17 @@ public class HolomaProcessControl {
 	/** Stop watch. */
 	private static final StopWatch stopWatch = new StopWatch();
 	
-	// TODO: file location the property file
-	/*	private static final String edgeFileLoc = "./src/main/resources/example_edges.csv";
-		private static final String vertexFileLoc = "./src/main/resources/example_vertices.csv";
-		private static final String conCompFileLoc = "./src/main/resources/example_connectedComponents.csv";
-	*/	
-	
+	/** Where to print or where to get the set of edges of the graph. */
 	private static final String edgeFileLoc = "./src/main/resources/edges.csv";
+	/** Where to print or where to get the set of vertices of the graph. */
 	private static final String vertexFileLoc = "./src/main/resources/vertices.csv";
-	
+	/** Where to print the connected components. */
 	private static final String conCompFileLoc = "./src/main/resources/connectedComponents.csv";
-	
+	/** Path of the ontology files. */
 	private static final String ontologyPath = "./src/main/resources/ont/";
+	/** Name of the mapping file (same path as ontology files). */
 	private static final String mappingFile = "mapping_mod.csv";
+	/** Names of the ontology files. */
 	private static final String[] ontologyFiles = {
 /*		"chebi.owljsonLD.json",
 		"fma.owljsonLD.json",
@@ -50,10 +48,13 @@ public class HolomaProcessControl {
 		"Radlex_3.12.owljsonLD.json",
 		"RXNORM.ttljsonLD.json"
 	};
-
+	/** Specifies whether the preprocessor is optimistic: 'true' for optimistic, 'false' for pessimistic.
+	 * An optimistic preprocessor adds missing edges' vertices to the set of all vertices.
+	 * A pessimistic preprocessor deletes all edges where at least on vertex is not part of the set of all vertices. */
 	private static final boolean isOptimPrepr = false;
-	
+	/** Maximum number of iteration steps for connected components. */
 	private static final int maxIterations = 10;
+	
 	private static final boolean noSingletonComponents = true;
 	
 	
@@ -99,7 +100,7 @@ public class HolomaProcessControl {
 		// calculate connected components
 		System.out.println("\nCalculating Connected Components ... ");
 		startTime();
-		Map<Long, List<String>> connCompts = null;
+		Map<Long, Set<String>> connCompts = null;
 		try {
 			startTime();
 			connCompts = calculateConnComponents(graph);
@@ -131,7 +132,7 @@ public class HolomaProcessControl {
 	 * @param graph The components are based on the graph.
 	 * @return Connected Components.
 	 */
-	private static Map<Long, List<String>> calculateConnComponents (Graph<String, String, Integer> graph){
+	private static Map<Long, Set<String>> calculateConnComponents (Graph<String, String, Integer> graph){
 		GraphEvaluationPoint eval = new GraphEvaluationPoint(graph, maxIterations);
 		DataSet<Vertex<String, Long>> verticesWithComponents = eval.getConnectedComponents();
 			
