@@ -1,17 +1,15 @@
 package holoma;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 //
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.flink.api.java.DataSet;
-import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 import org.apache.log4j.Logger;
 
-import holoma.parsing.ParsingPoint;
+import tools.io.InputFromConsole;
 
 /**
  * This class manages the overall workflow 
@@ -41,14 +39,14 @@ public class HolomaProcessControl {
 	private static final String ontologyPath = "./src/main/resources/ont/";
 	private static final String mappingFile = "mapping_mod.csv";
 	private static final String[] ontologyFiles = {
-		"chebi.owljsonLD.json",
-/*		"fma.owljsonLD.json",
+/*		"chebi.owljsonLD.json",
+		"fma.owljsonLD.json",
 		"full-galen.owljsonLD.json",
 		"MESH.ttljsonLD.json",
 		"NCITNCBO.ttljsonLD.json",
-*/		"NPOntology01.owljsonLD.json",
+		"NPOntology01.owljsonLD.json",
 		"OMIM.ttljsonLD.json",
-		"PDQ.ttljsonLD.json",
+*/		"PDQ.ttljsonLD.json",
 		"Radlex_3.12.owljsonLD.json",
 		"RXNORM.ttljsonLD.json"
 	};
@@ -64,6 +62,7 @@ public class HolomaProcessControl {
 	//############### main #############################################
 	//##################################################################
 	public static void main(String[] args) {	
+		// #0: Showing settings
 		System.out.println("HolOMa (Holistic Ontology Mapping)\n"
 				+ "-------------------------------------------------------------");		
 		System.out.println("Properties:");
@@ -75,45 +74,56 @@ public class HolomaProcessControl {
 		System.out.println("no singleton components:       "+noSingletonComponents);
 		System.out.println("-------------------------------------------------------------\n");
 		
+		// #1: Creating the graph
+		GraphCreationPoint creation = new GraphCreationPoint();
+		Graph<String, String, Integer> graph = null;
 		
-		// #0: Load vertices and edges	 
-		startTime();
-		ParsingPoint pp = new ParsingPoint (ontologyPath, ontologyFiles, mappingFile, isOptimPrepr);		
-		pp.printEdgeVertexToFile(edgeFileLoc, vertexFileLoc);
-		Set<Edge<String, Integer>> edges = pp.getEdges();
-		Set<Vertex<String, String>> vertices = pp.getVertices();
-		System.out.println();
-		System.out.println("Printing "+edges.size()+" edges to file  ... ");
-		System.out.println("Printing "+vertices.size()+" vertices to file ... ");
-		printTime();		
-				
-		 // #1: Creating the graph		 
-		System.out.println("\nCreating the graph ... ");
-		startTime();
-		GraphCreationPoint creationPoint = new GraphCreationPoint();
-		Graph<String, String, Integer> graph = creationPoint.createGraph(edges, vertices);
-		printTime();
+		while (true) {
+			char c = InputFromConsole.readChar("Load graph from ontology files ('o') or from existing edge and vertex file ('e')? \n >> ");
+			if (c=='o') { 
+				startTime();
+				graph = creation.getGraphFromOntologyFiles(ontologyPath, ontologyFiles, mappingFile, isOptimPrepr, edgeFileLoc, vertexFileLoc);
+				printTime(); break;
+			}
+			if (c=='e') {
+				startTime();
+				graph = creation.getGraphFromEdgeVertexFile(edgeFileLoc, vertexFileLoc);
+				printTime(); break;
+			}
+		}
 		
 /*		System.out.println("\n!!!!Quit program!!!!");System.exit(0);
-		
-		System.out.println("Showing the graph ... ");
-		GraphVisualisation.showEdgesVertices(graph);	
 */		
-		// #2: Evaluating the graph
 		
-		System.out.println("\nEvaluating the graph ... ");		
+		// #2: Evaluating the graph
+		// calculate connected components
 		System.out.println("\nCalculating Connected Components ... ");
 		startTime();
-		Map<Long, List<String>> connCompts = calculateConnComponents(graph);
-/*		GraphVisualisation.showConnectedComponents(conCompts);
-*/		System.out.println("printing to "+conCompFileLoc+" ... ");
+		Map<Long, List<String>> connCompts = null;
+		try {
+			startTime();
+			connCompts = calculateConnComponents(graph);
+			printTime();
+		} catch (Exception e){
+			System.err.println("Error while calculating connected components.");
+			e.printStackTrace();
+			System.out.println("\nQuit program ... ");
+			System.exit(1);
+		}
+		// save connected components
+		System.out.println("printing to "+conCompFileLoc+" ... ");
 		GraphVisualisation.printConnectedComponents(connCompts, conCompFileLoc);
-		printTime();
-	
+		// analyse connected components: avg/ min/ max size
+		startTime();
+		System.out.println("Analysing connected components ... ");
 		GraphEvaluationPoint.analyseConnComponents(connCompts);
+		printTime();
 		
 		System.out.println("\n--- End ---");
 	}
+	
+	
+	
 	
 	/**
 	 * Calculates the connected components and changes their format to a map

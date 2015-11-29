@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -100,10 +98,10 @@ public class OntologyParserJSON {
 							subclass = enrichShortHandNode(subclass);
 							Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
 							this.edgeSet.add(edge);
-						}
-					}
-				}
-			}
+						} // end for j
+					} // end else
+				} // end for i
+			} // end if
 		} catch (JSONException  | IOException e) {
 			e.printStackTrace();
 		}
@@ -128,16 +126,16 @@ public class OntologyParserJSON {
 	 * @return Node with a full URI name.
 	 */
 	private String enrichShortHandNode (String node) {
-		if (node.startsWith("biotop:")) {
+		if (node.startsWith("biotop:"))
 			return  "http://purl.org/biotop/biotop.owl#"+node.substring("biotop:".length());
-		}
-		if (node.startsWith("owl:")) {
-			return "http://www.w3.org/2002/07/owl#"+node.substring("owl:".length());
-		}
-		if (node.startsWith("chebi:") && this.ONT_NAME.equals("natpro")) {
-			//TODO: this doesn't work ...
+		if (node.startsWith("chebi:") && this.ONT_NAME.equals("chebi"))
+			return "http://purl.obolibrary.org/obo/chebi#"+node.substring("chebi:".length());
+		if  (node.startsWith("chebi:") && this.ONT_NAME.equals("natpro"))
 			return "http://purl.bioontology.org/ontology/CHEBI#"+node.substring("chebi:".length());
-		}
+		if (node.startsWith("owl:"))
+			return "http://www.w3.org/2002/07/owl#"+node.substring("owl:".length());
+		if (node.startsWith("rdf:"))
+			return "http://www.w3.org/1999/02/22-rdf-syntax-ns#"+node.substring("rdf:".length());
 		else
 			return node;
 	}

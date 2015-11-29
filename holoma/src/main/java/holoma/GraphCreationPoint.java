@@ -10,6 +10,8 @@ import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 
+import holoma.parsing.ParsingPoint;
+
 /**
  * This class creates the graph which
  * consists of ontologies and correspondences.
@@ -40,13 +42,45 @@ public class GraphCreationPoint {
 		
 	}
 	
+	
+	/**
+	 * Returns a graph which is created after parsing the specified ontology and mapping files.
+	 * @param ontologyPath Path of the ontology files.
+	 * @param ontologyFiles Names of the ontology files.
+	 * @param mapFile Name of the mapping file (same path as ontology files).
+	 * @param isOptimPrepr Specifies whether the preprocessor is optimistic: 'true' for optimistic, 'false' for pessimistic.
+	 * An optimistic preprocessor adds missing edges' vertices to the set of all vertices.
+	 * A pessimistic preprocessor deletes all edges where at least on vertex is not part of the set of all vertices.
+	 * @param edgeFileLoc Where to print the edge file.
+	 * @param vertexFileLoc Where to print the vertex file.
+	 * @return The created graph.
+	 */
+	public Graph<String, String, Integer> getGraphFromOntologyFiles (String ontologyPath, String[] ontologyFiles, 
+			String mapFile, boolean isOptimPrepr, String edgeFileLoc, String vertexFileLoc) {
+		// #0: Load vertices and edges	 
+		ParsingPoint pp = new ParsingPoint (ontologyPath, ontologyFiles, mapFile, isOptimPrepr);		
+		pp.printEdgeVertexToFile(edgeFileLoc, vertexFileLoc);
+		Set<Edge<String, Integer>> edges = pp.getEdges();
+		Set<Vertex<String, String>> vertices = pp.getVertices();
+		System.out.println();
+		System.out.println("Printing "+edges.size()+" edges to file  ... ");
+		System.out.println("Printing "+vertices.size()+" vertices to file ... ");			
+				
+		 // #1: Creating the graph		 
+		System.out.println("\nCreating the graph ... ");
+		Graph<String, String, Integer> graph = createGraph(edges, vertices);
+		
+		return graph;
+	}
+	
+	
 	/**
 	 * Creates a graph based on a list of edges and vertices.
 	 * @param edges Set of edges.
 	 * @param vertices Set of vertices.
 	 * @return The graph.
 	 */
-	public Graph<String, String, Integer> createGraph (Set<Edge<String, Integer>> edges, Set<Vertex<String, String>> vertices) {
+	private Graph<String, String, Integer> createGraph (Set<Edge<String, Integer>> edges, Set<Vertex<String, String>> vertices) {
 		Graph<String, String, Integer> graph = Graph.fromCollection(vertices, edges, env);
 		return graph;
 	}
@@ -57,12 +91,12 @@ public class GraphCreationPoint {
 	 * Manages the creation of the graph.
 	 * @param edgeFileLocation Location of the edge file.
 	 * @param vertexFileLocation Location of the vertex file.
-	 * @return The graph with vertex ID type, vertex value type, and edge value type as String.
+	 * @return The created graph.
 	 */
-	public Graph<String, String, Integer> createGraphFromFile (String edgeFileLocation, String vertexFileLocation) {
+	public Graph<String, String, Integer> getGraphFromEdgeVertexFile (String edgeFileLoc, String vertexFileLoc) {
 		// load vertices and edges
-		DataSet<Tuple2<String, String>> vertices = loadVertices(vertexFileLocation);
-		DataSet<Tuple3<String, String, Integer>> edges = loadEdges(edgeFileLocation);
+		DataSet<Tuple2<String, String>> vertices = loadVertices(vertexFileLoc);
+		DataSet<Tuple3<String, String, Integer>> edges = loadEdges(edgeFileLoc);
 		// create graph with vertex ID type, vertex value type, and edge value type
 		Graph<String, String, Integer> graph = Graph.fromTupleDataSet(vertices, edges, env);
 		return graph;

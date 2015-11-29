@@ -77,7 +77,8 @@ public class ParsingPoint {
 	
 	/**
 	 * Creates the edge file to the specified location.
-	 * @param location Location of the edge file.
+	 * @param locationEdge Where to print the edges.
+	 * @param locationVertex Where to print the vertcies.
 	 */
 	public void printEdgeVertexToFile (String locationEdge, String locationVertex) {
 		// create a new edge file
