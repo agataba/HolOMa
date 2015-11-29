@@ -21,7 +21,7 @@ public class GraphTest {
 	
 	public void graphTestRunning (){
 		GraphCreationPoint graphCreation = new GraphCreationPoint();
-		Graph<String, String, Integer> graph = graphCreation.createGraphFromFile("/src/main/resources/example_edges.csv", "/src/main/resources/example_vertices.csv");
+		Graph<String, String, Integer> graph = graphCreation.getGraphFromEdgeVertexFile("/src/main/resources/example_edges.csv", "/src/main/resources/example_vertices.csv");
 		Assert.assertTrue(!((List<Edge<String, Integer>>) graph).isEmpty());
 	}
 
