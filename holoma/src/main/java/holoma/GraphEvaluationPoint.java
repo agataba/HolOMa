@@ -1,8 +1,8 @@
 package holoma;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -143,9 +143,9 @@ public class GraphEvaluationPoint implements Serializable {
 	
 	/**
 	 * Analyses the connected components.
-	 * @param connComp
+	 * @param connComp Map of connected components.
 	 */
-	public static void analyseConnComponents (Map<Long, List<String>> connComp) {
+	public static void analyseConnComponents (Map<Long, Set<String>> connComp) {
 		int count = connComp.size();
 		int max = 0, min = 500000, sum = 0;
 		for (long component : connComp.keySet()) {
