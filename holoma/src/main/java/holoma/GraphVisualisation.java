@@ -54,12 +54,12 @@ public class GraphVisualisation implements Serializable {
 	 * @param conCompts Map of connected components.
 	 * @param path Where to print the connected components.
 	 */
-	@SuppressWarnings("unchecked")
 	public static void printConnectedComponents (Map<Long, Set<String>> conCompts, String path) {
 		OutputToFile out = new OutputToFile (500, path);
 		for (Long key : conCompts.keySet()) {
 			out.addToBuff("-------------\ncomponent ID: "+key);
-			out.addToBuff((List<String>) conCompts.get(key));
+			for (String vertex : conCompts.get(key))
+				out.addToBuff(vertex);
 		}	
 		out.close();
 	}

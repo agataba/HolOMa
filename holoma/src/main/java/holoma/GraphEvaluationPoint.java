@@ -155,12 +155,13 @@ public class GraphEvaluationPoint implements Serializable {
 			min = (size < min) ? size : min;
 		}
 		float avg = sum / (1.0f*count);
-		System.out.println("\n-------------------------------------------------------------");
+		System.out.println("-------------------------------------------------------------");
 		System.out.println("Analysis of connected components:");
 		System.out.println("count:     "+count);
 		System.out.println("avg:       "+avg);
 		System.out.println("min:       "+min);
 		System.out.println("max:       "+max);
+		System.out.println();
 	}
 	
 }
