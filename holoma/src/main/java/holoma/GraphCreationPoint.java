@@ -1,6 +1,6 @@
 package holoma;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -42,14 +42,16 @@ public class GraphCreationPoint {
 	
 	/**
 	 * Creates a graph based on a list of edges and vertices.
-	 * @param edges List of edges.
-	 * @param vertices List of vertices.
+	 * @param edges Set of edges.
+	 * @param vertices Set of vertices.
 	 * @return The graph.
 	 */
-	public Graph<String, String, Integer> createGraph (List<Edge<String, Integer>> edges, List<Vertex<String, String>> vertices) {
+	public Graph<String, String, Integer> createGraph (Set<Edge<String, Integer>> edges, Set<Vertex<String, String>> vertices) {
 		Graph<String, String, Integer> graph = Graph.fromCollection(vertices, edges, env);
 		return graph;
 	}
+	
+
 	
 	/** 
 	 * Manages the creation of the graph.
@@ -95,6 +97,9 @@ public class GraphCreationPoint {
 		
 		return edgeTuples;
 	}
+	
+	
+	
 	
 	           
 }
