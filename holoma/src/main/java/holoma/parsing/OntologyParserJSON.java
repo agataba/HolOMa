@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.flink.graph.Edge;
@@ -25,10 +27,11 @@ public class OntologyParserJSON {
 	private final File ONT_FILE;
 	/** The name of the current ontology which is being parsed. */
 	private final String ONT_NAME;
-	/** The list of the edges. */
-	private List<Edge<String, Integer>> edgeList = new ArrayList<Edge<String, Integer>>();
-	/** The list of the vertices. */
-	private List<Vertex<String, String>> vertexList = new ArrayList<Vertex<String, String>>();
+	/** The set of the edges. */
+	private Set<Edge<String, Integer>> edgeSet = new HashSet<Edge<String, Integer>>();
+	/** The set of the vertices. */
+	private Set<Vertex<String, String>> vertexSet = new HashSet<Vertex<String, String>>();
+	
 	
 	
 	/**
@@ -42,16 +45,16 @@ public class OntologyParserJSON {
 	}
 	
 	/**
-	 * Get the list of edges.
+	 * Get the set of edges.
 	 * @return Edges.
 	 */
-	public List<Edge<String, Integer>> getEdgeList ( ) { return this.edgeList; }
+	public Set<Edge<String, Integer>> getEdgeSet ( ) { return this.edgeSet; }
 	
 	/**
-	 * Get the list of vertices.
+	 * Get the set of vertices.
 	 * @return Vertices.
 	 */
-	public List<Vertex<String, String>> getVertexList ( ) { return this.vertexList; }
+	public Set<Vertex<String, String>> getVertexSet ( ) { return this.vertexSet; }
 	
 	
 	
@@ -75,25 +78,28 @@ public class OntologyParserJSON {
 					JSONObject graph_dependency_object = jsonArray.getJSONObject(i);
 					// get id
 					String graphID = graph_dependency_object.get("@id").toString();
-					//TODO: resolve context??
+					graphID = enrichShortHandNode(graphID);
+			
 					Vertex<String, String> vertex = new Vertex<String, String>(graphID, this.ONT_NAME);
-					this.vertexList.add(vertex);
+					this.vertexSet.add(vertex);
 					
 					// get subclasses
 					String typeSubclassField = graph_dependency_object.get("subClassOf").getClass().getName();
 					// only one parent: field is a string
 					if (typeSubclassField.equals("java.lang.String")) {
 						String subclass = enrichBlankNode(graph_dependency_object.get("subClassOf").toString());
+						subclass = enrichShortHandNode(subclass);
 						Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
-						this.edgeList.add(edge);
+						this.edgeSet.add(edge);
 					}
 					// more than on parent: field is an array
 					else {
 						JSONArray jArray = graph_dependency_object.getJSONArray("subClassOf");
 						for (int j=0; j<jArray.length(); j++){
 							String subclass = enrichBlankNode(jArray.getString(j));
+							subclass = enrichShortHandNode(subclass);
 							Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
-							this.edgeList.add(edge);
+							this.edgeSet.add(edge);
 						}
 					}
 				}
@@ -113,5 +119,26 @@ public class OntologyParserJSON {
 	 */
 	private String enrichBlankNode (String node) {
 		return (node.startsWith("_:")) ? this.ONT_NAME+node : node;
+	}
+	
+	
+	/**
+	 * Enriches a node with a short hand name to the full URI name.
+	 * @param node A node with a potentially short hand name.
+	 * @return Node with a full URI name.
+	 */
+	private String enrichShortHandNode (String node) {
+		if (node.startsWith("biotop:")) {
+			return  "http://purl.org/biotop/biotop.owl#"+node.substring("biotop:".length());
+		}
+		if (node.startsWith("owl:")) {
+			return "http://www.w3.org/2002/07/owl#"+node.substring("owl:".length());
+		}
+		if (node.startsWith("chebi:") && this.ONT_NAME.equals("natpro")) {
+			//TODO: this doesn't work ...
+			return "http://purl.bioontology.org/ontology/CHEBI#"+node.substring("chebi:".length());
+		}
+		else
+			return node;
 	}
 }
