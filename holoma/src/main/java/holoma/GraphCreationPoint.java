@@ -34,12 +34,15 @@ public class GraphCreationPoint {
 	public ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 	
 	
+	private final boolean IS_PRINTING_EDGVERT;
+	
 	
 	/**
 	 * Constructor.
+	 * @param isPrintingValidEdgVert Printing edges and vertices to file.
 	 */
-	public GraphCreationPoint () {
-		
+	public GraphCreationPoint (boolean isPrintingValidEdgVert) {
+		this.IS_PRINTING_EDGVERT = isPrintingValidEdgVert;
 	}
 	
 	
@@ -59,13 +62,16 @@ public class GraphCreationPoint {
 			String mapFile, boolean isOptimPrepr, String edgeFileLoc, String vertexFileLoc) {
 		// #0: Load vertices and edges	 
 		ParsingPoint pp = new ParsingPoint (ontologyPath, ontologyFiles, mapFile, isOptimPrepr);		
-		pp.printEdgeVertexToFile(edgeFileLoc, vertexFileLoc);
+		if (IS_PRINTING_EDGVERT)
+			pp.printEdgeVertexToFile(edgeFileLoc, vertexFileLoc);
 		Set<Edge<String, Integer>> edges = pp.getEdges();
 		Set<Vertex<String, String>> vertices = pp.getVertices();
-		System.out.println();
-		System.out.println("Printing "+edges.size()+" edges to file  ... ");
-		System.out.println("Printing "+vertices.size()+" vertices to file ... ");			
-				
+		if (IS_PRINTING_EDGVERT) {
+			System.out.println();
+			System.out.println("Printing "+edges.size()+" edges to file  ... ");
+			System.out.println("Printing "+vertices.size()+" vertices to file ... ");			
+		}
+		
 		 // #1: Creating the graph		 
 		System.out.println("\nCreating the graph ... ");
 		Graph<String, String, Integer> graph = createGraph(edges, vertices);

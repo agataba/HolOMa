@@ -115,8 +115,7 @@ public class ParsingPoint {
 	
 	
 	/** Parses all ontology files and
-	 *  adds the vertices and edges to the set of vertices and edges of all ontologies, respectively.
-	 */
+	 *  adds the vertices and edges to the set of vertices and edges of all ontologies, respectively. */
 	private void parseEdgesVertices () {
 		// parse each ontology
 		for (String ontology : this.ONT_FILES) {
@@ -148,11 +147,18 @@ public class ParsingPoint {
 			reader.close();
 			// determine valid correspondences
 			if (this.IS_OPTIM_PREPR) {
-				System.err.println("Not defined yet!");
-				System.exit(1);
+				//TODO: redesign
+/*				Set<Vertex<String, String>> validVertices = 
+						Preprocessor.addMissingVertices(vertices, correspondences, "correspondences");
+				this.vertices.addAll(validVertices);
+				this.edges.addAll(correspondences);
+*/				Set<Edge<String, Integer>> validCorrespondences = 
+						Preprocessor.removeInvalidEdges(this.vertices, correspondences, "correspondences");			
+				this.edges.addAll(validCorrespondences);
 			}
 			else {
-				Set<Edge<String, Integer>> validCorrespondences = Preprocessor.removeInvalidEdges(this.vertices, correspondences, "correspondences");			
+				Set<Edge<String, Integer>> validCorrespondences = 
+						Preprocessor.removeInvalidEdges(this.vertices, correspondences, "correspondences");			
 				this.edges.addAll(validCorrespondences);
 			}				
 		} catch (IOException e) {

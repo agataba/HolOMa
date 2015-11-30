@@ -2,7 +2,6 @@ package holoma;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,7 +39,7 @@ public class GraphVisualisation implements Serializable {
 	 * Prints the connected components to the console.
 	 * @param conCompts Map of connected components.
 	 */
-	public static void showConnectedComponents (Map<Long, List<String>> conCompts) {			
+	public static void showConnectedComponents (Map<Long, Set<String>> conCompts) {			
 		for (Long key : conCompts.keySet()) {
 			System.out.println("component ID: "+key);
 			System.out.println(conCompts.get(key));

@@ -147,7 +147,7 @@ public class GraphEvaluationPoint implements Serializable {
 	 */
 	public static void analyseConnComponents (Map<Long, Set<String>> connComp) {
 		int count = connComp.size();
-		int max = 0, min = 500000, sum = 0;
+		int max = 0, min = Integer.MAX_VALUE, sum = 0;
 		for (long component : connComp.keySet()) {
 			int size = connComp.get(component).size();
 			sum += size;
@@ -159,8 +159,8 @@ public class GraphEvaluationPoint implements Serializable {
 		System.out.println("Analysis of connected components:");
 		System.out.println("count:     "+count);
 		System.out.println("avg:       "+avg);
-		System.out.println("min:       "+min);
-		System.out.println("max:       "+max);
+		System.out.println("min:       "+((min==Integer.MAX_VALUE) ? "--" : min));
+		System.out.println("max:       "+((max==0) ? "--" : max));
 		System.out.println();
 	}
 	
