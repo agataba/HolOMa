@@ -1,6 +1,7 @@
 package holoma;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,16 +45,16 @@ public class HolomaProcessControl {
 /*		"blue.ttljsonLD.json",
 		"green.ttljsonLD.json",
 		"orange.ttljsonLD.json"
-*/		"chebi.owljsonLD.json",
-		"fma.owljsonLD.json",
+*/		"RXNORM.ttljsonLD.json",
+		"PDQ.ttljsonLD.json",
+		"NPOntology01.owljsonLD.json",
 		"full-galen.owljsonLD.json",
 		"MESH.ttljsonLD.json",
-		"NCITNCBO.ttljsonLD.json",
-		"NPOntology01.owljsonLD.json",
 		"OMIM.ttljsonLD.json",
-		"PDQ.ttljsonLD.json",
 		"Radlex_3.12.owljsonLD.json",
-		"RXNORM.ttljsonLD.json"
+		"chebi.owljsonLD.json",
+		"fma.owljsonLD.json",
+		"NCITNCBO.ttljsonLD.json"
 	};
 	
 	/** Specifies whether the preprocessor is optimistic: 'true' for optimistic, 'false' for pessimistic.
@@ -64,9 +65,9 @@ public class HolomaProcessControl {
 	 *  Invalid edges are calculated iff <code>isOptimPrepr=false</code>. */
 	private static final boolean isPrintingInvalEdges = false;
 	/** Valid edges and vertices are printed iff 'true'. */
-	private static final boolean isPrintingValidEdgVert = false;
+	private static final boolean isPrintingValidEdgVert = true;
 	/** Maximum number of iteration steps for connected components. */
-	private static final int maxIterations = 10;
+	private static final int maxIterations = 2;
 	/** Singletons of connected components are eliminated iff 'true'. */
 	private static final boolean noSingletonComponents = true;
 	
@@ -124,7 +125,10 @@ public class HolomaProcessControl {
 	}
 	
 	
-	
+	/**
+	 * Naive approach: calculate connected components on the whole graph of all ontologies.
+	 * @return Map from component ID to a connected component, i.e., a set of vertices.
+	 */
 	private static Map<Long, Set<String>> doNaive () {
 		// #1: Creating the graph
 		GraphCreationPoint creation = new GraphCreationPoint(isPrintingValidEdgVert);
@@ -144,9 +148,8 @@ public class HolomaProcessControl {
 			}
 		}
 		
-/*		System.out.println("\n!!!!Quit program!!!!");System.exit(0);
+/*		System.out.println("\n!!!!Quit program!!!!");System.exit(0);	
 */		
-		
 		// #2: Evaluating the graph
 		// calculate connected components
 		System.out.println("\nCalculating Connected Components ... ");
@@ -167,8 +170,41 @@ public class HolomaProcessControl {
 	}
 	
 	
+	/**
+	 * Dynamic approach for calculating connected components: connected components are calculated pairwise.
+	 * Note: not fully implemented yet!
+	 * @return Map from component ID to a connected component.
+	 */
 	private static Map<Long, Set<String>> doDynamic() {
-		return calculateConnComponentsDynamic();
+		// determine connected components between two ontologies
+		// e.g.: Ontologies = {O, P, Q} then connComp(O,P) and connComp(P,Q)
+		List<Map<Long, Set<String>>> listConnCompts = new ArrayList<Map<Long, Set<String>>>(ontologyFiles.length-1);
+		System.out.println("Intialising with pairwise connected components:\n"); startTime();
+		for (int i=0; i<ontologyFiles.length-1; i++) {
+			String[] ontologies = {ontologyFiles[i], ontologyFiles[i+1]};
+			String edgeFile = edgeFileLoc.substring(0, edgeFileLoc.lastIndexOf('.'))+"_"+i+".csv";
+			String vertexFile = vertexFileLoc.substring(0, vertexFileLoc.lastIndexOf('.'))+"_"+i+".csv";
+			// create graph for two ontologies
+			GraphCreationPoint creation = new GraphCreationPoint(isPrintingValidEdgVert);
+			Graph<String, String, Integer> graph = 
+					creation.getGraphFromOntologyFiles(ontologyPath, ontologies, mappingFile, isOptimPrepr, edgeFile, vertexFile);
+			
+			// calculate connected components on that graph
+			GraphEvaluationPoint eval = new GraphEvaluationPoint(graph, maxIterations);
+			System.out.println("Calculating connected components for "+ontologies[0]+", "+ontologies[1]+" ... ");
+			DataSet<Vertex<String, Long>> verticesWithComponents = eval.getConnectedComponents();
+			// add the connected components to the list
+			Map<Long, Set<String>> connCompts = GraphVisualisation.sortConnectedComponents(verticesWithComponents, noSingletonComponents);
+/*			GraphVisualisation.showEdgesVertices(graph);
+			GraphVisualisation.showConnectedComponents(connCompts);
+			InputFromConsole.readLine();
+*/			listConnCompts.add(connCompts);
+		}
+		printTime();
+		if (listConnCompts.size() == 0)
+			return null;
+		else
+			return calculateConnComponentsDynamic(listConnCompts);
 	}
 	
 	
@@ -188,52 +224,38 @@ public class HolomaProcessControl {
 	}
 	
 	
-	private static Map<Long, Set<String>> calculateConnComponentsDynamic () {
-		// #1: determine connected components between two ontologies
-		// e.g.: Ontologies = {O, P, Q} then connComp(O,P) and connComp(P,Q)
-		List<Map<Long, Set<String>>> listConnCompts = new ArrayList<Map<Long, Set<String>>>(ontologyFiles.length-1);
-		for (int i=0; i<ontologyFiles.length-1; i++) {
-			String[] ontologies = {ontologyFiles[i], ontologyFiles[i+1]};
-			String edgeFile = edgeFileLoc.substring(0, edgeFileLoc.lastIndexOf('.'))+"_"+i+".csv";
-			String vertexFile = vertexFileLoc.substring(0, vertexFileLoc.lastIndexOf('.'))+"_"+i+".csv";
-			// create graph for two ontologies
-			GraphCreationPoint creation = new GraphCreationPoint(isPrintingValidEdgVert);
-			Graph<String, String, Integer> graph = 
-					creation.getGraphFromOntologyFiles(ontologyPath, ontologies, mappingFile, isOptimPrepr, edgeFile, vertexFile);
-			
-			// calculate connected components on that graph
-			GraphEvaluationPoint eval = new GraphEvaluationPoint(graph, maxIterations);
-			DataSet<Vertex<String, Long>> verticesWithComponents = eval.getConnectedComponents();
-			// add the connected components to the list
-			Map<Long, Set<String>> connCompts = GraphVisualisation.sortConnectedComponents(verticesWithComponents, noSingletonComponents);
-/*			GraphVisualisation.showEdgesVertices(graph);
-			GraphVisualisation.showConnectedComponents(connCompts);
-			InputFromConsole.readLine();
-*/			listConnCompts.add(connCompts);
-		}
-		
-		// #2: combine two maps of connected components iff they share at least one vertex
+	private static Map<Long, Set<String>> calculateConnComponentsDynamic (List<Map<Long, Set<String>>> listConnCompts) {		
+		// combine two maps of connected components iff they share at least one vertex
 		// e.g.: connComp(O,P) = { 1->{O2,P1}, 2->{O6,P7} }, connComp(P,Q) = { 3->{P6,Q3}, 4->{P7,Q5} }
 		//       then: connComp(O,P,Q) = { 1->... , 2->{O6,P7,Q5}, 3->... }
+		System.out.println("Combining components ... "); startTime();
 		while (listConnCompts.size() > 1) {
-/*			System.out.println("\nCombining connected components (list size: "+listConnCompts.size()+") ... ");
-*/			List<Map<Long, Set<String>>> prevListConnCompts = listConnCompts;
-/*			System.out.println("list: "+listConnCompts);
+			System.out.println("\nCombining connected components (list size: "+listConnCompts.size()+") ... ");
+			List<Map<Long, Set<String>>> prevListConnCompts = listConnCompts;
+/*			System.out.println("list: ");
+			for (Map<Long, Set<String>> map : listConnCompts) {
+				for (long key : map.keySet()) {
+					System.out.println("ID: "+key);
+					System.out.println(map.get(key));
+				}
+			}
 			System.out.println("size: "+prevListConnCompts.size());
+			InputFromConsole.readLine();
 */			listConnCompts = new ArrayList<Map<Long, Set<String>>>();
 			
 			// compare two "neighbouring" maps of connected components
 			// if their connected components share at least one element, then combine these sets to a new one
 			for (int i=0; i<prevListConnCompts.size()-1; i++) {
 /*				System.out.println("  ... between map "+i+" and "+(i+1));
+				InputFromConsole.readLine();
 */				Map<Long, Set<String>> map1 = prevListConnCompts.get(i);
 				Map<Long, Set<String>> map2 = prevListConnCompts.get(i+1);				
 				Map<Long, Set<String>> mapNew = combineMaps(map1, map2);
 				
-				listConnCompts.add(mapNew);
-				
+				listConnCompts.add(mapNew);				
 			}
 		}
+		printTime();
 		
 		return listConnCompts.get(0);		
 	}
@@ -247,8 +269,7 @@ public class HolomaProcessControl {
 	 * @return Combined map of connected components.
 	 */
 	private static Map<Long, Set<String>> combineMaps (Map<Long, Set<String>> map1, Map<Long, Set<String>> map2) {
-/*		System.out.println("comineMaps with map1: "+map1+" and map2: "+map2);
-*/		Map<Long, Set<String>> mapNew = new HashMap<Long, Set<String>>();
+		Map<Long, Set<String>> mapNew = new HashMap<Long, Set<String>>();
 		
 		// maps for managing whether a component set is combined with another one
 		Map<Long, Boolean> map1IsCombined = new HashMap<Long, Boolean>();
@@ -261,10 +282,13 @@ public class HolomaProcessControl {
 			Set<String> set1 = map1.get(key1);
 			for (Long key2 : map2.keySet()) {
 				Set<String> set2 = map2.get(key2);
-				if (set1.removeAll(set2)) {
+				Set<String> copySet1 = new HashSet<String>();
+				copySet1.addAll(set1);
+				if (copySet1.removeAll(set2)) {
 					// set1 and set2 share at least one element
 					// combine the two sets
-					Set<String> setNew = set1;
+					Set<String> setNew = new HashSet<String>();
+					setNew.addAll(set1);
 					setNew.addAll(set2);
 					map1IsCombined.put(key1, true);
 					map2IsCombined.put(key2, true);

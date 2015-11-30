@@ -73,7 +73,6 @@ public class GraphCreationPoint {
 		}
 		
 		 // #1: Creating the graph		 
-		System.out.println("\nCreating the graph ... ");
 		Graph<String, String, Integer> graph = createGraph(edges, vertices);
 		
 		return graph;
