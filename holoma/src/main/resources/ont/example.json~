@@ -1,5 +1,0 @@
- }, {^M
-    "@id" : "http://purl.org/sig/ont/fma/fma9997",^M
-    "subClassOf" : [ "_:b107193", "http://purl.org/sig/ont/fma/fma9146" ]^M
-  },
-
