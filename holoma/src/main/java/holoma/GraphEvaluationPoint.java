@@ -12,11 +12,10 @@ import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 import org.apache.flink.graph.library.ConnectedComponents;
 import org.apache.flink.graph.spargel.VertexCentricConfiguration;
-import org.apache.flink.graph.validation.InvalidVertexIdsValidator;
 
 /**
- * This class evaluates a given graph regarding to
- * some selected measures and characteristics.
+ * This class provides methods for 
+ * determining connected components.
  * @author max
  *
  */
@@ -41,53 +40,7 @@ public class GraphEvaluationPoint implements Serializable {
 		this.maxIterations = maxIterations;
 	}
 	
-	/**
-	 * Checks that the edge set input contains valid vertex IDs, i.e. that they also exist in the vertex input set.
-	 * @return 'true' iff edges contain valid vertex IDs; otherwise 'false'.
-	 */
-	public boolean validateGraph() {
-		boolean v = false;
-		try {
-			v = this.GRAPH.validate(new InvalidVertexIdsValidator<String, String, Integer>());
-		} catch (Exception e) {
-			System.err.println("Exception while valiadting the graph.");
-			e.printStackTrace();
-		} 
-		return v;
-	}
 	
-	
-	/**
-	 * Get the number of vertices.
-	 * @return Number of vertices.
-	 */
-	public long getCountVertices () {
-		long c = -1;
-		try {
-			c = this.GRAPH.numberOfVertices();
-		} catch (Exception e) {
-			System.err.println("Exception while counting vertices!");
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return c;
-	}
-	
-	/**
-	 * Get the number of edges.
-	 * @return Number of Edges.
-	 */
-	public long getCountEdges () {
-		long c = -1;
-		try {
-			c = this.GRAPH.numberOfEdges();
-		} catch (Exception e) {
-			System.err.println("Exception while counting edges!");
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return c;
-	}
 	
 	/**
 	 * Returns the graph on which the connected components are calculated.
@@ -100,21 +53,21 @@ public class GraphEvaluationPoint implements Serializable {
 	 * Returns the connected components of the given graph.
 	 * @return DataSet of vertices, where the vertex values correspond to the component ID.
 	 */
-	public DataSet<Vertex<String, Long>> getConnectedComponents () {
+	private DataSet<Vertex<String, Long>> getConnectedComponents () {
 		// set the degree option to true
 		VertexCentricConfiguration parameters = new VertexCentricConfiguration();
 		parameters.setOptDegrees(true);
 		
 		DataSet<Vertex<String, Long>> verticesWithComponents = null;		
 		
-		// #1: initialise each vertex value with its own and unique component ID
-				this.componentGraph = this.GRAPH.mapVertices(
-						new MapFunction<Vertex<String, String>, Long>() {
-							public Long map (Vertex<String, String> value) {
-								// the component ID is the hashCode of the key
-								return (long) value.getId().hashCode();
-							}
-						});	
+		// #1: Initialize each vertex value with its own and unique component ID
+		this.componentGraph = this.GRAPH.mapVertices(
+				new MapFunction<Vertex<String, String>, Long>() {
+					public Long map (Vertex<String, String> value) {
+						// the component ID is the hashCode of the key
+						return (long) value.getId().hashCode();
+					}
+				});	
 				
 		// #2: create subgraph: only edges with value "equal"
 		this.componentGraph = this.componentGraph.filterOnEdges(
@@ -124,9 +77,6 @@ public class GraphEvaluationPoint implements Serializable {
 						return (edge.getValue() == 0);
 					}
 				});
-
-		// #x: remove all nodes with no in-going or out-going edges
-		//TODO				
 
 		// #3: calculate the connected components
 		try {
@@ -142,7 +92,24 @@ public class GraphEvaluationPoint implements Serializable {
 	
 	
 	/**
-	 * Analyses the connected components.
+	 * Calculates the connected components and changes their format to a map
+	 * which has the component ID as key, and the nodes of this ID as value.
+	 * @param noSingletonComponents Singletons of connected components are eliminated iff 'true'.
+	 * @return Connected Components.
+	 */
+	public Map<Long, Set<String>> calculateConnComponents (boolean noSingletonComponents){
+		DataSet<Vertex<String, Long>> verticesWithComponents = getConnectedComponents();			
+		return GraphVisualisation.sortConnectedComponents(verticesWithComponents, noSingletonComponents);
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Analyzes the connected components.
 	 * @param connComp Map of connected components.
 	 */
 	public static void analyseConnComponents (Map<Long, Set<String>> connComp) {
