@@ -1,0 +1,29 @@
+{
+  "@graph" : [ {
+    "@id" : "14",
+    "subClassOf" : "13"
+  }, {
+    "@id" : "15",
+    "subClassOf" : "13"
+  }, {
+    "@id" : "13",
+    "subClassOf" : "12"
+  }, {
+    "@id" : "11",
+    "subClassOf" : "10"
+  }, {
+    "@id" : "12",
+    "subClassOf" : "10"
+  } ],
+  "@context" : {
+    "subClassOf" : {
+      "@id" : "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+      "@type" : "@id"
+    },
+    "owl" : "http://www.w3.org/2002/07/owl#",
+    "xsd" : "http://www.w3.org/2001/XMLSchema#",
+    "skos" : "http://www.w3.org/2004/02/skos/core#",
+    "umls" : "http://bioportal.bioontology.org/ontologies/umls/",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"
+  }
+}
