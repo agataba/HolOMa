@@ -20,7 +20,7 @@ public class GraphTest {
 
 	
 	public void graphTestRunning (){
-		GraphCreationPoint graphCreation = new GraphCreationPoint();
+		GraphCreationPoint graphCreation = new GraphCreationPoint(false);
 		Graph<String, String, Integer> graph = graphCreation.getGraphFromEdgeVertexFile("/src/main/resources/example_edges.csv", "/src/main/resources/example_vertices.csv");
 		Assert.assertTrue(!((List<Edge<String, Integer>>) graph).isEmpty());
 	}
