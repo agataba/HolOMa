@@ -1,6 +1,7 @@
 package holoma;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -115,19 +116,31 @@ public class GraphEvaluationPoint implements Serializable {
 	public static void analyseConnComponents (Map<Long, Set<String>> connComp) {
 		int count = connComp.size();
 		int max = 0, min = Integer.MAX_VALUE, sum = 0;
+		Map<Integer, Long> histogramData = new HashMap<Integer, Long>();
+		
 		for (long component : connComp.keySet()) {
 			int size = connComp.get(component).size();
+			if (histogramData.containsKey(size)) {
+				long value = histogramData.get(size);
+				histogramData.put(size, (value+1));
+			}
+			else
+				histogramData.put(size, 1l);
 			sum += size;
 			max = (size > max) ? size : max;
 			min = (size < min) ? size : min;
 		}
 		float avg = sum / (1.0f*count);
 		System.out.println("-------------------------------------------------------------");
-		System.out.println("Analysis of connected components:");
+		System.out.println("Analysis of connected components (#nodes):");
 		System.out.println("count:     "+count);
 		System.out.println("avg:       "+avg);
 		System.out.println("min:       "+((min==Integer.MAX_VALUE) ? "--" : min));
 		System.out.println("max:       "+((max==0) ? "--" : max));
+		System.out.println();
+		System.out.println("size \t|\tcount\n-----------------------");
+		for (int size : histogramData.keySet())
+			System.out.println(" "+size+"\t|\t "+histogramData.get(size));
 		System.out.println();
 	}
 	
