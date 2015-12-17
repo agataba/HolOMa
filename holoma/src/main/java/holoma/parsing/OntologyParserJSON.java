@@ -85,19 +85,23 @@ public class OntologyParserJSON {
 					String typeSubclassField = graph_dependency_object.get("subClassOf").getClass().getName();
 					// only one parent: field is a string
 					if (typeSubclassField.equals("java.lang.String")) {
-						String subclass = enrichBlankNode(graph_dependency_object.get("subClassOf").toString());
-						subclass = enrichShortHandNode(subclass);
-						Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
-						this.edgeSet.add(edge);
+						String subclass = enrichShortHandNode(graph_dependency_object.get("subClassOf").toString());
+						// blank nodes are ignored
+						if (!subclass.startsWith("_:")) {
+							Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
+							this.edgeSet.add(edge);
+						}
 					}
 					// more than on parent: field is an array
 					else {
 						JSONArray jArray = graph_dependency_object.getJSONArray("subClassOf");
 						for (int j=0; j<jArray.length(); j++){
-							String subclass = enrichBlankNode(jArray.getString(j));
-							subclass = enrichShortHandNode(subclass);
-							Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
-							this.edgeSet.add(edge);
+							String subclass = enrichShortHandNode(jArray.getString(j));
+							// blank nodes are ignored
+							if (!subclass.startsWith("_:")) {
+								Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
+								this.edgeSet.add(edge);
+							} // end if
 						} // end for j
 					} // end else
 				} // end for i
@@ -108,16 +112,7 @@ public class OntologyParserJSON {
 	}
 	
 	
-	/**
-	 * Enriches a blank node identifier with the name of the ontology
-	 * in which it occurs.
-	 * @param node Locally unique identifier of a node.
-	 * @param ontName Name of the ontology.
-	 * @return Enriched name of the node.
-	 */
-	private String enrichBlankNode (String node) {
-		return (node.startsWith("_:")) ? this.ONT_NAME+node : node;
-	}
+	
 	
 	
 	/**
