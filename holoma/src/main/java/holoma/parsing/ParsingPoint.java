@@ -144,7 +144,7 @@ public class ParsingPoint {
 			reader = new BufferedReader ( new FileReader(this.PATH+this.MAP_FILE));
 			String line;
 			while ( (line = reader.readLine()) != null ) {
-				String[] fields = line.split("\t");
+				String[] fields = line.split(",");
 				// check whether it is the right mapping file
 				if (fields.length != 6) {
 					reader.close();
