@@ -115,9 +115,11 @@ public class ParsingPoint {
 	
 	
 	/** Parses all ontology files and
-	 *  adds the vertices and edges to the set of vertices and edges of all ontologies, respectively. */
-	private void parseEdgesVertices () {
-		// parse each ontology
+	 *  adds the vertices and edges to the set of vertices and edges of all ontologies, respectively. 
+	 *  @exception Wrong input file. 
+	 */
+	private void parseEdgesVertices () throws IllegalArgumentException {
+		// #1: parse each ontology
 		for (String ontology : this.ONT_FILES) {
 			System.out.println("Parsing "+this.PATH+ontology+" ... ");
 			File fileOntology = new File (this.PATH+ontology);
@@ -132,27 +134,38 @@ public class ParsingPoint {
 			else
 				doPessimPreprocessing(parser.getVertexSet(), parser.getEdgeSet(), ontName);			
 		}
-		// add mapping correspondences to edges
+		
+		// #2: add mapping correspondences to edges
+		//		... and missing vertices to the vertex set
 		System.out.println("\nReading "+this.PATH+this.MAP_FILE+" ... ");
 		BufferedReader reader = null;
-		Set<Edge<String, Integer>> correspondences = new HashSet<Edge<String, Integer>>();
-		try {
+/*		Set<Edge<String, Integer>> correspondences = new HashSet<Edge<String, Integer>>();
+*/		try {
 			reader = new BufferedReader ( new FileReader(this.PATH+this.MAP_FILE));
 			String line;
 			while ( (line = reader.readLine()) != null ) {
-				String[] node = line.split("\t");
-				Edge<String, Integer> edge = new Edge<String, Integer>(node[0],node[1],0);
-				correspondences.add(edge);
+				String[] fields = line.split("\t");
+				// check whether it is the right mapping file
+				if (fields.length != 6) {
+					reader.close();
+					throw new IllegalArgumentException("Mapping file has "+fields.length+" columns. 6 expected!");
+				}
+				Edge<String, Integer> edge = new Edge<String, Integer>(fields[0],fields[1],0);
+				this.edges.add(edge);
+				Vertex<String, String> v1 = new Vertex<String, String>(fields[0],fields[2].toLowerCase());
+				Vertex<String, String> v2 = new Vertex<String, String>(fields[1],fields[3].toLowerCase());
+				this.vertices.add(v1);
+				this.vertices.add(v2);
 			}
 			reader.close();
 			// determine valid correspondences
-			if (this.IS_OPTIM_PREPR) {
+/*			if (this.IS_OPTIM_PREPR) {
 				//TODO: redesign
-/*				Set<Vertex<String, String>> validVertices = 
+				Set<Vertex<String, String>> validVertices = 
 						Preprocessor.addMissingVertices(vertices, correspondences, "correspondences");
 				this.vertices.addAll(validVertices);
 				this.edges.addAll(correspondences);
-*/				Set<Edge<String, Integer>> validCorrespondences = 
+			Set<Edge<String, Integer>> validCorrespondences = 
 						Preprocessor.removeInvalidEdges(this.vertices, correspondences, "correspondences");			
 				this.edges.addAll(validCorrespondences);
 			}
@@ -161,7 +174,7 @@ public class ParsingPoint {
 						Preprocessor.removeInvalidEdges(this.vertices, correspondences, "correspondences");			
 				this.edges.addAll(validCorrespondences);
 			}				
-		} catch (IOException e) {
+*/		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
