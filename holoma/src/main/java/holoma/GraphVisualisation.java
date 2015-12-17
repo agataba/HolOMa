@@ -37,12 +37,12 @@ public class GraphVisualisation implements Serializable {
 	
 	/**
 	 * Prints the connected components to the console.
-	 * @param conCompts Map of connected components.
+	 * @param connCompts Map of connected components.
 	 */
-	public static void showConnectedComponents (Map<Long, Set<String>> conCompts) {			
-		for (Long key : conCompts.keySet()) {
+	public static void showConnectedComponents (Map<Long, Set<String>> connCompts) {			
+		for (Long key : connCompts.keySet()) {
 			System.out.println("component ID: "+key);
-			System.out.println(conCompts.get(key));
+			System.out.println(connCompts.get(key));
 		}		
 	}
 	
@@ -50,14 +50,13 @@ public class GraphVisualisation implements Serializable {
 	 * Prints the connected components to <code>path</code>.
 	 * Schema: Each set of connected components is introduced by a dotted line 
 	 * followed by the component ID. The following lines contain the particular vertex URLs.
-	 * @param conCompts Map of connected components.
-	 * @param path Where to print the connected components.
+	 * @param connCompts Map of connected components.
 	 */
-	public static void printConnectedComponents (Map<Long, Set<String>> conCompts, String path) {
-		OutputToFile out = new OutputToFile (500, path);
-		for (Long key : conCompts.keySet()) {
+	public static void printConnectedComponents (Map<Long, Set<String>> connCompts) {
+		OutputToFile out = new OutputToFile (500, HolomaConstants.CONNCOMP_FILE_LOC);
+		for (Long key : connCompts.keySet()) {
 			out.addToBuff("-------------\ncomponent ID: "+key);
-			for (String vertex : conCompts.get(key))
+			for (String vertex : connCompts.get(key))
 				out.addToBuff(vertex);
 		}	
 		out.close();
@@ -71,40 +70,40 @@ public class GraphVisualisation implements Serializable {
 	 * @param noSingletons Singletons of connected components are eliminated iff 'true'.
 	 * @return Map from component ID to its set of connected vertices.
 	 */
-	public static Map<Long, Set<String>> sortConnectedComponents (DataSet<Vertex<String, Long>> verticesWithComponents, boolean noSingletons) {
-		Map<Long, Set<String>> conCompts = new HashMap<Long, Set<String>>();
+	public static Map<Long, Set<String>> sortConnectedComponents (DataSet<Vertex<String, Long>> verticesWithComponents) {
+		Map<Long, Set<String>> connCompts = new HashMap<Long, Set<String>>();
 		try {
 			for (Vertex<String, Long> vertex : verticesWithComponents.collect()) {
 				// component has already occurred: add entry to existing hash map
-				if (conCompts.keySet().contains(vertex.f1))
-					conCompts.get(vertex.f1).add(vertex.f0);
+				if (connCompts.keySet().contains(vertex.f1))
+					connCompts.get(vertex.f1).add(vertex.f0);
 				// component is new: create a new entry in the hash map
 				else {
 					Set<String> l = new HashSet<String>();
 					l.add(vertex.f0);
-					conCompts.put(vertex.f1, l);
+					connCompts.put(vertex.f1, l);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		if (noSingletons)
-			conCompts = eliminateSingletons (conCompts);
+		if (HolomaConstants.NO_SINGLETON_CONNCOMP)
+			connCompts = eliminateSingletons (connCompts);
 		
-		return conCompts;
+		return connCompts;
 	}
 	
 	/**
 	 * Eliminates singletons from the set of connected components.
-	 * @param conCompts Set of connected components (potentially components of cardinality one).
+	 * @param connCompts Set of connected components (potentially components of cardinality one).
 	 * @return Set of connected components such that each connected component contains at least two nodes.
 	 */
-	private static Map<Long, Set<String>> eliminateSingletons (Map<Long, Set<String>> conCompts) {
+	private static Map<Long, Set<String>> eliminateSingletons (Map<Long, Set<String>> connCompts) {
 		Map<Long, Set<String>> newMap = new HashMap<Long, Set<String>>();
-		for (Long key : conCompts.keySet()) {
-			if (conCompts.get(key).size() > 1)
-				newMap.put(key, conCompts.get(key));
+		for (Long key : connCompts.keySet()) {
+			if (connCompts.get(key).size() > 1)
+				newMap.put(key, connCompts.get(key));
 		}		
 		return newMap;		
 	}

@@ -34,15 +34,11 @@ public class GraphCreationPoint {
 	public ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 	
 	
-	private final boolean IS_PRINTING_EDGVERT;
-	
-	
 	/**
 	 * Constructor.
-	 * @param isPrintingValidEdgVert Printing edges and vertices to file.
 	 */
-	public GraphCreationPoint (boolean isPrintingValidEdgVert) {
-		this.IS_PRINTING_EDGVERT = isPrintingValidEdgVert;
+	public GraphCreationPoint () {
+		
 	}
 	
 	
@@ -58,15 +54,14 @@ public class GraphCreationPoint {
 	 * @param vertexFileLoc Where to print the vertex file.
 	 * @return The created graph.
 	 */
-	public Graph<String, String, Integer> getGraphFromOntologyFiles (String ontologyPath, String[] ontologyFiles, 
-			String mapFile, boolean isOptimPrepr, String edgeFileLoc, String vertexFileLoc) {
+	public Graph<String, String, Integer> getGraphFromOntologyFiles () {
 		// #0: Load vertices and edges	 
-		ParsingPoint pp = new ParsingPoint (ontologyPath, ontologyFiles, mapFile, isOptimPrepr);		
-		if (IS_PRINTING_EDGVERT)
-			pp.printEdgeVertexToFile(edgeFileLoc, vertexFileLoc);
+		ParsingPoint pp = new ParsingPoint ();		
+		if (HolomaConstants.IS_PRINTING_VALID_EDGVERT)
+			pp.printEdgeVertexToFile();
 		Set<Edge<String, Integer>> edges = pp.getEdges();
 		Set<Vertex<String, String>> vertices = pp.getVertices();
-		if (IS_PRINTING_EDGVERT) {
+		if (HolomaConstants.IS_PRINTING_VALID_EDGVERT) {
 			System.out.println();
 			System.out.println("Printing "+edges.size()+" edges to file  ... ");
 			System.out.println("Printing "+vertices.size()+" vertices to file ... ");			
@@ -94,14 +89,12 @@ public class GraphCreationPoint {
 	
 	/** 
 	 * Manages the creation of the graph.
-	 * @param edgeFileLocation Location of the edge file.
-	 * @param vertexFileLocation Location of the vertex file.
 	 * @return The created graph.
 	 */
-	public Graph<String, String, Integer> getGraphFromEdgeVertexFile (String edgeFileLoc, String vertexFileLoc) {
+	public Graph<String, String, Integer> getGraphFromEdgeVertexFile () {
 		// load vertices and edges
-		DataSet<Tuple2<String, String>> vertices = loadVertices(vertexFileLoc);
-		DataSet<Tuple3<String, String, Integer>> edges = loadEdges(edgeFileLoc);
+		DataSet<Tuple2<String, String>> vertices = loadVertices(HolomaConstants.VERTEX_FILE_LOC);
+		DataSet<Tuple3<String, String, Integer>> edges = loadEdges(HolomaConstants.EDGE_FILE_LOC);
 		// create graph with vertex ID type, vertex value type, and edge value type
 		Graph<String, String, Integer> graph = Graph.fromTupleDataSet(vertices, edges, env);
 		return graph;

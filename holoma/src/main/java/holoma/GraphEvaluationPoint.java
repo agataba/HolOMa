@@ -23,22 +23,17 @@ import org.apache.flink.graph.spargel.VertexCentricConfiguration;
 @SuppressWarnings("serial")
 public class GraphEvaluationPoint implements Serializable {
 	/** The graph. */
-	transient private final Graph<String, String, Integer> GRAPH;
-	/** Maximum number of iteration steps for connected components. */
-	private final int maxIterations;
+	transient private final Graph<String, String, Integer> GRAPH;	
 	/** Graph for calculating connected components. */
-	transient private Graph<String, Long, Integer> componentGraph;
-	 
+	transient private Graph<String, Long, Integer> componentGraph; 
 	
 	
 	/**
 	 * Constructor.
 	 * @param graph The graph which shall be evaluated.
-	 * @param maxIterations Maximal number of iterations for algorithms.
 	 */
-	public GraphEvaluationPoint (Graph<String, String, Integer> graph, int maxIterations) {
+	public GraphEvaluationPoint (Graph<String, String, Integer> graph) {
 		this.GRAPH = graph;
-		this.maxIterations = maxIterations;
 	}
 	
 	
@@ -82,7 +77,7 @@ public class GraphEvaluationPoint implements Serializable {
 		// #3: calculate the connected components
 		try {
 			verticesWithComponents = this.componentGraph.run(
-					new ConnectedComponents<String, Integer>(this.maxIterations)
+					new ConnectedComponents<String, Integer>(HolomaConstants.MAX_ITER)
 					);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -98,9 +93,9 @@ public class GraphEvaluationPoint implements Serializable {
 	 * @param noSingletonComponents Singletons of connected components are eliminated iff 'true'.
 	 * @return Connected Components.
 	 */
-	public Map<Long, Set<String>> calculateConnComponents (boolean noSingletonComponents){
+	public Map<Long, Set<String>> calculateConnComponents (){
 		DataSet<Vertex<String, Long>> verticesWithComponents = getConnectedComponents();			
-		return GraphVisualisation.sortConnectedComponents(verticesWithComponents, noSingletonComponents);
+		return GraphVisualisation.sortConnectedComponents(verticesWithComponents);
 	}
 	
 	

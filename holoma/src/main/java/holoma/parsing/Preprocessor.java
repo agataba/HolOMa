@@ -6,6 +6,7 @@ import java.util.Set;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Vertex;
 
+import holoma.HolomaConstants;
 import tools.io.OutputToFile;
 
 /**
@@ -15,7 +16,6 @@ import tools.io.OutputToFile;
  */
 public class Preprocessor {
 	
-	public static boolean isPrintingInvalEdges = true;
 	
 	/**
 	 * Adds the missing vertices from the edge set <code>edges</code> to the set <code>vertices</code>.
@@ -67,7 +67,7 @@ public class Preprocessor {
 			vertexNames.add(v.getId());
 		
 		OutputToFile out = null;
-		if (isPrintingInvalEdges)
+		if (HolomaConstants.IS_PRINTING_INVALID_EDG)
 			out = new OutputToFile (500, "./src/main/resources/invalidEdges_"+ontName+".csv");
 		
 		for (Edge<String, Integer> e : edges) {
@@ -76,11 +76,11 @@ public class Preprocessor {
 			if (vertexNames.contains(srcName) && vertexNames.contains(trgName))
 				validEdges.add(e);
 			else {
-				if (isPrintingInvalEdges)
+				if (HolomaConstants.IS_PRINTING_INVALID_EDG)
 					out.addToBuff(srcName+"\t"+trgName+"\t"+e.getValue());	
 			}
 		}		
-		if (isPrintingInvalEdges) {
+		if (HolomaConstants.IS_PRINTING_INVALID_EDG) {
 			out.close();
 			System.out.println("Printing invalid edge file to ./src/main/resources/invalidEdges_"+ontName+".csv");
 		}		

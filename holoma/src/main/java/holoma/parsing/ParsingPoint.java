@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Vertex;
 
+import holoma.HolomaConstants;
 import tools.io.OutputToFile;
 
 /**
@@ -19,38 +20,15 @@ import tools.io.OutputToFile;
  */
 public class ParsingPoint {
 
-	/** The path of the ontology (and the mapping) files. */
-	private final String PATH;
-	/** The mapping file name. */
-	private final String MAP_FILE;
-	/** The ontology JSON file names. */
-	private final String[] ONT_FILES;
-	/** Specifies whether the preprocessor is optimistic.
-	 * An optimistic preprocessor adds missing edges' vertices to the set of all vertices.
-	 * A pessimistic preprocessor deletes all edges where at least on vertex is not part of the set of all vertices. */
-	private final boolean IS_OPTIM_PREPR;
-	
 	/** Edges of the graph. */
 	private Set<Edge<String, Integer>> edges = new HashSet<Edge<String, Integer>>();
 	/** Vertices of the graph. */
 	private Set<Vertex<String, String>> vertices = new HashSet<Vertex<String, String>>();
 	
 
-	/**
-	 * Constructor.
-	 * @param path Path of the ontology files.
-	 * @param ontFiles Names of the ontology files.
-	 * @param mapFile Name of the mapping file (same path as ontology files).
-	 * @param isOptimPrepr Specifies whether the preprocessor is optimistic:
-	 * 'true' for optimistic, 'false' for pessimistic. 
-	 * An optimistic preprocessor adds missing edges' vertices to the set of all vertices.
-	 * A pessimistic preprocessor deletes all edges where at least on vertex is not part of the set of all vertices.
-	 */
-	public ParsingPoint (String path, String[] ontFiles, String mapFile, boolean isOptimPrepr) {
-		this.PATH = path;
-		this.MAP_FILE = mapFile;
-		this.ONT_FILES = ontFiles;
-		this.IS_OPTIM_PREPR = isOptimPrepr;
+	/** Constructor. */
+	public ParsingPoint () {
+		
 	}	
 	
 	
@@ -75,31 +53,27 @@ public class ParsingPoint {
 	}
 	
 	
-	/**
-	 * Creates the edge file to the specified location.
-	 * @param locationEdge Where to print the edges.
-	 * @param locationVertex Where to print the vertcies.
-	 */
-	public void printEdgeVertexToFile (String locationEdge, String locationVertex) {
+	/**  Creates the edge file to the specified location. */
+	public void printEdgeVertexToFile () {
 		// create a new edge file
-		File fileEdge = new File (locationEdge);
+		File fileEdge = new File (HolomaConstants.EDGE_FILE_LOC);
 		if (fileEdge.exists()) fileEdge.delete();
 		// create a new vertex file
-		File fileVertex = new File (locationVertex);
+		File fileVertex = new File (HolomaConstants.VERTEX_FILE_LOC);
 		if (fileVertex.exists()) fileVertex.delete();
 		
 		if (this.edges.isEmpty() || this.vertices.isEmpty())
 			parseEdgesVertices();
 		
 		// print edges
-		OutputToFile out = new OutputToFile (800, locationEdge);
+		OutputToFile out = new OutputToFile (800, HolomaConstants.EDGE_FILE_LOC);
 		for (Edge<String, Integer> edge : this.edges) {
 			String line = edge.f0+"\t"+edge.f1+"\t"+edge.f2;
 			out.addToBuff(line);
 		}
 		out.close();
 		// print vertices
-		out = new OutputToFile (800, locationVertex);
+		out = new OutputToFile (800, HolomaConstants.VERTEX_FILE_LOC);
 		for (Vertex<String, String> vert : this.vertices) {
 			String line = vert.f0+"\t"+vert.f1;
 			out.addToBuff(line);
@@ -120,16 +94,16 @@ public class ParsingPoint {
 	 */
 	private void parseEdgesVertices () throws IllegalArgumentException {
 		// #1: parse each ontology
-		for (String ontology : this.ONT_FILES) {
-			System.out.println("Parsing "+this.PATH+ontology+" ... ");
-			File fileOntology = new File (this.PATH+ontology);
+		for (String ontology : HolomaConstants.ONTOLOGY_FILES) {
+			System.out.println("Parsing "+HolomaConstants.PATH+ontology+" ... ");
+			File fileOntology = new File (HolomaConstants.PATH+ontology);
 			String ontName = getOntologyName(ontology);
 			
 			OntologyParserJSON parser = new OntologyParserJSON(ontName, fileOntology);
 			parser.doParsing();
 			// preprocessing and 
 			// add the edges and vertices of the current ontology to 'overall' collections
-			if (this.IS_OPTIM_PREPR)
+			if (HolomaConstants.IS_OPTIM_PREPR)
 				doOptimPreprocessing(parser.getVertexSet(), parser.getEdgeSet(), ontName);
 			else
 				doPessimPreprocessing(parser.getVertexSet(), parser.getEdgeSet(), ontName);			
@@ -137,11 +111,11 @@ public class ParsingPoint {
 		
 		// #2: add mapping correspondences to edges
 		//		... and missing vertices to the vertex set
-		System.out.println("\nReading "+this.PATH+this.MAP_FILE+" ... ");
+		System.out.println("\nReading "+HolomaConstants.PATH+HolomaConstants.MAPPING_FILE+" ... ");
 		BufferedReader reader = null;
 /*		Set<Edge<String, Integer>> correspondences = new HashSet<Edge<String, Integer>>();
 */		try {
-			reader = new BufferedReader ( new FileReader(this.PATH+this.MAP_FILE));
+			reader = new BufferedReader ( new FileReader(HolomaConstants.PATH+HolomaConstants.MAPPING_FILE));
 			String line;
 			while ( (line = reader.readLine()) != null ) {
 				String[] fields = line.split(",");
