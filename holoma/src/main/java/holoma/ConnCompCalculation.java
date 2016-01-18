@@ -28,6 +28,8 @@ public class ConnCompCalculation implements Serializable {
 	/** Graph for calculating connected components. */
 	transient private Graph<String, Long, Integer> componentGraph; 
 	
+	private Map<Long, Set<String>> connCompts = new HashMap<Long, Set<String>>();
+	
 	
 	/**
 	 * Constructor.
@@ -44,6 +46,39 @@ public class ConnCompCalculation implements Serializable {
 	 * @return Graph for connected components calculation.
 	 */
 	public Graph<String, Long, Integer> getComponentGraph () { return this.componentGraph; }
+	
+		
+	
+	/**
+	 * Naive approach: calculate connected components on the whole graph of all ontologies.
+	 * @return Map from component ID to a connected component, i.e., a set of vertices.
+	 */
+	public Map<Long, Set<String>> calculateConnComp_naive () {
+		try {
+			// exactly one ontology: no connected components
+			connCompts = (HolomaConstants.ONTOLOGY_FILES.length<=1) ? null : getSortedConnComp ();
+		} catch (Exception e){
+			System.err.println("Error while calculating connected components.");
+			e.printStackTrace();
+			System.out.println("\nQuit program ... ");
+			System.exit(1);
+		}
+		
+		return connCompts;				
+	}
+	
+	
+	/**
+	 * Calculates the connected components and changes their format to a map
+	 * which has the component ID as key, and the nodes of this ID as value.
+	 * @param noSingletonComponents Singletons of connected components are eliminated iff 'true'.
+	 * @return Connected Components.
+	 */
+	private Map<Long, Set<String>> getSortedConnComp (){
+		DataSet<Vertex<String, Long>> verticesWithComponents = getConnectedComponents();			
+		return sortConnectedComponents(verticesWithComponents);
+	}
+	
 	
 	
 	/**
@@ -88,36 +123,6 @@ public class ConnCompCalculation implements Serializable {
 	}
 	
 	
-	/**
-	 * Calculates the connected components and changes their format to a map
-	 * which has the component ID as key, and the nodes of this ID as value.
-	 * @param noSingletonComponents Singletons of connected components are eliminated iff 'true'.
-	 * @return Connected Components.
-	 */
-	private Map<Long, Set<String>> getSortedConnComp (){
-		DataSet<Vertex<String, Long>> verticesWithComponents = getConnectedComponents();			
-		return sortConnectedComponents(verticesWithComponents);
-	}
-	
-	/**
-	 * Naive approach: calculate connected components on the whole graph of all ontologies.
-	 * @return Map from component ID to a connected component, i.e., a set of vertices.
-	 */
-	public Map<Long, Set<String>> calculateConnComp_naive () {
-		Map<Long, Set<String>> connCompts = null;
-		try {
-			// exactly one ontology: no connected components
-			connCompts = (HolomaConstants.ONTOLOGY_FILES.length<=1) ? null : getSortedConnComp ();
-		} catch (Exception e){
-			System.err.println("Error while calculating connected components.");
-			e.printStackTrace();
-			System.out.println("\nQuit program ... ");
-			System.exit(1);
-		}
-		
-		return connCompts;				
-	}
-	
 	
 	/**
 	 * Sorts the nodes according to their association with a connected component. 
@@ -128,7 +133,7 @@ public class ConnCompCalculation implements Serializable {
 	 * @return Map from component ID to its set of connected vertices.
 	 */
 	public Map<Long, Set<String>> sortConnectedComponents (DataSet<Vertex<String, Long>> verticesWithComponents) {
-		Map<Long, Set<String>> connCompts = new HashMap<Long, Set<String>>();
+		
 		try {
 			for (Vertex<String, Long> vertex : verticesWithComponents.collect()) {
 				// component has already occurred: add entry to existing hash map
@@ -146,7 +151,7 @@ public class ConnCompCalculation implements Serializable {
 		}
 		
 		if (HolomaConstants.NO_SINGLETON_CONNCOMP)
-			connCompts = eliminateSingletons (connCompts);
+			connCompts = eliminateSingletons ();
 		
 		return connCompts;
 	}
@@ -157,11 +162,11 @@ public class ConnCompCalculation implements Serializable {
 	 * @param connCompts Set of connected components (potentially components of cardinality one).
 	 * @return Set of connected components such that each connected component contains at least two nodes.
 	 */
-	private Map<Long, Set<String>> eliminateSingletons (Map<Long, Set<String>> connCompts) {
+	private Map<Long, Set<String>> eliminateSingletons () {
 		Map<Long, Set<String>> newMap = new HashMap<Long, Set<String>>();
-		for (Long key : connCompts.keySet()) {
-			if (connCompts.get(key).size() > 1)
-				newMap.put(key, connCompts.get(key));
+		for (Long key : this.connCompts.keySet()) {
+			if (this.connCompts.get(key).size() > 1)
+				newMap.put(key, this.connCompts.get(key));
 		}		
 		return newMap;		
 	}
@@ -169,15 +174,15 @@ public class ConnCompCalculation implements Serializable {
 	
 	/**
 	 * Analyzes the connected components.
-	 * @param connComp Map of connected components.
+	 * @return Analysis result.
 	 */
-	public static void analyseConnComponents (Map<Long, Set<String>> connComp) {
-		int count = connComp.size();
+	public String analyseConnComponents () {
+		int count = this.connCompts.size();
 		int max = 0, min = Integer.MAX_VALUE, sum = 0;
 		Map<Integer, Long> histogramData = new HashMap<Integer, Long>();
 		
-		for (long component : connComp.keySet()) {
-			int size = connComp.get(component).size();
+		for (long component : this.connCompts.keySet()) {
+			int size = this.connCompts.get(component).size();
 			if (histogramData.containsKey(size)) {
 				long value = histogramData.get(size);
 				histogramData.put(size, (value+1));
@@ -189,17 +194,20 @@ public class ConnCompCalculation implements Serializable {
 			min = (size < min) ? size : min;
 		}
 		float avg = sum / (1.0f*count);
-		System.out.println("-------------------------------------------------------------");
-		System.out.println("Analysis of connected components (#nodes):");
-		System.out.println("count:     "+count);
-		System.out.println("avg:       "+avg);
-		System.out.println("min:       "+((min==Integer.MAX_VALUE) ? "--" : min));
-		System.out.println("max:       "+((max==0) ? "--" : max));
-		System.out.println();
-		System.out.println("size \t|\tcount\n-----------------------");
+
+		String result = "-------------------------------------------------------------\n";
+		result += "Analysis of connected components (#nodes):\n";
+		result += "count:     "+count+"\n";
+		result += "avg:       "+avg+"\n";
+		result += "min:       "+((min==Integer.MAX_VALUE) ? "--" : min)+"\n";
+		result += "max:       "+((max==0) ? "--" : max)+"\n";
+		result += "\n";
+		result += "size \t|\tcount\n-----------------------\n";
 		for (int size : histogramData.keySet())
-			System.out.println(" "+size+"\t|\t "+histogramData.get(size));
-		System.out.println();
+			result += " "+size+"\t|\t "+histogramData.get(size)+"\n";
+		result += "\n";
+		
+		return result;
 	}
 	
 }

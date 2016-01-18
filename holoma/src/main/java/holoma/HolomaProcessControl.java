@@ -33,8 +33,8 @@ public class HolomaProcessControl {
 	public static void main(String[] args) {
 		
 		// #0: Showing settings
-		System.out.println("HolOMa (Holistic Ontology Mapping)\n"
-				+ "-------------------------------------------------------------");		
+		System.out.println("HolOMa (Holistic Ontology Mapping)");
+		System.out.println("-------------------------------------------------------------");		
 		System.out.println("Properties:");
 		System.out.println("edge file location:            "+HolomaConstants.EDGE_FILE_LOC);
 		System.out.println("vertex file location:          "+HolomaConstants.VERTEX_FILE_LOC);
@@ -80,7 +80,8 @@ public class HolomaProcessControl {
 		// #3: Analyzing connected components
 		startTime();
 		System.out.println("\nAnalysing connected components ... ");
-		ConnCompCalculation.analyseConnComponents(connCompts);
+		String analysisResult = connCompCalc.analyseConnComponents();
+		System.out.println(analysisResult);
 		printTime();
 		
 		System.out.println("\n--- End ---");
