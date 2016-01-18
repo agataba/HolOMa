@@ -1,13 +1,9 @@
 package holoma;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.flink.api.java.DataSet;
 import org.apache.flink.graph.Graph;
-import org.apache.flink.graph.Vertex;
 
 import tools.io.OutputToFile;
 
