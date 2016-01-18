@@ -4,6 +4,7 @@ import java.util.Set;
 
 //
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.graph.Graph;
 import org.apache.log4j.Logger;
 
@@ -21,10 +22,11 @@ public class HolomaProcessControl {
 	static Logger log = Logger.getLogger("HolomaProcessControl");
 	
 	/** Stop watch. */
-	private static final StopWatch stopWatch = new StopWatch();
+	private static final StopWatch stopWatch = new StopWatch();	
+
 	
-	
-	
+	/** Context in which the program is currently executed. */
+	static final ExecutionEnvironment ENV = ExecutionEnvironment.getExecutionEnvironment();
 	
 	
 	//##################################################################
@@ -47,7 +49,7 @@ public class HolomaProcessControl {
 		System.out.println("-------------------------------------------------------------\n");
 		
 		// #1: Creating the graph
-		GraphCreationPoint creation = new GraphCreationPoint();
+		GraphCreationPoint creation = new GraphCreationPoint(ENV);
 		Graph<String, String, Integer> graph = null;
 		
 		while (true) {
@@ -84,12 +86,14 @@ public class HolomaProcessControl {
 		System.out.println(analysisResult);
 		printTime();
 		
+		// #4: Enriching connected components
+		
+		
+		
+		
+		
 		System.out.println("\n--- End ---");
 	}
-	
-	
-	
-	
 	
 	
 	

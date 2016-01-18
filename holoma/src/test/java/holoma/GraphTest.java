@@ -1,14 +1,8 @@
 package holoma;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
-import java.util.List;
-
-import org.apache.flink.graph.Edge;
-import org.apache.flink.graph.Graph;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 public class GraphTest {
 
@@ -18,11 +12,11 @@ public class GraphTest {
 	}
 	
 
-	
+/*	
 	public void graphTestRunning (){
 		GraphCreationPoint graphCreation = new GraphCreationPoint();
 		Graph<String, String, Integer> graph = graphCreation.getGraphFromEdgeVertexFile();
 		Assert.assertTrue(!((List<Edge<String, Integer>>) graph).isEmpty());
 	}
-
+*/
 }

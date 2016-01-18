@@ -21,12 +21,12 @@ public abstract class HolomaConstants {
 	public static final String PATH = "./src/main/resources/ont/";
 	
 	/** Name of the mapping file (same path as ontology files). */
-	public static final String MAPPING_FILE = "mapping.csv";
-	public static final String MAPPING_FILE_COLOR = "mapping_color.csv"; // for testing
+	public static final String MAPPING_FILE_UNCOLOR = "mapping.csv";
+	public static final String MAPPING_FILE = "mapping_color.csv"; // for testing
 	
 	
 	/** Names of the ontology files. */
-	public static final String[] ONTOLOGY_FILES = {
+	public static final String[] ONTOLOGY_FILES_UNCOLOR = {
 		"RXNORM.ttljsonLD.json",
 		"PDQ.ttljsonLD.json",
 		"NPOntology01.owljsonLD.json",
@@ -39,7 +39,7 @@ public abstract class HolomaConstants {
 		"NCITNCBO.ttljsonLD.json"
 */	};
 	
-	public static final String[] ONTOLOGY_FILES_COLOR = { // for testing
+	public static final String[] ONTOLOGY_FILES = { // for testing
 		"blue.ttljsonLD.json",
 		"green.ttljsonLD.json",
 		"orange.ttljsonLD.json"

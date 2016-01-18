@@ -26,19 +26,16 @@ import holoma.parsing.ParsingPoint;
  * @author max
  *
  */
-public class GraphCreationPoint {
-	
-	
+public class GraphCreationPoint {	
 	
 	/** Context in which the program is currently executed. */
-	public ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-	
+	ExecutionEnvironment env;
 	
 	/**
 	 * Constructor.
 	 */
-	public GraphCreationPoint () {
-		
+	public GraphCreationPoint (ExecutionEnvironment env) {
+		this.env=env;
 	}
 	
 	
