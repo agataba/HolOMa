@@ -2,6 +2,7 @@ package holoma;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,7 +96,7 @@ public class ConnCompPoint implements Serializable {
 	 */
 	private Map<Long, Set<String>> getSortedConnComp (){
 		DataSet<Vertex<String, Long>> verticesWithComponents = getConnectedComponents();			
-		return GraphVisualisation.sortConnectedComponents(verticesWithComponents);
+		return sortConnectedComponents(verticesWithComponents);
 	}
 	
 	/**
@@ -118,9 +119,52 @@ public class ConnCompPoint implements Serializable {
 	}
 	
 	
+	/**
+	 * Sorts the nodes according to their association with a connected component. 
+	 * All nodes with the same component ID are grouped together. They are mapped
+	 * to their component ID.
+	 * @param verticesWithComponents Vertices with the connected component ID as value.
+	 * @param noSingletons Singletons of connected components are eliminated iff 'true'.
+	 * @return Map from component ID to its set of connected vertices.
+	 */
+	public Map<Long, Set<String>> sortConnectedComponents (DataSet<Vertex<String, Long>> verticesWithComponents) {
+		Map<Long, Set<String>> connCompts = new HashMap<Long, Set<String>>();
+		try {
+			for (Vertex<String, Long> vertex : verticesWithComponents.collect()) {
+				// component has already occurred: add entry to existing hash map
+				if (connCompts.keySet().contains(vertex.f1))
+					connCompts.get(vertex.f1).add(vertex.f0);
+				// component is new: create a new entry in the hash map
+				else {
+					Set<String> l = new HashSet<String>();
+					l.add(vertex.f0);
+					connCompts.put(vertex.f1, l);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (HolomaConstants.NO_SINGLETON_CONNCOMP)
+			connCompts = eliminateSingletons (connCompts);
+		
+		return connCompts;
+	}
 	
 	
-	
+	/**
+	 * Eliminates singletons from the set of connected components.
+	 * @param connCompts Set of connected components (potentially components of cardinality one).
+	 * @return Set of connected components such that each connected component contains at least two nodes.
+	 */
+	private Map<Long, Set<String>> eliminateSingletons (Map<Long, Set<String>> connCompts) {
+		Map<Long, Set<String>> newMap = new HashMap<Long, Set<String>>();
+		for (Long key : connCompts.keySet()) {
+			if (connCompts.get(key).size() > 1)
+				newMap.put(key, connCompts.get(key));
+		}		
+		return newMap;		
+	}
 	
 	
 	/**
