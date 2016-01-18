@@ -46,39 +46,6 @@ public class HolomaProcessControl {
 		System.out.println("no singleton components:       "+HolomaConstants.NO_SINGLETON_CONNCOMP);
 		System.out.println("-------------------------------------------------------------\n");
 		
-		
-		// #1: Calculating connected components
-		startTime();
-		System.out.println("\nCalculating Connected Components ... ");
-		Map<Long, Set<String>> connCompts = doNaive(); 		
-		if (connCompts==null || connCompts.size()==0) {
-			System.out.println("No connected components.");
-			System.out.println("\n--- End ---");
-			System.exit(0);
-		}		
-		printTime();		
-		// save connected components
-		System.out.println("printing to "+HolomaConstants.CONNCOMP_FILE_LOC+" ... ");
-		GraphVisualisation.printConnectedComponents(connCompts);
-		
-		// #2: Analyzing connected components
-		startTime();
-		System.out.println("\nAnalysing connected components ... ");
-		GraphEvaluationPoint.analyseConnComponents(connCompts);
-		printTime();
-		
-		System.out.println("\n--- End ---");
-	}
-	
-	
-	
-	
-	
-	/**
-	 * Naive approach: calculate connected components on the whole graph of all ontologies.
-	 * @return Map from component ID to a connected component, i.e., a set of vertices.
-	 */
-	private static Map<Long, Set<String>> doNaive () {
 		// #1: Creating the graph
 		GraphCreationPoint creation = new GraphCreationPoint();
 		Graph<String, String, Integer> graph = null;
@@ -95,27 +62,41 @@ public class HolomaProcessControl {
 			}
 		}
 		
-		GraphEvaluationPoint eval = new GraphEvaluationPoint(graph);
+		// #2 Calculating connected components
+		startTime();
+		System.out.println("\nCalculating Connected Components ... ");
+		ConnCompCalculation connCompCalc = new ConnCompCalculation(graph);
+		Map<Long, Set<String>> connCompts = connCompCalc.calculateConnComp_naive(); 		
+		if (connCompts==null || connCompts.size()==0) {
+			System.out.println("No connected components.");
+			System.out.println("\n--- End ---");
+			System.exit(0);
+		}		
+		printTime();		
+		// save connected components
+		System.out.println("printing to "+HolomaConstants.CONNCOMP_FILE_LOC+" ... ");
+		GraphVisualisation.printConnectedComponents(connCompts);
 		
-/*		System.out.println("\n!!!!Quit program!!!!");System.exit(0);	
-*/		
-		// #2: Evaluating the graph
-		// calculate connected components
-		Map<Long, Set<String>> connCompts = null;
-		try {
-			// exactly one ontology: no connected components
-			connCompts = (HolomaConstants.ONTOLOGY_FILES.length<=1) ? null : eval.calculateConnComponents();
-		} catch (Exception e){
-			System.err.println("Error while calculating connected components.");
-			e.printStackTrace();
-			System.out.println("\nQuit program ... ");
-			System.exit(1);
-		}
+		// #3: Analyzing connected components
+		startTime();
+		System.out.println("\nAnalysing connected components ... ");
+		ConnCompCalculation.analyseConnComponents(connCompts);
+		printTime();
 		
-		return connCompts;				
+		System.out.println("\n--- End ---");
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//############### time measure methods ###############
 	
 	/** Starts the stop watch. */
 	private static void startTime () { stopWatch.reset(); stopWatch.start(); }
