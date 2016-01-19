@@ -24,12 +24,15 @@ public class GraphVisualisation implements Serializable {
 	@SuppressWarnings("rawtypes")
 	public static void showEdgesVertices (Graph g) {
 		try {
+			System.out.println("Edges:");
 			g.getEdges().print();
+			System.out.println("Vertices:");
 			g.getVertices().print();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 	}
+	
 	
 	/**
 	 * Prints the connected components to the console.
