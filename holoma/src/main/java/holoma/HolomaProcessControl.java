@@ -1,4 +1,5 @@
 package holoma;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -6,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.graph.Graph;
+import org.apache.flink.types.NullValue;
 import org.apache.log4j.Logger;
 
 import tools.io.InputFromConsole;
@@ -87,6 +89,19 @@ public class HolomaProcessControl {
 		printTime();
 		
 		// #4: Enriching connected components
+		System.out.println("\nEnriching connected components ... ");
+		Map<Integer, Float> mapWeight = new HashMap<Integer, Float>();
+		mapWeight.put(0, 1f);
+		mapWeight.put(1, 0.5f);
+		ConnCompEnrichment enr = new ConnCompEnrichment(2, graph, mapWeight, ENV);
+		for (long key : connCompts.keySet()) {
+			Set<String> connComp = connCompts.get(key);
+			Graph<String, NullValue, Float> g = enr.getEnrichedConnComp(connComp);
+			GraphVisualisation.showEdgesVertices(g);
+			InputFromConsole.readLine();
+			
+			
+		}
 		
 		
 		
