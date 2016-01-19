@@ -23,11 +23,12 @@ import org.apache.flink.graph.spargel.VertexCentricConfiguration;
  */
 @SuppressWarnings("serial")
 public class ConnCompCalculation implements Serializable {
+	
 	/** The graph. */
 	transient private final Graph<String, String, Integer> GRAPH;	
 	/** Graph for calculating connected components. */
 	transient private Graph<String, Long, Integer> componentGraph; 
-	
+	/** Map from component ID to its set of vertex IDs.*/
 	private Map<Long, Set<String>> connCompts = new HashMap<Long, Set<String>>();
 	
 	
