@@ -10,6 +10,8 @@ import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
+import org.apache.flink.graph.Vertex;
+import org.apache.flink.graph.VertexJoinFunction;
 import org.apache.flink.types.NullValue;
 
 /**
@@ -52,11 +54,11 @@ public class ConnCompEnrichment {
 	 * @param connComp A set of vertices which are a connected component.
 	 * @return The enriched connected component.
 	 */
-	public Graph<String, NullValue, Float> getEnrichedConnComp (Set<String> connComp) {
-		Graph<String, NullValue, Float> enrConnComp = null;
+	public Graph<String, String, Float> getEnrichedConnComp (Set<String> connComp) {
+		Graph<String, String, Float> enrConnComp = null;
 		
 		// calculate the subgraph, i.e. the connected component plus some structure
-		Graph<String, NullValue, Integer> subgraph = extractSubgraph(connComp);
+		Graph<String, String, Integer> subgraph = extractSubgraph(connComp);
 		
 		// map the values of the edges from type to weight
 		enrConnComp = mapEdgeValues (subgraph);
@@ -71,7 +73,7 @@ public class ConnCompEnrichment {
 	 * @param connComp A connected component within <code>GRAPH</code>.
 	 * @return The subgraph around the connected component.
 	 */
-	public Graph<String, NullValue, Integer> extractSubgraph (Set<String> connComp) {		
+	private Graph<String, String, Integer> extractSubgraph (Set<String> connComp) {		
 		Graph<String, NullValue, Integer> subgraph = null;
 		Set<String> vertexIds = connComp;
 		
@@ -84,8 +86,11 @@ public class ConnCompEnrichment {
 				e.printStackTrace();
 			}
 		}
+		Graph<String, String, Integer> g = subgraph.mapVertices(new MapperNull2EmptyStr());
+		g = g.joinWithVertices(this.GRAPH.getVerticesAsTuple2(), new JoinVertexValue());
 		
-		return subgraph;
+		
+		return g;
 	}
 	
 	
@@ -115,11 +120,38 @@ public class ConnCompEnrichment {
 	
 	/**
 	 * Maps the edge values from edge type to weight according to <code>MAP_WEIGHT</code>.
-	 * @param g The graph for which the mapping is executed.
+	 * @param subgraph The graph for which the mapping is executed.
 	 * @return A new graph with mapped edges.
 	 */
-	public Graph<String, NullValue, Float> mapEdgeValues (Graph<String, NullValue, Integer> g) {
-		return g.mapEdges(new MapperWeights(this.MAP_WEIGHT));
+	private Graph<String, String, Float> mapEdgeValues (Graph<String, String, Integer> subgraph) {
+		return subgraph.mapEdges(new MapperWeights(this.MAP_WEIGHT));
+	}
+	
+	
+	
+	
+	@SuppressWarnings("serial")
+	private final static class JoinVertexValue implements VertexJoinFunction<String, String> {
+
+		@Override
+		public String vertexJoin(String vertexValue, String inputValue) throws Exception {
+			return inputValue;
+		}
+		
+	}
+	
+	
+	/**
+	 * Maps null values to empty strings.
+	 */
+	@SuppressWarnings("serial")
+	private final static class MapperNull2EmptyStr implements MapFunction<Vertex<String, NullValue>, String> {
+
+		@Override
+		public String map(Vertex<String, NullValue> value) throws Exception {
+			return "";
+		}
+		
 	}
 	
 	
