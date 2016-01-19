@@ -83,25 +83,20 @@ public class HolomaProcessControl {
 		GraphVisualisation.printConnectedComponents(connCompts);
 		
 		// #3: Analyzing connected components
-		startTime();
 		System.out.println("\nAnalysing connected components ... ");
 		String analysisResult = connCompCalc.analyseConnComponents();
 		OutputToFile out = new OutputToFile(100, HolomaConstants.ANALYSIS_1_FILE_LOC);
-		out.addToBuff(analysisResult); out.close();
-		printTime();
+		out.addToBuff(analysisResult); out.close();		
 		
 		// #4: Enriching connected components
 		System.out.println("\nEnriching connected components ... ");
-		Map<Integer, Float> mapWeight = new HashMap<Integer, Float>();
-		mapWeight.put(0, 1f);
-		mapWeight.put(1, 0.5f);
-		ConnCompEnrichment enr = new ConnCompEnrichment(2, graph, mapWeight, ENV);
+		ConnCompEnrichment enr = new ConnCompEnrichment(2, graph, HolomaConstants.MAP_WEIGHT, ENV);
 		for (long key : connCompts.keySet()) {
 			Set<String> connComp = connCompts.get(key);
 			Graph<String, String, Float> g = enr.getEnrichedConnComp(connComp);
 			// print enriched connected components
 			String path = "./src/main/resources/output/";
-			System.out.println("printing to \t"+path+key+"_edges.txt \n\tand \t"+path+key+"_vertices.txt");
+			/*System.out.println("printing to \t"+path+key+"_edges.txt \n\t and \t"+path+key+"_vertices.txt");*/
 			GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");	
 			
 		}

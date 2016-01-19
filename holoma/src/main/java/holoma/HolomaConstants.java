@@ -1,5 +1,8 @@
 package holoma;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Manages all constants which are relevant for HolOMa.
  * @author max
@@ -68,4 +71,13 @@ public abstract class HolomaConstants {
 	/** Singletons of connected components are eliminated iff 'true'. */
 	public static final boolean NO_SINGLETON_CONNCOMP = true;
 	
+	/** Depth of the enrichment of connected components. */
+	public static final int ENR_DEPTH = 2;
+	
+	/** Weights for is-a ('1') and same-as ('0') edges. */
+	public static final Map<Integer, Float> MAP_WEIGHT = new HashMap<Integer, Float>();
+	static {
+		MAP_WEIGHT.put(0, 1f);
+		MAP_WEIGHT.put(1, 0.5f);
+	}
 }
