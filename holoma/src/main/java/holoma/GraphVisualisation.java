@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.flink.core.fs.FileSystem.WriteMode;
 import org.apache.flink.graph.Graph;
 
 import tools.io.OutputToFile;
@@ -30,6 +31,22 @@ public class GraphVisualisation implements Serializable {
 			g.getVertices().print();
 		} catch (Exception e1) {
 			e1.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Prints a graph as two files (edges, vertices) to the file system.
+	 * @param g The graph.
+	 * @param filePathEdges File path for edges.
+	 * @param filePathVertices File path for vertices.
+	 */
+	@SuppressWarnings("rawtypes") 
+	public static void printGraph (Graph g, String filePathEdges, String filePathVertices) {
+		try {
+			g.getEdgesAsTuple3().writeAsCsv(filePathEdges,"\n","\t", WriteMode.OVERWRITE);
+			g.getVerticesAsTuple2().writeAsCsv(filePathVertices,"\n","\t", WriteMode.OVERWRITE);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

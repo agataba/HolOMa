@@ -97,10 +97,10 @@ public class HolomaProcessControl {
 		for (long key : connCompts.keySet()) {
 			Set<String> connComp = connCompts.get(key);
 			Graph<String, NullValue, Float> g = enr.getEnrichedConnComp(connComp);
-			GraphVisualisation.showEdgesVertices(g);
-			InputFromConsole.readLine();
-			
-			
+			// print enriched connected components
+			String path = "./src/main/resources/output/";
+			System.out.println("printing to \t"+path+key+"_edges.txt \n\tand \t"+path+key+"_vertices.txt");
+			GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");		
 		}
 		
 		
