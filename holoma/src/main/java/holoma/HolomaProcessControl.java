@@ -7,10 +7,10 @@ import java.util.Set;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.graph.Graph;
-import org.apache.flink.types.NullValue;
 import org.apache.log4j.Logger;
 
 import tools.io.InputFromConsole;
+import tools.io.OutputToFile;
 
 /**
  * This class manages the overall workflow 
@@ -43,6 +43,7 @@ public class HolomaProcessControl {
 		System.out.println("edge file location:            "+HolomaConstants.EDGE_FILE_LOC);
 		System.out.println("vertex file location:          "+HolomaConstants.VERTEX_FILE_LOC);
 		System.out.println("connected components location: "+HolomaConstants.CONNCOMP_FILE_LOC);
+		System.out.println("analysis of conn comp location:"+HolomaConstants.ANALYSIS_1_FILE_LOC);
 		System.out.println("optimistic preprocessor:       "+HolomaConstants.IS_OPTIM_PREPR);
 		System.out.println("printing invalid edges:        "+HolomaConstants.IS_PRINTING_INVALID_EDG);
 		System.out.println("printing valid edges/ vertices:"+HolomaConstants.IS_PRINTING_VALID_EDGVERT);
@@ -85,7 +86,8 @@ public class HolomaProcessControl {
 		startTime();
 		System.out.println("\nAnalysing connected components ... ");
 		String analysisResult = connCompCalc.analyseConnComponents();
-		System.out.println(analysisResult);
+		OutputToFile out = new OutputToFile(100, HolomaConstants.ANALYSIS_1_FILE_LOC);
+		out.addToBuff(analysisResult); out.close();
 		printTime();
 		
 		// #4: Enriching connected components
@@ -96,11 +98,12 @@ public class HolomaProcessControl {
 		ConnCompEnrichment enr = new ConnCompEnrichment(2, graph, mapWeight, ENV);
 		for (long key : connCompts.keySet()) {
 			Set<String> connComp = connCompts.get(key);
-			Graph<String, NullValue, Float> g = enr.getEnrichedConnComp(connComp);
+			Graph<String, String, Float> g = enr.getEnrichedConnComp(connComp);
 			// print enriched connected components
 			String path = "./src/main/resources/output/";
 			System.out.println("printing to \t"+path+key+"_edges.txt \n\tand \t"+path+key+"_vertices.txt");
-			GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");		
+			GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");	
+			
 		}
 		
 		
