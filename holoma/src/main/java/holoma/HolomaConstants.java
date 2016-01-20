@@ -27,12 +27,12 @@ public abstract class HolomaConstants {
 	public static final String PATH = "./src/main/resources/ont/";
 	
 	/** Name of the mapping file (same path as ontology files). */
-	public static final String MAPPING_FILE_UNCOLOR = "mapping.csv";
-	public static final String MAPPING_FILE = "mapping_color.csv"; // for testing
+	public static final String MAPPING_FILE = "mapping.csv";
+	public static final String MAPPING_FILE_COLOR = "mapping_color.csv"; // for testing
 	
 	
 	/** Names of the ontology files. */
-	public static final String[] ONTOLOGY_FILES_UNCOLOR = {
+	public static final String[] ONTOLOGY_FILES = {
 		"RXNORM.ttljsonLD.json",
 		"PDQ.ttljsonLD.json",
 		"NPOntology01.owljsonLD.json",
@@ -41,11 +41,11 @@ public abstract class HolomaConstants {
 		"OMIM.ttljsonLD.json",
 		"Radlex_3.12.owljsonLD.json",
 		"chebi.owljsonLD.json",
-		"fma.owljsonLD.json"/*,
+		"fma.owljsonLD.json",
 		"NCITNCBO.ttljsonLD.json"
-*/	};
+	};
 	
-	public static final String[] ONTOLOGY_FILES = { // for testing
+	public static final String[] ONTOLOGY_FILES_COLOR = { // for testing
 		"blue.ttljsonLD.json",
 		"green.ttljsonLD.json",
 		"orange.ttljsonLD.json"
@@ -66,7 +66,7 @@ public abstract class HolomaConstants {
 	public static final boolean IS_PRINTING_VALID_EDGVERT = false;
 	
 	/** Maximum number of iteration steps for connected components. */
-	public static final int MAX_ITER = 10;
+	public static final int MAX_ITER = 15;
 	
 	/** Singletons of connected components are eliminated iff 'true'. */
 	public static final boolean NO_SINGLETON_CONNCOMP = true;
@@ -80,4 +80,7 @@ public abstract class HolomaConstants {
 		MAP_WEIGHT.put(0, 1f);
 		MAP_WEIGHT.put(1, 0.5f);
 	}
+	
+	/** The minimal size of a connected component such that it is enriched and page-ranked.*/
+	public static final int MIN_CC_SIZE = 10;
 }

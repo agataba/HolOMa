@@ -1,5 +1,4 @@
 package holoma;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,6 +50,9 @@ public class HolomaProcessControl {
 		System.out.println("no singleton components:       "+HolomaConstants.NO_SINGLETON_CONNCOMP);
 		System.out.println("-------------------------------------------------------------\n");
 		
+		startTime();
+		
+		
 		// #1: Creating the graph
 		GraphCreationPoint creation = new GraphCreationPoint(ENV);
 		Graph<String, String, Integer> graph = null;
@@ -68,7 +70,6 @@ public class HolomaProcessControl {
 		}
 		
 		// #2 Calculating connected components
-		startTime();
 		System.out.println("\nCalculating Connected Components ... ");
 		ConnCompCalculation connCompCalc = new ConnCompCalculation(graph);
 		Map<Long, Set<String>> connCompts = connCompCalc.calculateConnComp_naive(); 		
@@ -77,7 +78,6 @@ public class HolomaProcessControl {
 			System.out.println("\n--- End ---");
 			System.exit(0);
 		}		
-		printTime();		
 		// save connected components
 		System.out.println("printing to "+HolomaConstants.CONNCOMP_FILE_LOC+" ... ");
 		GraphVisualisation.printConnectedComponents(connCompts);
@@ -90,21 +90,26 @@ public class HolomaProcessControl {
 		
 		// #4: Enriching connected components
 		System.out.println("\nEnriching connected components ... ");
-		ConnCompEnrichment enr = new ConnCompEnrichment(2, graph, HolomaConstants.MAP_WEIGHT, ENV);
-		for (long key : connCompts.keySet()) {
+		ConnCompEnrichment enr = 
+				new ConnCompEnrichment(HolomaConstants.ENR_DEPTH, graph, HolomaConstants.MAP_WEIGHT, ENV);
+		for (long key : connCompts.keySet()) { 
 			Set<String> connComp = connCompts.get(key);
-			Graph<String, String, Float> g = enr.getEnrichedConnComp(connComp);
-			// print enriched connected components
-			String path = "./src/main/resources/output/";
-			/*System.out.println("printing to \t"+path+key+"_edges.txt \n\t and \t"+path+key+"_vertices.txt");*/
-			GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");	
-			
+			int connComptSize = connComp.size();
+			// check whether component has critical size
+			if (connComptSize >= HolomaConstants.MIN_CC_SIZE) {
+				Graph<String, String, Float> g = enr.getEnrichedConnComp(connComp);
+				// print enriched connected components
+				String path = "./src/main/resources/output/";
+				/*System.out.println("printing to \t"+path+key+"_edges.txt \n\t and \t"+path+key+"_vertices.txt");*/
+				GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");	
+			}
 		}
 		
 		
 		
 		
 		
+		printTime();
 		System.out.println("\n--- End ---");
 	}
 	
