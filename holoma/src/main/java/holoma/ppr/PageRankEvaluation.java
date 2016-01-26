@@ -45,7 +45,26 @@ public class PageRankEvaluation {
 	 * @return Best friend for each vertex.
 	 */
 	public Map<String, Tuple2<String,Float>> getBestFriends () {
-		return null;
+		Map<String, Tuple2<String, Float>> bestFriends = new HashMap<String, Tuple2<String, Float>>();
+		try {
+			initCheck();
+			// iterate over each vertex
+			for (String vertexId : this.prVectors.keySet()) {
+				// ... and find its best friend
+				Tuple2<String, Float> bestFriend = new Tuple2<String, Float>("",-1f);
+				Map<String, Float> prVector = this.prVectors.get(vertexId);
+				for (String friendId : prVector.keySet()) {
+					if (prVector.get(friendId) > bestFriend.f1) {
+						bestFriend.f0 = friendId;
+						bestFriend.f1 = prVector.get(friendId);
+					}
+				}
+				// ... and collect the vertex plus its best friend
+				bestFriends.put(vertexId, bestFriend);
+			}		
+		} catch (Exception e) { e.printStackTrace(); }
+		
+		return bestFriends;
 	}
 	
 	
