@@ -1,4 +1,4 @@
-package holoma;
+package holoma.connComp;
 
 import java.util.HashSet;
 import java.util.Map;

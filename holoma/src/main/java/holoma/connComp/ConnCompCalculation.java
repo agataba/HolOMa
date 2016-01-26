@@ -1,4 +1,4 @@
-package holoma;
+package holoma.connComp;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -14,6 +14,8 @@ import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 import org.apache.flink.graph.library.ConnectedComponents;
 import org.apache.flink.graph.spargel.VertexCentricConfiguration;
+
+import holoma.HolomaConstants;
 
 /**
  * This class provides methods for 
