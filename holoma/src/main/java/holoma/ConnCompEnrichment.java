@@ -12,7 +12,6 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
-import org.apache.flink.graph.VertexJoinFunction;
 
 import holoma.complexDatatypes.VertexValue;
 
@@ -31,8 +30,7 @@ public class ConnCompEnrichment {
 	/** Mapping from edge type to weight. */
 	private final Map<Integer, Float> MAP_WEIGHT;
 	
-	
-	
+		
 	ExecutionEnvironment ENV;
 	
 	/**
@@ -78,21 +76,24 @@ public class ConnCompEnrichment {
 	private Graph<String, VertexValue, Integer> extractSubgraph (Set<String> connComp) {		
 		Graph<String, String, Integer> subgraph = null;
 		Set<String> vertexIds = connComp;
-		// add vertices:
+		// #1 add vertices:
 		// in each step the current vertexIds are expanded by all vertexIds which are one hop away
 		for (int i=1; i<= this.DEPTH; i++) {
 			try {
 				vertexIds = addNextHop (vertexIds);
 			} catch (Exception e) { e.printStackTrace(); }
 		}
-		// create subgraph due to relevant vertices
+		// #2 create subgraph due to relevant vertices
 		final Set<String> relevantVertexIds = vertexIds;
 		subgraph = this.GRAPH.filterOnVertices(new FilterFunction<Vertex<String, String>>() {
+			
+			private static final long serialVersionUID = 1L;
+
 			public boolean filter(Vertex<String, String> value) throws Exception {
 				return relevantVertexIds.contains(value.f0);
 			}			
 		});
-		// change vertex value to complex vertex value type
+		// #3 change vertex value to complex vertex value type
 		Graph<String, VertexValue, Integer> g = subgraph.mapVertices(new MapperNull2VertexVal());			
 		
 		return g;
@@ -140,18 +141,6 @@ public class ConnCompEnrichment {
 	private Graph<String, VertexValue, Float> mapEdgeValues (Graph<String, VertexValue, Integer> subgraph) {
 		
 		return subgraph.mapEdges(new MapperWeights(this.MAP_WEIGHT));
-	}
-	
-	
-	
-	/** Adds the ontology name to the vertex value. */
-	@SuppressWarnings("serial")
-	private final static class JoinVertexValue implements VertexJoinFunction<VertexValue, String> {
-
-		public VertexValue vertexJoin(VertexValue vertexValue, String inputValue) throws Exception {
-			vertexValue.ontName=inputValue;
-			return vertexValue;
-		}		
 	}
 	
 	
