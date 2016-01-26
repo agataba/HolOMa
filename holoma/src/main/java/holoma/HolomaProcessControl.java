@@ -9,6 +9,8 @@ import org.apache.flink.graph.Graph;
 import org.apache.log4j.Logger;
 
 import holoma.complexDatatypes.VertexValue;
+import holoma.graph.GraphCreationPoint;
+import holoma.graph.GraphVisualisation;
 import tools.io.InputFromConsole;
 import tools.io.OutputToFile;
 

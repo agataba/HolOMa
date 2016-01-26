@@ -1,4 +1,4 @@
-package holoma;
+package holoma.graph;
 
 import java.util.Set;
 
@@ -10,6 +10,7 @@ import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 
+import holoma.HolomaConstants;
 import holoma.parsing.ParsingPoint;
 
 /**

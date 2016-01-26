@@ -1,4 +1,4 @@
-package holoma;
+package holoma.graph;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -6,6 +6,7 @@ import java.util.Set;
 import org.apache.flink.core.fs.FileSystem.WriteMode;
 import org.apache.flink.graph.Graph;
 
+import holoma.HolomaConstants;
 import tools.io.OutputToFile;
 
 /**
