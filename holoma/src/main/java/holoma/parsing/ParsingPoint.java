@@ -42,6 +42,7 @@ public class ParsingPoint {
 		return this.edges;
 	}
 	
+	
 	/**
 	 * Gets the vertices within the specified ontology files.
 	 * @return Vertices of all ontologies.
@@ -81,6 +82,7 @@ public class ParsingPoint {
 		out.close();	
 	}
 	
+	
 	/** Resets the sets of edges and vertices. */
 	public void clear() {
 		this.edges.clear();
@@ -113,8 +115,7 @@ public class ParsingPoint {
 		//		... and missing vertices to the vertex set
 		System.out.println("\nReading "+HolomaConstants.PATH+HolomaConstants.MAPPING_FILE+" ... ");
 		BufferedReader reader = null;
-/*		Set<Edge<String, Integer>> correspondences = new HashSet<Edge<String, Integer>>();
-*/		try {
+		try {
 			reader = new BufferedReader ( new FileReader(HolomaConstants.PATH+HolomaConstants.MAPPING_FILE));
 			String line;
 			while ( (line = reader.readLine()) != null ) {
@@ -126,32 +127,19 @@ public class ParsingPoint {
 				}
 				Edge<String, Integer> edge = new Edge<String, Integer>(fields[0],fields[1],0);
 				this.edges.add(edge);
+				edge = new Edge<String, Integer>(fields[1],fields[0],0);
+				this.edges.add(edge);
 				Vertex<String, String> v1 = new Vertex<String, String>(fields[0],fields[2].toLowerCase());
 				Vertex<String, String> v2 = new Vertex<String, String>(fields[1],fields[3].toLowerCase());
 				this.vertices.add(v1);
 				this.vertices.add(v2);
 			}
 			reader.close();
-			// determine valid correspondences
-/*			if (this.IS_OPTIM_PREPR) {
-				//TODO: redesign
-				Set<Vertex<String, String>> validVertices = 
-						Preprocessor.addMissingVertices(vertices, correspondences, "correspondences");
-				this.vertices.addAll(validVertices);
-				this.edges.addAll(correspondences);
-			Set<Edge<String, Integer>> validCorrespondences = 
-						Preprocessor.removeInvalidEdges(this.vertices, correspondences, "correspondences");			
-				this.edges.addAll(validCorrespondences);
-			}
-			else {
-				Set<Edge<String, Integer>> validCorrespondences = 
-						Preprocessor.removeInvalidEdges(this.vertices, correspondences, "correspondences");			
-				this.edges.addAll(validCorrespondences);
-			}				
-*/		} catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	/**
 	 * Does optimistic preprocessing.
@@ -164,6 +152,7 @@ public class ParsingPoint {
 		this.vertices.addAll(Preprocessor.addMissingVertices(vertices, edges, ontName));
 	}
 	
+	
 	/**
 	 * Does pessimistic preprocessing.
 	 * @param vertices Set of vertices.
@@ -174,8 +163,6 @@ public class ParsingPoint {
 		this.edges.addAll(Preprocessor.removeInvalidEdges(vertices, edges, ontName));
 		this.vertices.addAll(vertices);
 	}
-	
-	
 	
 	
 	/**

@@ -1,5 +1,8 @@
 package holoma;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Manages all constants which are relevant for HolOMa.
  * @author max
@@ -16,17 +19,20 @@ public abstract class HolomaConstants {
 	/** Where to print the connected components. */
 	public static final String CONNCOMP_FILE_LOC = "./src/main/resources/connectedComponents.csv";
 	
+	/** Where to print the analysis of the connected components. */
+	public static final String ANALYSIS_1_FILE_LOC = "./src/main/resources/analysis_1.txt";
+	
 	
 	/** Path of the ontology and mapping files. */
 	public static final String PATH = "./src/main/resources/ont/";
 	
 	/** Name of the mapping file (same path as ontology files). */
-	public static final String MAPPING_FILE = "mapping.csv";
-	public static final String MAPPING_FILE_COLOR = "mapping_color.csv"; // for testing
+	public static final String MAPPING_FILE_UNCOLOR = "mapping.csv";
+	public static final String MAPPING_FILE = "mapping_color.csv"; // for testing
 	
 	
 	/** Names of the ontology files. */
-	public static final String[] ONTOLOGY_FILES = {
+	public static final String[] ONTOLOGY_FILES_UNCOLOR = {
 		"RXNORM.ttljsonLD.json",
 		"PDQ.ttljsonLD.json",
 		"NPOntology01.owljsonLD.json",
@@ -35,11 +41,11 @@ public abstract class HolomaConstants {
 		"OMIM.ttljsonLD.json",
 		"Radlex_3.12.owljsonLD.json",
 		"chebi.owljsonLD.json",
-		"fma.owljsonLD.json"/*,
+		"fma.owljsonLD.json",
 		"NCITNCBO.ttljsonLD.json"
-*/	};
+	};
 	
-	public static final String[] ONTOLOGY_FILES_COLOR = { // for testing
+	public static final String[] ONTOLOGY_FILES = { // for testing
 		"blue.ttljsonLD.json",
 		"green.ttljsonLD.json",
 		"orange.ttljsonLD.json"
@@ -60,9 +66,21 @@ public abstract class HolomaConstants {
 	public static final boolean IS_PRINTING_VALID_EDGVERT = false;
 	
 	/** Maximum number of iteration steps for connected components. */
-	public static final int MAX_ITER = 10;
+	public static final int MAX_ITER = 15;
 	
 	/** Singletons of connected components are eliminated iff 'true'. */
 	public static final boolean NO_SINGLETON_CONNCOMP = true;
 	
+	/** Depth of the enrichment of connected components. */
+	public static final int ENR_DEPTH = 1;
+	
+	/** Weights for is-a ('1') and same-as ('0') edges. */
+	public static final Map<Integer, Float> MAP_WEIGHT = new HashMap<Integer, Float>();
+	static {
+		MAP_WEIGHT.put(0, 1f);
+		MAP_WEIGHT.put(1, 0.5f);
+	}
+	
+	/** The minimal size of a connected component such that it is enriched and page-ranked.*/
+	public static final int MIN_CC_SIZE = 2;
 }

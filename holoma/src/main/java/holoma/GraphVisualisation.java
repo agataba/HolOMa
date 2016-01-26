@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.flink.core.fs.FileSystem.WriteMode;
 import org.apache.flink.graph.Graph;
 
 import tools.io.OutputToFile;
@@ -20,16 +21,40 @@ public class GraphVisualisation implements Serializable {
 	/**
 	 * Prints the edges and vertices of a graph <code>g</code> to the console.
 	 * @param g A graph.
+	 * @return Result.
 	 */
 	@SuppressWarnings("rawtypes")
-	public static void showEdgesVertices (Graph g) {
+	public static String showEdgesVertices (Graph g) {
+		String str = "";
 		try {
-			g.getEdges().print();
-			g.getVertices().print();
+			str = "Edges:\n";
+			for (Object edge : g.getEdges().collect())
+				str += " "+edge+"\n";
+			str += "\nVertices:\n";
+			for (Object vertex : g.getVertices().collect())
+				str += " "+vertex+"\n";
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+		return str;
 	}
+	
+	/**
+	 * Prints a graph as two files (edges, vertices) to the file system.
+	 * @param g The graph.
+	 * @param filePathEdges File path for edges.
+	 * @param filePathVertices File path for vertices.
+	 */
+	@SuppressWarnings("rawtypes") 
+	public static void printGraph (Graph g, String filePathEdges, String filePathVertices) {
+		try {
+			g.getEdgesAsTuple3().writeAsCsv(filePathEdges,"\n","\t", WriteMode.OVERWRITE);
+			g.getVerticesAsTuple2().writeAsCsv(filePathVertices,"\n","\t", WriteMode.OVERWRITE);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	/**
 	 * Prints the connected components to the console.
