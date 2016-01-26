@@ -16,5 +16,17 @@ public class VertexValue {
 	}
 	
 	
+	/** Creates a new vertex value with default values. */
+	public VertexValue () {
+		this.ontName="";
+		this.pr=0f;
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "["+ontName+", "+pr+"]";
+	}
+	
 
 }

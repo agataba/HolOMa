@@ -14,6 +14,8 @@ import org.apache.flink.graph.Vertex;
 import org.apache.flink.graph.VertexJoinFunction;
 import org.apache.flink.types.NullValue;
 
+import holoma.complexDatatypes.VertexValue;
+
 /**
  * Enriches connected components
  * with additional structure from the given ontologies.
@@ -54,11 +56,11 @@ public class ConnCompEnrichment {
 	 * @param connComp A set of vertices which are a connected component.
 	 * @return The enriched connected component.
 	 */
-	public Graph<String, String, Float> getEnrichedConnComp (Set<String> connComp) {
-		Graph<String, String, Float> enrConnComp = null;
+	public Graph<String, VertexValue, Float> getEnrichedConnComp (Set<String> connComp) {
+		Graph<String, VertexValue, Float> enrConnComp = null;
 		
 		// calculate the subgraph, i.e. the connected component plus some structure
-		Graph<String, String, Integer> subgraph = extractSubgraph(connComp);
+		Graph<String, VertexValue, Integer> subgraph = extractSubgraph(connComp);
 		
 		// map the values of the edges from type to weight
 		enrConnComp = mapEdgeValues (subgraph);
@@ -73,7 +75,7 @@ public class ConnCompEnrichment {
 	 * @param connComp A connected component within <code>GRAPH</code>.
 	 * @return The subgraph around the connected component.
 	 */
-	private Graph<String, String, Integer> extractSubgraph (Set<String> connComp) {		
+	private Graph<String, VertexValue, Integer> extractSubgraph (Set<String> connComp) {		
 		Graph<String, NullValue, Integer> subgraph = null;
 		Set<String> vertexIds = connComp;
 		
@@ -86,7 +88,7 @@ public class ConnCompEnrichment {
 				e.printStackTrace();
 			}
 		}
-		Graph<String, String, Integer> g = subgraph.mapVertices(new MapperNull2EmptyStr());
+		Graph<String, VertexValue, Integer> g = subgraph.mapVertices(new MapperNull2VertexVal());
 		g = g.joinWithVertices(this.GRAPH.getVerticesAsTuple2(), new JoinVertexValue());
 		
 		
@@ -108,7 +110,6 @@ public class ConnCompEnrichment {
 					
 					private static final long serialVersionUID = 1L;
 
-					@Override
 					public boolean filter(Edge<String, Integer> value) throws Exception {
 						return targetVertices.contains(value.getSource());
 					}
@@ -123,44 +124,36 @@ public class ConnCompEnrichment {
 	 * @param subgraph The graph for which the mapping is executed.
 	 * @return A new graph with mapped edges.
 	 */
-	private Graph<String, String, Float> mapEdgeValues (Graph<String, String, Integer> subgraph) {
+	private Graph<String, VertexValue, Float> mapEdgeValues (Graph<String, VertexValue, Integer> subgraph) {
 		return subgraph.mapEdges(new MapperWeights(this.MAP_WEIGHT));
 	}
 	
 	
 	
-	
+	/** Adds the ontology name to the vertex value. */
 	@SuppressWarnings("serial")
-	private final static class JoinVertexValue implements VertexJoinFunction<String, String> {
+	private final static class JoinVertexValue implements VertexJoinFunction<VertexValue, String> {
 
-		@Override
-		public String vertexJoin(String vertexValue, String inputValue) throws Exception {
-			return inputValue;
-		}
-		
+		public VertexValue vertexJoin(VertexValue vertexValue, String inputValue) throws Exception {
+			vertexValue.ontName=inputValue;
+			return vertexValue;
+		}		
 	}
 	
 	
-	/**
-	 * Maps null values to empty strings.
-	 */
+	/** Maps null values of vertices to the default VertexValue. */
 	@SuppressWarnings("serial")
-	private final static class MapperNull2EmptyStr implements MapFunction<Vertex<String, NullValue>, String> {
-
-		@Override
-		public String map(Vertex<String, NullValue> value) throws Exception {
-			return "";
-		}
+	private final static class MapperNull2VertexVal implements MapFunction<Vertex<String, NullValue>, VertexValue> {
 		
+		public VertexValue map(Vertex<String, NullValue> value) throws Exception {
+			return new VertexValue();
+		}
 	}
 	
 	
-	/**
-	 * Maps edges type to weight.
-	 */
+	/** Maps edge type to weight. */
 	@SuppressWarnings("serial")
 	private final static class MapperWeights implements MapFunction<Edge<String, Integer>, Float> {
-
 		
 		/** Mapping from edge type to weight. */
 		private final Map<Integer, Float> MAP_WEIGHT;
@@ -168,12 +161,10 @@ public class ConnCompEnrichment {
 		public MapperWeights (Map<Integer, Float> mapWeight) {
 			this.MAP_WEIGHT=mapWeight;
 		}
-		
-		@Override
+
 		public Float map(Edge<String, Integer> value) throws Exception {
 			return this.MAP_WEIGHT.get(value.f2);
 		}
-		
 	}
 	
 	

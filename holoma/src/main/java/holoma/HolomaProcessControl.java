@@ -8,6 +8,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.graph.Graph;
 import org.apache.log4j.Logger;
 
+import holoma.complexDatatypes.VertexValue;
 import tools.io.InputFromConsole;
 import tools.io.OutputToFile;
 
@@ -97,7 +98,7 @@ public class HolomaProcessControl {
 			int connComptSize = connComp.size();
 			// check whether component has critical size
 			if (connComptSize >= HolomaConstants.MIN_CC_SIZE) {
-				Graph<String, String, Float> g = enr.getEnrichedConnComp(connComp);
+				Graph<String, VertexValue, Float> g = enr.getEnrichedConnComp(connComp);
 				// print enriched connected components
 				String path = "./src/main/resources/output/";
 				/*System.out.println("printing to \t"+path+key+"_edges.txt \n\t and \t"+path+key+"_vertices.txt");*/
