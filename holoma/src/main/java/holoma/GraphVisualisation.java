@@ -21,17 +21,22 @@ public class GraphVisualisation implements Serializable {
 	/**
 	 * Prints the edges and vertices of a graph <code>g</code> to the console.
 	 * @param g A graph.
+	 * @return Result.
 	 */
 	@SuppressWarnings("rawtypes")
-	public static void showEdgesVertices (Graph g) {
+	public static String showEdgesVertices (Graph g) {
+		String str = "";
 		try {
-			System.out.println("Edges:");
-			g.getEdges().print();
-			System.out.println("Vertices:");
-			g.getVertices().print();
+			str = "Edges:\n";
+			for (Object edge : g.getEdges().collect())
+				str += " "+edge+"\n";
+			str += "\nVertices:\n";
+			for (Object vertex : g.getVertices().collect())
+				str += " "+vertex+"\n";
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+		return str;
 	}
 	
 	/**

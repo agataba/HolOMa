@@ -8,11 +8,11 @@ import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 import org.apache.flink.graph.VertexJoinFunction;
-import org.apache.flink.types.NullValue;
 
 import holoma.complexDatatypes.VertexValue;
 
@@ -76,21 +76,24 @@ public class ConnCompEnrichment {
 	 * @return The subgraph around the connected component.
 	 */
 	private Graph<String, VertexValue, Integer> extractSubgraph (Set<String> connComp) {		
-		Graph<String, NullValue, Integer> subgraph = null;
+		Graph<String, String, Integer> subgraph = null;
 		Set<String> vertexIds = connComp;
-		
+		// add vertices:
+		// in each step the current vertexIds are expanded by all vertexIds which are one hop away
 		for (int i=1; i<= this.DEPTH; i++) {
-			DataSet<Edge<String, Integer>> edges = addNextHop (vertexIds);
-			subgraph = Graph.fromDataSet(edges, ENV);
 			try {
-				vertexIds = new HashSet<String>(subgraph.getVertexIds().collect());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+				vertexIds = addNextHop (vertexIds);
+			} catch (Exception e) { e.printStackTrace(); }
 		}
-		Graph<String, VertexValue, Integer> g = subgraph.mapVertices(new MapperNull2VertexVal());
-		g = g.joinWithVertices(this.GRAPH.getVerticesAsTuple2(), new JoinVertexValue());
-		
+		// create subgraph due to relevant vertices
+		final Set<String> relevantVertexIds = vertexIds;
+		subgraph = this.GRAPH.filterOnVertices(new FilterFunction<Vertex<String, String>>() {
+			public boolean filter(Vertex<String, String> value) throws Exception {
+				return relevantVertexIds.contains(value.f0);
+			}			
+		});
+		// change vertex value to complex vertex value type
+		Graph<String, VertexValue, Integer> g = subgraph.mapVertices(new MapperNull2VertexVal());			
 		
 		return g;
 	}
@@ -100,21 +103,31 @@ public class ConnCompEnrichment {
 	 * Adds to the previous subgraph (represented by its vertex IDs)
 	 * all vertices (and the corresponding edges) which are one hop away.
 	 * @param vertexIds Set of vertices, represent the subgraph.
-	 * @return The enriched subgraph (represented by its edges).
+	 * @return Vertex IDs of the of the current graph plus those which are one hop away.
+	 * @throws Exception Converting DataSet to List failed.
 	 */
-	private DataSet<Edge<String, Integer>> addNextHop (Set<String> vertexIds) {
-		final Set<String> targetVertices = vertexIds; 
-		DataSet<Edge<String, Integer>> edges = this.GRAPH.getEdges();
-		DataSet<Edge<String, Integer>> filteredEdges = edges
-				.filter( new FilterFunction<Edge<String, Integer>>() {
+	private Set<String> addNextHop (Set<String> vertexIds) throws Exception {
+		final Set<String> currentVertices = vertexIds; 
+		Set<String> newVertexIds = new HashSet<String>();
+		DataSet<Tuple2<String, String>> edges = this.GRAPH.getEdgeIds();
+		
+		DataSet<Tuple2<String, String>> filteredEdges = edges
+				.filter( new FilterFunction<Tuple2<String, String>>() {
 					
 					private static final long serialVersionUID = 1L;
 
-					public boolean filter(Edge<String, Integer> value) throws Exception {
-						return targetVertices.contains(value.getSource());
+					public boolean filter(Tuple2<String, String> value) throws Exception {
+						return ( currentVertices.contains(value.f0) 
+								|| currentVertices.contains(value.f1));
 					}
 				});
-		return filteredEdges;
+		
+		for (Tuple2<String, String> edge : filteredEdges.collect()) {
+			newVertexIds.add(edge.f0);
+			newVertexIds.add(edge.f1);
+		}
+		
+		return newVertexIds;		
 	}
 	
 	
@@ -125,6 +138,7 @@ public class ConnCompEnrichment {
 	 * @return A new graph with mapped edges.
 	 */
 	private Graph<String, VertexValue, Float> mapEdgeValues (Graph<String, VertexValue, Integer> subgraph) {
+		
 		return subgraph.mapEdges(new MapperWeights(this.MAP_WEIGHT));
 	}
 	
@@ -141,13 +155,13 @@ public class ConnCompEnrichment {
 	}
 	
 	
-	/** Maps null values of vertices to the default VertexValue. */
+	/** Maps simple vertex values to the complex vertex value type. */
 	@SuppressWarnings("serial")
-	private final static class MapperNull2VertexVal implements MapFunction<Vertex<String, NullValue>, VertexValue> {
-		
-		public VertexValue map(Vertex<String, NullValue> value) throws Exception {
-			return new VertexValue();
-		}
+	private final static class MapperNull2VertexVal implements MapFunction<Vertex<String, String>, VertexValue> {
+
+		public VertexValue map(Vertex<String, String> value) throws Exception {
+			return new VertexValue(value.f1,0f);
+		}		
 	}
 	
 	

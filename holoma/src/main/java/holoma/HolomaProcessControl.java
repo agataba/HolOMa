@@ -93,6 +93,7 @@ public class HolomaProcessControl {
 		System.out.println("\nEnriching connected components ... ");
 		ConnCompEnrichment enr = 
 				new ConnCompEnrichment(HolomaConstants.ENR_DEPTH, graph, HolomaConstants.MAP_WEIGHT, ENV);
+		String vis = "";
 		for (long key : connCompts.keySet()) { 
 			Set<String> connComp = connCompts.get(key);
 			int connComptSize = connComp.size();
@@ -100,13 +101,15 @@ public class HolomaProcessControl {
 			if (connComptSize >= HolomaConstants.MIN_CC_SIZE) {
 				Graph<String, VertexValue, Float> g = enr.getEnrichedConnComp(connComp);
 				// print enriched connected components
-				String path = "./src/main/resources/output/";
-				/*System.out.println("printing to \t"+path+key+"_edges.txt \n\t and \t"+path+key+"_vertices.txt");*/
-				GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");	
+/*				String path = "./src/main/resources/output/";
+				System.out.println("printing to \t"+path+key+"_edges.txt \n\t and \t"+path+key+"_vertices.txt");
+				GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");
+*/				vis += "----------\n"+GraphVisualisation.showEdgesVertices(g);
+				
 			}
 		}
 		
-		
+		System.out.println(vis);
 		
 		
 		
