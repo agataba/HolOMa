@@ -40,6 +40,16 @@ public class PageRankEvaluation {
 		this.prVectors=prVectors;
 	}
 	
+	public String showPrVectors () {
+		String res = "prVectors (size: "+this.prVectors.size()+"):\n";
+		for (String src : this.prVectors.keySet()) {
+			Map<String, Float> vect = this.prVectors.get(src);
+			for (String trg : vect.keySet())
+				res += src+"=("+trg+","+vect.get(trg)+")\n";
+		}
+		return res;
+	}
+	
 	/**
 	 * Returns for each vertex its best friend, i.e., the vertex with the highest pagerank.
 	 * @return Best friend for each vertex.
@@ -55,8 +65,7 @@ public class PageRankEvaluation {
 				Map<String, Float> prVector = this.prVectors.get(vertexId);
 				for (String friendId : prVector.keySet()) {
 					if (prVector.get(friendId) > bestFriend.f1) {
-						bestFriend.f0 = friendId;
-						bestFriend.f1 = prVector.get(friendId);
+						bestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
 					}
 				}
 				// ... and collect the vertex plus its best friend
