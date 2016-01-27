@@ -115,6 +115,30 @@ public class PageRankEvaluationTest {
 		assertEquals(expectedResult, prEval.getBestFriends());
 	}
 	
+	@Test
+	public void testGetBestFriendsWithParm() {
+		Map<String, Set<Tuple2<String,Float>>> expectedResult = new HashMap<String, Set<Tuple2<String,Float>>>();
+		Set<Tuple2<String,Float>> bestsOfX = new HashSet<Tuple2<String,Float>>();
+		
+		Tuple2<String,Float> bestFriend = new Tuple2<String, Float>("1",1f);
+		bestsOfX.add(bestFriend);
+		expectedResult.put("1", bestsOfX);
+		
+		bestsOfX = new HashSet<Tuple2<String,Float>>();
+		bestFriend = new Tuple2<String, Float>("9",0.7f);
+		bestsOfX.add(bestFriend);
+		expectedResult.put("3", bestsOfX);
+		
+		bestsOfX = new HashSet<Tuple2<String,Float>>();
+		bestFriend = new Tuple2<String, Float>("13",0.8f);
+		bestsOfX.add(bestFriend);
+		expectedResult.put("8", bestsOfX);		
+		
+		Set<String> noFriends = new HashSet<String>();
+		noFriends.add("11");
+		assertEquals(expectedResult, prEval.getBestFriends(noFriends));
+	}
+	
 	
 	@Test
 	public void testGetWorstFriends() {

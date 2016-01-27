@@ -42,6 +42,11 @@ public class PageRankEvaluation {
 		this.prVectors=prVectors;
 	}
 	
+	
+	/**
+	 * Returns a String which represent the pagerank vector for each vertex.
+	 * @return Pagerank vectors.
+	 */
 	public String showPrVectors () {
 		String res = "prVectors (size: "+this.prVectors.size()+"):\n";
 		for (String src : this.prVectors.keySet()) {
@@ -67,6 +72,45 @@ public class PageRankEvaluation {
 				Tuple2<String, Float> bestFriend = new Tuple2<String, Float>("",-1f);
 				Map<String, Float> prVector = this.prVectors.get(vertexId);
 				for (String friendId : prVector.keySet()) {	
+					if (prVector.get(friendId) > bestFriend.f1) {	
+						// there is an even better friend
+						bestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						bestsOfX.clear();
+						bestsOfX.add(bestFriend);
+					} else if (Math.abs(prVector.get(friendId) - bestFriend.f1) < 0.000000001f) {
+						// there is a friend as good as the current best friend
+						Tuple2<String, Float> furtherBestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						bestsOfX.add(furtherBestFriend);
+					}
+				}
+				// ... and collect the vertex plus its best friend
+				bestFriends.put(vertexId, bestsOfX);
+			}		
+		} catch (Exception e) { e.printStackTrace(); }
+		
+		return bestFriends;
+	}
+	
+	
+	/**
+	 * Returns for each vertex its best friend(s), i.e., the vertex with the highest pagerank whereby
+	 * that vertex is not part of the set <code>noFriends</code>.
+	 * @param noFriends Specifies which friends are actual no friends and have to be ignored as a best friend.
+	 * @return Best friend(s) for each vertex.
+	 */
+	public Map<String, Set<Tuple2<String,Float>>> getBestFriends (Set<String> noFriends) {
+		Map<String, Set<Tuple2<String, Float>>> bestFriends = new HashMap<String, Set<Tuple2<String, Float>>>();
+		try {
+			initCheck();
+			// iterate over each vertex
+			for (String vertexId : this.prVectors.keySet()) {
+				// ... and find its best friend (or the set of the (same) best friends)
+				Set<Tuple2<String, Float>> bestsOfX = new HashSet<Tuple2<String, Float>>();
+				Tuple2<String, Float> bestFriend = new Tuple2<String, Float>("",-1f);
+				Map<String, Float> prVector = this.prVectors.get(vertexId);
+				for (String friendId : prVector.keySet()) {
+					// exclude as best friends vertices which are specified as method parameter
+					if (noFriends.contains(friendId)) continue;
 					if (prVector.get(friendId) > bestFriend.f1) {	
 						// there is an even better friend
 						bestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
