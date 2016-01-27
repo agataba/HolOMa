@@ -1,7 +1,9 @@
 package holoma.ppr;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.graph.Graph;
@@ -51,29 +53,72 @@ public class PageRankEvaluation {
 	}
 	
 	/**
-	 * Returns for each vertex its best friend, i.e., the vertex with the highest pagerank.
-	 * @return Best friend for each vertex.
+	 * Returns for each vertex its best friend(s), i.e., the vertex with the highest pagerank.
+	 * @return Best friend(s) for each vertex.
 	 */
-	public Map<String, Tuple2<String,Float>> getBestFriends () {
-		Map<String, Tuple2<String, Float>> bestFriends = new HashMap<String, Tuple2<String, Float>>();
+	public Map<String, Set<Tuple2<String,Float>>> getBestFriends () {
+		Map<String, Set<Tuple2<String, Float>>> bestFriends = new HashMap<String, Set<Tuple2<String, Float>>>();
 		try {
 			initCheck();
 			// iterate over each vertex
 			for (String vertexId : this.prVectors.keySet()) {
-				// ... and find its best friend
+				// ... and find its best friend (or the set of the (same) best friends)
+				Set<Tuple2<String, Float>> bestsOfX = new HashSet<Tuple2<String, Float>>();
 				Tuple2<String, Float> bestFriend = new Tuple2<String, Float>("",-1f);
 				Map<String, Float> prVector = this.prVectors.get(vertexId);
-				for (String friendId : prVector.keySet()) {
-					if (prVector.get(friendId) > bestFriend.f1) {
+				for (String friendId : prVector.keySet()) {	
+					if (prVector.get(friendId) > bestFriend.f1) {	
+						// there is an even better friend
 						bestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						bestsOfX.clear();
+						bestsOfX.add(bestFriend);
+					} else if (Math.abs(prVector.get(friendId) - bestFriend.f1) < 0.000000001f) {
+						// there is a friend as good as the current best friend
+						Tuple2<String, Float> furtherBestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						bestsOfX.add(furtherBestFriend);
 					}
 				}
 				// ... and collect the vertex plus its best friend
-				bestFriends.put(vertexId, bestFriend);
+				bestFriends.put(vertexId, bestsOfX);
 			}		
 		} catch (Exception e) { e.printStackTrace(); }
 		
 		return bestFriends;
+	}
+	
+	
+	/**
+	 * Returns for each vertex its worst friend(s), i.e., the vertex with the lowest pagerank.
+	 * @return Worst friend(s) for each vertex.
+	 */
+	public Map<String, Set<Tuple2<String,Float>>> getWorstFriends () {
+		Map<String, Set<Tuple2<String, Float>>> worstFriends = new HashMap<String, Set<Tuple2<String, Float>>>();
+		try {
+			initCheck();
+			// iterate over each vertex
+			for (String vertexId : this.prVectors.keySet()) {
+				// ... and find its worst friend (or the set of the (same) worst friends)
+				Set<Tuple2<String, Float>> worstsOfX = new HashSet<Tuple2<String, Float>>();
+				Tuple2<String, Float> worstFriend = new Tuple2<String, Float>("",1000f);
+				Map<String, Float> prVector = this.prVectors.get(vertexId);
+				for (String friendId : prVector.keySet()) {	
+					if (prVector.get(friendId) < worstFriend.f1) {	
+						// there is an even better friend
+						worstFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						worstsOfX.clear();
+						worstsOfX.add(worstFriend);
+					} else if (Math.abs(prVector.get(friendId) - worstFriend.f1) < 0.000000001f) {
+						// there is a friend as good as the current best friend
+						Tuple2<String, Float> furtherWorstFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						worstsOfX.add(furtherWorstFriend);
+					}
+				}
+				// ... and collect the vertex plus its best friend
+				worstFriends.put(vertexId, worstsOfX);
+			}		
+		} catch (Exception e) { e.printStackTrace(); }
+		
+		return worstFriends;
 	}
 	
 	

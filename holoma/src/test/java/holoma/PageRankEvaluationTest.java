@@ -82,7 +82,7 @@ public class PageRankEvaluationTest {
 		innerVector.put("9", 0.7f);
 		innerVector.put("10", 0.65f);
 		innerVector.put("11", 0.8f);
-		innerVector.put("12", 0.2f);
+		innerVector.put("12", 0f);
 		innerVector.put("13", 0.8f);
 		prVectors.put("8", innerVector);
 		
@@ -113,6 +113,31 @@ public class PageRankEvaluationTest {
 		expectedResult.put("8", bestsOfX);		
 		
 		assertEquals(expectedResult, prEval.getBestFriends());
+	}
+	
+	
+	@Test
+	public void testGetWorstFriends() {
+		Map<String, Set<Tuple2<String,Float>>> expectedResult = new HashMap<String, Set<Tuple2<String,Float>>>();
+		Set<Tuple2<String,Float>> worstsOfX = new HashSet<Tuple2<String,Float>>();
+		
+		Tuple2<String,Float> worstFriend = new Tuple2<String, Float>("12",0.2f);
+		worstsOfX.add(worstFriend);
+		expectedResult.put("1", worstsOfX);
+		
+		worstsOfX = new HashSet<Tuple2<String,Float>>();
+		worstFriend = new Tuple2<String, Float>("1",0f);
+		worstsOfX.add(worstFriend);
+		expectedResult.put("3", worstsOfX);
+		
+		worstsOfX = new HashSet<Tuple2<String,Float>>();
+		worstFriend = new Tuple2<String, Float>("1",0f);
+		worstsOfX.add(worstFriend);
+		worstFriend = new Tuple2<String, Float>("12",0f);
+		worstsOfX.add(worstFriend);
+		expectedResult.put("8", worstsOfX);		
+		
+		assertEquals(expectedResult, prEval.getWorstFriends());
 	}
 
 }
