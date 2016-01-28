@@ -83,4 +83,12 @@ public abstract class HolomaConstants {
 	
 	/** The minimal size of a connected component such that it is enriched and page-ranked.*/
 	public static final int MIN_CC_SIZE = 2;
+
+	/** Teleportation probability. */
+	public static final float TELEPORT_PROB = 0.5f;
+	
+	/** Maximum number of iteration steps for personalized pagerank. */
+	public static final int MAX_ITER_PPR = 10;
+	
+
 }
