@@ -1,4 +1,4 @@
-package ppr;
+package holoma.ppr;
 
 /**
  * The value of a vertex.
