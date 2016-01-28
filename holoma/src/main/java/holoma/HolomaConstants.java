@@ -65,4 +65,10 @@ public abstract class HolomaConstants {
 	/** Singletons of connected components are eliminated iff 'true'. */
 	public static final boolean NO_SINGLETON_CONNCOMP = true;
 	
+	/** Teleportation probability. */
+	public static final float TELEPORT_PROB = 0.5f;
+	
+	/** Maximum number of iteration steps for personalized pagerank. */
+	public static final int MAX_ITER_PPR = 10;
+	
 }
