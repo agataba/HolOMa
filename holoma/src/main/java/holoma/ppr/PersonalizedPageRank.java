@@ -17,6 +17,7 @@ import org.apache.flink.graph.spargel.MessagingFunction;
 import org.apache.flink.graph.spargel.VertexUpdateFunction;
 
 import holoma.HolomaConstants;
+import holoma.complexDatatypes.VertexValue;
 
 public class PersonalizedPageRank {
 	
@@ -36,12 +37,18 @@ public class PersonalizedPageRank {
 	}
 	
 	/**
-	 * Starts the computation of pagerank for all sources.
+	 * 
 	 * @param enrConnComp
+	 */
+	public void setEnrConnComp (Graph<String, VertexValue, Float> enrConnComp) {
+		this.enrConnComp=enrConnComp;
+	}
+	
+	/**
+	 * Starts the computation of pagerank for all sources.
 	 * @throws Exception
 	 */
-	public void start (Graph<String, VertexValue, Float> enrConnComp) throws Exception {		
-		this.enrConnComp=enrConnComp;
+	public void start () throws Exception {		
 		
 		List<Vertex<String, VertexValue>> sources = this.enrConnComp.getVertices().collect();
 		
@@ -51,7 +58,7 @@ public class PersonalizedPageRank {
 			this.enrConnComp = this.enrConnComp.mapVertices(new InitMapper(source.f0));
 			// #2: calculate pagerank 
 			try {
-				startCalculation(source);
+				calculateOneSource(source);
 			} catch (Exception e) {
 				System.err.println("Exception during Messaging.");
 				e.printStackTrace();
@@ -65,7 +72,7 @@ public class PersonalizedPageRank {
 	 * @param source Source.
 	 * @throws Exception Exception during Messaging.
 	 */
-	private void startCalculation(Vertex<String, VertexValue> source) throws Exception {
+	public void calculateOneSource(Vertex<String, VertexValue> source) throws Exception {
 		// calculate pagerank for one source and for all vertices
 		Graph<String, VertexValue, Float> calcGraph = 
 				this.enrConnComp.runVertexCentricIteration(

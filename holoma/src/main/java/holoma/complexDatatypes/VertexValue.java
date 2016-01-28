@@ -1,7 +1,11 @@
 package holoma.complexDatatypes;
 
-public class VertexValue {
+import java.io.Serializable;
+
+public class VertexValue implements Serializable {
 	
+	
+	private static final long serialVersionUID = 1L;
 	public String ontName;
 	public float pr;
 	
