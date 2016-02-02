@@ -102,7 +102,7 @@ public class HolomaProcessControl {
 			Set<String> connComp = connCompts.get(key);
 			int connComptSize = connComp.size();
 			// check whether component has critical size
-			if (connComptSize >= HolomaConstants.MIN_CC_SIZE) {
+			if (connComptSize >= HolomaConstants.MIN_CC_SIZE && connComptSize <= HolomaConstants.MAX_CC_SIZE) {
 				Graph<String, VertexValue, Float> g = enr.getEnrichedConnComp(connComp);
 				// print enriched connected components
 /*				String path = "./src/main/resources/output/";
