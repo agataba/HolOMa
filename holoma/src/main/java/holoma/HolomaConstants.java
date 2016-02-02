@@ -1,8 +1,5 @@
 package holoma;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Manages all constants which are relevant for HolOMa.
  * @author max
@@ -66,7 +63,7 @@ public abstract class HolomaConstants {
 	public static final boolean IS_PRINTING_VALID_EDGVERT = false;
 	
 	/** Maximum number of iteration steps for connected components. */
-	public static final int MAX_ITER = 15;
+	public static final int MAX_ITER = 10;
 	
 	/** Singletons of connected components are eliminated iff 'true'. */
 	public static final boolean NO_SINGLETON_CONNCOMP = true;
