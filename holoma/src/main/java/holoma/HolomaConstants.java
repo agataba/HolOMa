@@ -91,7 +91,7 @@ public abstract class HolomaConstants {
 	public static final int MAX_CC_SIZE = 100;
 
 	/** Teleportation probability. */
-	public static final float TELEPORT_PROB = 0.5f;
+	public static final float TELEPORT_PROB = 0.15f;
 	
 	/** Maximum number of iteration steps for personalized pagerank. */
 	public static final int MAX_ITER_PPR = 10;

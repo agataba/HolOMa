@@ -13,6 +13,7 @@ import org.apache.flink.graph.Vertex;
 import org.junit.Before;
 import org.junit.Test;
 
+import holoma.complexDatatypes.EdgeValue;
 import holoma.complexDatatypes.VertexValue;
 
 public class PersonalizedPageRankTest {
@@ -33,21 +34,21 @@ public class PersonalizedPageRankTest {
 		vertexList.add(new Vertex<String, VertexValue>("12", new VertexValue("orange", 0f)));
 		vertexList.add(new Vertex<String, VertexValue>("13", new VertexValue("orange", 0f)));
 		
-		List<Edge<String, Float>> edgeList = new ArrayList<Edge<String, Float>>();
-		edgeList.add(new Edge<String, Float>("1","10",0.5f));
-		edgeList.add(new Edge<String, Float>("3","1",0.5f));
-		edgeList.add(new Edge<String, Float>("3","9",1f));
-		edgeList.add(new Edge<String, Float>("9","3",1f));
-		edgeList.add(new Edge<String, Float>("9","8",0.5f));
-		edgeList.add(new Edge<String, Float>("9","11",1f));
-		edgeList.add(new Edge<String, Float>("9","12",1f));
-		edgeList.add(new Edge<String, Float>("11","9",1f));
-		edgeList.add(new Edge<String, Float>("11","10",0.5f));
-		edgeList.add(new Edge<String, Float>("12","9",1f));
-		edgeList.add(new Edge<String, Float>("12","10",0.5f));
-		edgeList.add(new Edge<String, Float>("13","12",0.5f));
+		List<Edge<String, EdgeValue>> edgeList = new ArrayList<Edge<String, EdgeValue>>();
+		edgeList.add(new Edge<String, EdgeValue>("1","10", new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("3","1",new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("3","9",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("9","3",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("9","8",new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("9","11",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("9","12",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("11","9",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("11","10",new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("12","9",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("12","10",new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("13","12",new EdgeValue(-1,0.5f)));
 		
-		Graph<String, VertexValue, Float> component = Graph.fromCollection(vertexList, edgeList, env);
+		Graph<String, VertexValue, EdgeValue> component = Graph.fromCollection(vertexList, edgeList, env);
 		
 		this.ppr.setEnrConnComp(component);
 	}

@@ -17,12 +17,13 @@ import org.apache.flink.graph.spargel.MessagingFunction;
 import org.apache.flink.graph.spargel.VertexUpdateFunction;
 
 import holoma.HolomaConstants;
+import holoma.complexDatatypes.EdgeValue;
 import holoma.complexDatatypes.VertexValue;
 
 public class PersonalizedPageRank {
 	
 	//static Graph<String, VertexValue, Float> enrConnComp;
-	public Graph<String, VertexValue, Float> enrConnComp; // who is right?
+	public Graph<String, VertexValue, EdgeValue> enrConnComp; // who is right?
 	
 	/** The results. */
 	//source_ID, target_ID, target
@@ -40,8 +41,9 @@ public class PersonalizedPageRank {
 	 * 
 	 * @param enrConnComp
 	 */
-	public void setEnrConnComp (Graph<String, VertexValue, Float> enrConnComp) {
+	public void setEnrConnComp (Graph<String, VertexValue, EdgeValue> enrConnComp) {
 		this.enrConnComp=enrConnComp;
+		this.mapCalcPageRanks = new HashMap<String, List<Vertex<String,VertexValue>>>();
 	}
 	
 	/**
@@ -74,7 +76,7 @@ public class PersonalizedPageRank {
 	 */
 	public void calculateOneSource(Vertex<String, VertexValue> source) throws Exception {
 		// calculate pagerank for one source and for all vertices
-		Graph<String, VertexValue, Float> calcGraph = 
+		Graph<String, VertexValue, EdgeValue> calcGraph = 
 				this.enrConnComp.runVertexCentricIteration(
 						new VertexPageRankUpdater(HolomaConstants.TELEPORT_PROB, source),
 						new PageRankMessenger(this.enrConnComp), HolomaConstants.MAX_ITER_PPR);	
@@ -136,19 +138,19 @@ public class PersonalizedPageRank {
 	 */
 	@SuppressWarnings("serial")
 	public static final class PageRankMessenger
-		extends MessagingFunction<String, VertexValue, Float, Float> {
+		extends MessagingFunction<String, VertexValue, Float, EdgeValue> {
 
-		Map<String, Float> sumWeights = new HashMap<String, Float>();
+		Map<String, EdgeValue> sumWeights = new HashMap<String, EdgeValue>();
 		
 		/**
 		 * Constructor.
 		 * @param enrConnComp
 		 * @throws Exception Cannot collect DataSet of sums of weights.
 		 */
-		public PageRankMessenger (Graph<String, VertexValue, Float> enrConnComp) throws Exception {
-			DataSet<Tuple2<String,Float>> sumWeightsDS =enrConnComp.reduceOnEdges(new SumWeight(), EdgeDirection.OUT);
-			List<Tuple2<String, Float>> sumWeightsList = sumWeightsDS.collect();			
-			for (Tuple2<String, Float> tuple : sumWeightsList)
+		public PageRankMessenger (Graph<String, VertexValue, EdgeValue> enrConnComp) throws Exception {
+			DataSet<Tuple2<String, EdgeValue>> sumWeightsDS =enrConnComp.reduceOnEdges(new SumWeight(), EdgeDirection.OUT);
+			List<Tuple2<String, EdgeValue>> sumWeightsList = sumWeightsDS.collect();			
+			for (Tuple2<String, EdgeValue> tuple : sumWeightsList)
 				this.sumWeights.put(tuple.f0, tuple.f1);			
 		}
 		
@@ -160,19 +162,15 @@ public class PersonalizedPageRank {
 		 */
 		@Override
 		public void sendMessages(Vertex<String, VertexValue> arg0) throws Exception {
-			for (Edge<String, Float> edge : getEdges()){
+			for (Edge<String, EdgeValue> edge : getEdges()){
 				sendMessageTo(edge.getTarget(),
-						arg0.f1.pr*(edge.getValue()/this.sumWeights.get(edge.getSource())));
-			}
-			
+						arg0.f1.pr*(edge.getValue().weight/this.sumWeights.get(edge.getSource()).weight));
+			}		
 		}		
 	}
 	
-	/**
-	 * Initializes the vertices.
-	 * @author agata
-	 *
-	 */
+	
+	/** Initializes the vertices. */
 	@SuppressWarnings("serial")
 	static final class InitMapper implements MapFunction<Vertex<String,VertexValue>, VertexValue> {
 		String sourceId;
@@ -191,10 +189,11 @@ public class PersonalizedPageRank {
 	
 	/** Sums up edge weights. */
 	@SuppressWarnings("serial")
-	static final class SumWeight implements ReduceEdgesFunction<Float> {
+	static final class SumWeight implements ReduceEdgesFunction<EdgeValue> {
 			@Override
-			public Float reduceEdges(Float firstEdgeValue, Float secondEdgeValue) {
-				return firstEdgeValue+secondEdgeValue;
+			public EdgeValue reduceEdges(EdgeValue firstEdgeValue, EdgeValue secondEdgeValue) {
+				return new EdgeValue(Math.max(firstEdgeValue.type, secondEdgeValue.type),
+						firstEdgeValue.weight+secondEdgeValue.weight);
 			}
 	}
 }

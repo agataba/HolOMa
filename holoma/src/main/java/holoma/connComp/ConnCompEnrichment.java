@@ -13,6 +13,7 @@ import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 
+import holoma.complexDatatypes.EdgeValue;
 import holoma.complexDatatypes.VertexValue;
 
 /**
@@ -54,8 +55,8 @@ public class ConnCompEnrichment {
 	 * @param connComp A set of vertices which are a connected component.
 	 * @return The enriched connected component.
 	 */
-	public Graph<String, VertexValue, Float> getEnrichedConnComp (Set<String> connComp) {
-		Graph<String, VertexValue, Float> enrConnComp = null;
+	public Graph<String, VertexValue, EdgeValue> getEnrichedConnComp (Set<String> connComp) {
+		Graph<String, VertexValue, EdgeValue> enrConnComp = null;
 		
 		// calculate the subgraph, i.e. the connected component plus some structure
 		Graph<String, VertexValue, Integer> subgraph = extractSubgraph(connComp);
@@ -138,7 +139,7 @@ public class ConnCompEnrichment {
 	 * @param subgraph The graph for which the mapping is executed.
 	 * @return A new graph with mapped edges.
 	 */
-	private Graph<String, VertexValue, Float> mapEdgeValues (Graph<String, VertexValue, Integer> subgraph) {
+	private Graph<String, VertexValue, EdgeValue> mapEdgeValues (Graph<String, VertexValue, Integer> subgraph) {
 		
 		return subgraph.mapEdges(new MapperWeights(this.MAP_WEIGHT));
 	}
@@ -156,7 +157,7 @@ public class ConnCompEnrichment {
 	
 	/** Maps edge type to weight. */
 	@SuppressWarnings("serial")
-	private final static class MapperWeights implements MapFunction<Edge<String, Integer>, Float> {
+	private final static class MapperWeights implements MapFunction<Edge<String, Integer>, EdgeValue> {
 		
 		/** Mapping from edge type to weight. */
 		private final Map<Integer, Float> MAP_WEIGHT;
@@ -165,8 +166,8 @@ public class ConnCompEnrichment {
 			this.MAP_WEIGHT=mapWeight;
 		}
 
-		public Float map(Edge<String, Integer> value) throws Exception {
-			return this.MAP_WEIGHT.get(value.f2);
+		public EdgeValue map(Edge<String, Integer> value) throws Exception {
+			return new EdgeValue(value.getValue(), this.MAP_WEIGHT.get(value.f2));
 		}
 	}
 	

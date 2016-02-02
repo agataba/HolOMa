@@ -10,6 +10,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 
+import holoma.complexDatatypes.EdgeValue;
 import holoma.complexDatatypes.VertexValue;
 
 /**
@@ -18,20 +19,20 @@ import holoma.complexDatatypes.VertexValue;
  * @author max
  *
  */
-public class PersonalizedPageRankEvaluation {
+public class PPREvaluation {
 	
 	/** The underlying structure, the enriched connected component. */
-	private Graph<String, VertexValue, Float> component = null;
+	private Graph<String, VertexValue, EdgeValue> component = null;
 	/** 
 	 * The result vectors:
 	 * the outer map maps from source to its result vector;
 	 * the inner map maps from vertexId to its pagerank value.
 	 */
-	private Map<String, Map<String, Float>> prVectors = null;
+	private Map<String, Map<String, VertexValue>> prVectors = null;
 	
 	
 	/**  Constructor. */
-	public PersonalizedPageRankEvaluation () { }
+	public PPREvaluation () { }
 	
 	
 	/**
@@ -39,27 +40,16 @@ public class PersonalizedPageRankEvaluation {
 	 * @param component The underlying structure, the enriched connected component.
 	 * @param prVectors The result vectors.
 	 */
-	public void setEvalData (Graph<String, VertexValue, Float> component, Map<String, List<Vertex<String, VertexValue>>> prVectors) {
+	public void setEvalData (Graph<String, VertexValue, EdgeValue> component, Map<String, List<Vertex<String, VertexValue>>> prVectors) {
 		this.component=component;
-		Map<String, Map<String, Float>> mOuter = new HashMap<String, Map<String, Float>>();
+		Map<String, Map<String, VertexValue>> mOuter = new HashMap<String, Map<String, VertexValue>>();
 		for (String s : prVectors.keySet()) {
-			Map<String, Float> mInner = new HashMap<String, Float>();
+			Map<String, VertexValue> mInner = new HashMap<String, VertexValue>();
 			for (Vertex<String, VertexValue> t : prVectors.get(s))
-				mInner.put(t.f0, t.f1.pr);
+				mInner.put(t.f0, t.f1);
 			mOuter.put(s, mInner);			
 		}
 		this.prVectors=mOuter;
-	}
-	
-	
-	/**
-	 * Sets the data that are necessary for evaluation.
-	 * @param component The underlying structure, the enriched connected component.
-	 * @param prVectors The result vectors.
-	 */
-	public void setEvalDataOld (Graph<String, VertexValue, Float> component, Map<String, Map<String, Float>> prVectors) {
-		this.component=component;
-		this.prVectors=prVectors;
 	}
 	
 	
@@ -69,10 +59,11 @@ public class PersonalizedPageRankEvaluation {
 	 */
 	public String showPrVectors () {
 		String res = "prVectors (size: "+this.prVectors.size()+"):\n";
+		res += "  <source>=(<target>,[<ontName>,<pagerank>])\n";
 		for (String src : this.prVectors.keySet()) {
-			Map<String, Float> vect = this.prVectors.get(src);
+			Map<String, VertexValue> vect = this.prVectors.get(src);
 			for (String trg : vect.keySet())
-				res += src+"=("+trg+","+vect.get(trg)+")\n";
+				res += "  "+src+"=("+trg+","+vect.get(trg)+")\n";
 		}
 		return res;
 	}
@@ -81,25 +72,25 @@ public class PersonalizedPageRankEvaluation {
 	 * Returns for each vertex its best friend(s), i.e., the vertex with the highest pagerank.
 	 * @return Best friend(s) for each vertex.
 	 */
-	public Map<String, Set<Tuple2<String,Float>>> getBestFriends () {
-		Map<String, Set<Tuple2<String, Float>>> bestFriends = new HashMap<String, Set<Tuple2<String, Float>>>();
+	public Map<String, Set<Tuple2<String, VertexValue>>> getBestFriends () {
+		Map<String, Set<Tuple2<String, VertexValue>>> bestFriends = new HashMap<String, Set<Tuple2<String, VertexValue>>>();
 		try {
 			initCheck();
 			// iterate over each vertex
 			for (String vertexId : this.prVectors.keySet()) {
 				// ... and find its best friend (or the set of the (same) best friends)
-				Set<Tuple2<String, Float>> bestsOfX = new HashSet<Tuple2<String, Float>>();
-				Tuple2<String, Float> bestFriend = new Tuple2<String, Float>("",-1f);
-				Map<String, Float> prVector = this.prVectors.get(vertexId);
+				Set<Tuple2<String, VertexValue>> bestsOfX = new HashSet<Tuple2<String, VertexValue>>();
+				Tuple2<String, VertexValue> bestFriend = new Tuple2<String, VertexValue>("", new VertexValue("",-1f));
+				Map<String, VertexValue> prVector = this.prVectors.get(vertexId);
 				for (String friendId : prVector.keySet()) {	
-					if (prVector.get(friendId) > bestFriend.f1) {	
+					if (prVector.get(friendId).pr > bestFriend.f1.pr) {	
 						// there is an even better friend
-						bestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						bestFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
 						bestsOfX.clear();
 						bestsOfX.add(bestFriend);
-					} else if (Math.abs(prVector.get(friendId) - bestFriend.f1) < 0.000000001f) {
+					} else if (Math.abs(prVector.get(friendId).pr - bestFriend.f1.pr) < 0.000000001f) {
 						// there is a friend as good as the current best friend
-						Tuple2<String, Float> furtherBestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						Tuple2<String, VertexValue> furtherBestFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
 						bestsOfX.add(furtherBestFriend);
 					}
 				}
@@ -118,27 +109,27 @@ public class PersonalizedPageRankEvaluation {
 	 * @param noFriends Specifies which friends are actual no friends and have to be ignored as a best friend.
 	 * @return Best friend(s) for each vertex.
 	 */
-	public Map<String, Set<Tuple2<String,Float>>> getBestFriends (Set<String> noFriends) {
-		Map<String, Set<Tuple2<String, Float>>> bestFriends = new HashMap<String, Set<Tuple2<String, Float>>>();
+	public Map<String, Set<Tuple2<String, VertexValue>>> getBestFriends (Set<String> noFriends) {
+		Map<String, Set<Tuple2<String, VertexValue>>> bestFriends = new HashMap<String, Set<Tuple2<String, VertexValue>>>();
 		try {
 			initCheck();
 			// iterate over each vertex
 			for (String vertexId : this.prVectors.keySet()) {
 				// ... and find its best friend (or the set of the (same) best friends)
-				Set<Tuple2<String, Float>> bestsOfX = new HashSet<Tuple2<String, Float>>();
-				Tuple2<String, Float> bestFriend = new Tuple2<String, Float>("",-1f);
-				Map<String, Float> prVector = this.prVectors.get(vertexId);
+				Set<Tuple2<String, VertexValue>> bestsOfX = new HashSet<Tuple2<String, VertexValue>>();
+				Tuple2<String, VertexValue> bestFriend = new Tuple2<String, VertexValue>("", new VertexValue("",-1f));
+				Map<String, VertexValue> prVector = this.prVectors.get(vertexId);
 				for (String friendId : prVector.keySet()) {
 					// exclude as best friends vertices which are specified as method parameter
 					if (noFriends.contains(friendId)) continue;
-					if (prVector.get(friendId) > bestFriend.f1) {	
+					if (prVector.get(friendId).pr > bestFriend.f1.pr) {	
 						// there is an even better friend
-						bestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						bestFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
 						bestsOfX.clear();
 						bestsOfX.add(bestFriend);
-					} else if (Math.abs(prVector.get(friendId) - bestFriend.f1) < 0.000000001f) {
+					} else if (Math.abs(prVector.get(friendId).pr - bestFriend.f1.pr) < 0.000000001f) {
 						// there is a friend as good as the current best friend
-						Tuple2<String, Float> furtherBestFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						Tuple2<String, VertexValue> furtherBestFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
 						bestsOfX.add(furtherBestFriend);
 					}
 				}
@@ -155,25 +146,25 @@ public class PersonalizedPageRankEvaluation {
 	 * Returns for each vertex its worst friend(s), i.e., the vertex with the lowest pagerank.
 	 * @return Worst friend(s) for each vertex.
 	 */
-	public Map<String, Set<Tuple2<String,Float>>> getWorstFriends () {
-		Map<String, Set<Tuple2<String, Float>>> worstFriends = new HashMap<String, Set<Tuple2<String, Float>>>();
+	public Map<String, Set<Tuple2<String, VertexValue>>> getWorstFriends () {
+		Map<String, Set<Tuple2<String, VertexValue>>> worstFriends = new HashMap<String, Set<Tuple2<String, VertexValue>>>();
 		try {
 			initCheck();
 			// iterate over each vertex
 			for (String vertexId : this.prVectors.keySet()) {
 				// ... and find its worst friend (or the set of the (same) worst friends)
-				Set<Tuple2<String, Float>> worstsOfX = new HashSet<Tuple2<String, Float>>();
-				Tuple2<String, Float> worstFriend = new Tuple2<String, Float>("",1000f);
-				Map<String, Float> prVector = this.prVectors.get(vertexId);
+				Set<Tuple2<String, VertexValue>> worstsOfX = new HashSet<Tuple2<String, VertexValue>>();
+				Tuple2<String, VertexValue> worstFriend = new Tuple2<String, VertexValue>("", new VertexValue("", 1000f));
+				Map<String, VertexValue> prVector = this.prVectors.get(vertexId);
 				for (String friendId : prVector.keySet()) {	
-					if (prVector.get(friendId) < worstFriend.f1) {	
+					if (prVector.get(friendId).pr < worstFriend.f1.pr) {	
 						// there is an even better friend
-						worstFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						worstFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
 						worstsOfX.clear();
 						worstsOfX.add(worstFriend);
-					} else if (Math.abs(prVector.get(friendId) - worstFriend.f1) < 0.000000001f) {
+					} else if (Math.abs(prVector.get(friendId).pr - worstFriend.f1.pr) < 0.000000001f) {
 						// there is a friend as good as the current best friend
-						Tuple2<String, Float> furtherWorstFriend = new Tuple2<String, Float>(friendId, prVector.get(friendId));
+						Tuple2<String, VertexValue> furtherWorstFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
 						worstsOfX.add(furtherWorstFriend);
 					}
 				}
@@ -184,6 +175,8 @@ public class PersonalizedPageRankEvaluation {
 		
 		return worstFriends;
 	}
+	
+	
 	
 	
 	

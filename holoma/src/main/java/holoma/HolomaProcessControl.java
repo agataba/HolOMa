@@ -6,17 +6,19 @@ import java.util.Set;
 //
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
 import org.apache.log4j.Logger;
 
+import holoma.complexDatatypes.EdgeValue;
 import holoma.complexDatatypes.VertexValue;
 import holoma.connComp.ConnCompCalculation;
 import holoma.connComp.ConnCompEnrichment;
 import holoma.graph.GraphCreationPoint;
 import holoma.graph.GraphVisualisation;
 import holoma.ppr.PersonalizedPageRank;
-import holoma.ppr.PersonalizedPageRankEvaluation;
+import holoma.ppr.PPREvaluation;
 import tools.io.InputFromConsole;
 import tools.io.OutputToFile;
 
@@ -103,28 +105,47 @@ public class HolomaProcessControl {
 				new ConnCompEnrichment(HolomaConstants.ENR_DEPTH, graph, HolomaConstants.MAP_WEIGHT, ENV);
 		PersonalizedPageRank pageRank = new PersonalizedPageRank();
 		// iterate over each connected component
+		out = new OutputToFile(100, HolomaConstants.ANALYSIS_PPR_FILE_LOC);
+		out.addToBuff("depth: "+HolomaConstants.ENR_DEPTH+
+				", #Iter: "+HolomaConstants.MAX_ITER_PPR+
+				", teleportProb: "+HolomaConstants.TELEPORT_PROB);
 		for (long key : connCompts.keySet()) { 
 			Set<String> connComp = connCompts.get(key);
 			int connComptSize = connComp.size();
 			// check whether component has critical size
 			if (connComptSize >= HolomaConstants.MIN_CC_SIZE && connComptSize <= HolomaConstants.MAX_CC_SIZE) {
 				// get enriched connected component
-				Graph<String, VertexValue, Float> enrConnComp = enr.getEnrichedConnComp(connComp);
+				Graph<String, VertexValue, EdgeValue> enrConnComp = enr.getEnrichedConnComp(connComp);
+				out.addToBuff("\n--------\nenriched component:");
+				out.addToBuff(GraphVisualisation.showEdgesVertices(enrConnComp));
 				try {
 					//calculate page rank
 					pageRank.setEnrConnComp(enrConnComp);
 					pageRank.start();
 					Map<String, List<Vertex<String, VertexValue>>> prVectors = pageRank.getMapCalcPageRanks();
-					PersonalizedPageRankEvaluation prEval = new PersonalizedPageRankEvaluation();
+					PPREvaluation prEval = new PPREvaluation();
 					prEval.setEvalData(enrConnComp, prVectors);
-					System.out.println(prEval.showPrVectors());
+					out.addToBuff(prEval.showPrVectors());
+					Map<String, Set<Tuple2<String, VertexValue>>> bestFriends = prEval.getBestFriends();
+					out.addToBuff("\nbest friends:");
+					for (String src : bestFriends.keySet()) {
+						for (Tuple2<String, VertexValue> trg : bestFriends.get(src))
+							out.addToBuff("  src: "+src+" \t trg: "+trg.f0+" \t "+trg.f1);
+					}
+					Map<String, Set<Tuple2<String, VertexValue>>> worstFriends = prEval.getWorstFriends();
+					out.addToBuff("\nworst friends:");
+					for (String src : worstFriends.keySet()) {
+						for (Tuple2<String, VertexValue> trg : worstFriends.get(src))
+							out.addToBuff("  src: "+src+" \t trg: "+trg.f0+" \t "+trg.f1);
+					}
 				} catch (Exception e) {
 					System.err.println("Exception during page rank calculation.");
 					e.printStackTrace();
 				}				
 			} // end 'if' of critical component size
-		} // end 'for' of iteration over connected components 
-		
+		} // end 'for' of iteration over connected components
+		// save pagerank results
+		out.close();
 		
 		
 		

@@ -6,6 +6,7 @@ public class VertexValue implements Serializable {
 	
 	
 	private static final long serialVersionUID = 1L;
+	
 	public String ontName;
 	public float pr;
 	
@@ -29,8 +30,22 @@ public class VertexValue implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "["+ontName+", "+pr+"]";
+		return "["+ontName+", "+Math.round((pr*100)/100.0)+"]";
 	}
 	
+	@Override
+	public boolean equals( Object o )
+	{
+	  if ( o == null )
+	    return false;
+
+	  if ( o == this )
+	    return true;
+
+	  VertexValue that = (VertexValue) o;
+
+	  return    this.ontName.equals(that.ontName)
+	         && Math.abs(this.pr - that.pr) < 0.0000000000001f;
+	}
 
 }

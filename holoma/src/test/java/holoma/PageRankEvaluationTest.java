@@ -17,12 +17,13 @@ import org.apache.flink.graph.Vertex;
 import org.junit.Before;
 import org.junit.Test;
 
+import holoma.complexDatatypes.EdgeValue;
 import holoma.complexDatatypes.VertexValue;
-import holoma.ppr.PersonalizedPageRankEvaluation;
+import holoma.ppr.PPREvaluation;
 
 public class PageRankEvaluationTest {
 
-	PersonalizedPageRankEvaluation prEval;
+	PPREvaluation prEval;
 	
 	@Before
 	public void setUp() {		
@@ -38,77 +39,77 @@ public class PageRankEvaluationTest {
 		vertexList.add(new Vertex<String, VertexValue>("12", new VertexValue("orange", 0f)));
 		vertexList.add(new Vertex<String, VertexValue>("13", new VertexValue("orange", 0f)));
 		
-		List<Edge<String, Float>> edgeList = new ArrayList<Edge<String, Float>>();
-		edgeList.add(new Edge<String, Float>("1","10",0.5f));
-		edgeList.add(new Edge<String, Float>("3","1",0.5f));
-		edgeList.add(new Edge<String, Float>("3","9",1f));
-		edgeList.add(new Edge<String, Float>("9","3",1f));
-		edgeList.add(new Edge<String, Float>("9","8",0.5f));
-		edgeList.add(new Edge<String, Float>("9","11",1f));
-		edgeList.add(new Edge<String, Float>("9","12",1f));
-		edgeList.add(new Edge<String, Float>("11","9",1f));
-		edgeList.add(new Edge<String, Float>("11","10",0.5f));
-		edgeList.add(new Edge<String, Float>("12","9",1f));
-		edgeList.add(new Edge<String, Float>("12","10",0.5f));
-		edgeList.add(new Edge<String, Float>("13","12",0.5f));
+		List<Edge<String, EdgeValue>> edgeList = new ArrayList<Edge<String, EdgeValue>>();
+		edgeList.add(new Edge<String, EdgeValue>("1","10", new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("3","1",new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("3","9",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("9","3",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("9","8",new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("9","11",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("9","12",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("11","9",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("11","10",new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("12","9",new EdgeValue(-1,1f)));
+		edgeList.add(new Edge<String, EdgeValue>("12","10",new EdgeValue(-1,0.5f)));
+		edgeList.add(new Edge<String, EdgeValue>("13","12",new EdgeValue(-1,0.5f)));
 		
-		Graph<String, VertexValue, Float> component = Graph.fromCollection(vertexList, edgeList, env);
+		Graph<String, VertexValue, EdgeValue> component = Graph.fromCollection(vertexList, edgeList, env);
 		
-		Map<String, Map<String, Float>> prVectors = new HashMap<String, Map<String, Float>>();
-		Map<String, Float> innerVector = new HashMap<String, Float>();
-		innerVector.put("1", 1f);
-		innerVector.put("3", 0.6f);
-		innerVector.put("8", 0.6f);
-		innerVector.put("9", 0.7f);
-		innerVector.put("10", 0.65f);
-		innerVector.put("11", 0.8f);
-		innerVector.put("12", 0.2f);
-		innerVector.put("13", 0.4f);
+		Map<String, List<Vertex<String, VertexValue>>> prVectors = new HashMap<String, List<Vertex<String, VertexValue>>>();
+		List<Vertex<String, VertexValue>> innerVector = new ArrayList<Vertex<String, VertexValue>>();
+		innerVector.add(new Vertex<String, VertexValue>("1", new VertexValue("blue",1f)));
+		innerVector.add(new Vertex<String, VertexValue>("3", new VertexValue("blue",0.6f)));
+		innerVector.add(new Vertex<String, VertexValue>("8", new VertexValue("green",0.6f)));
+		innerVector.add(new Vertex<String, VertexValue>("9", new VertexValue("green",0.7f)));
+		innerVector.add(new Vertex<String, VertexValue>("10", new VertexValue("orange",0.65f)));
+		innerVector.add(new Vertex<String, VertexValue>("11", new VertexValue("orange",0.8f)));
+		innerVector.add(new Vertex<String, VertexValue>("12", new VertexValue("orange",0.2f)));
+		innerVector.add(new Vertex<String, VertexValue>("13", new VertexValue("orange",0.4f)));
 		prVectors.put("1", innerVector);
-		innerVector = new HashMap<String, Float>();
-		innerVector.put("1", 0f);
-		innerVector.put("3", 0.6f);
-		innerVector.put("8", 0.6f);
-		innerVector.put("9", 0.7f);
-		innerVector.put("10", 0.65f);
-		innerVector.put("11", 0.8f);
-		innerVector.put("12", 0.2f);
-		innerVector.put("13", 0.4f);
+		innerVector = new ArrayList<Vertex<String, VertexValue>>();
+		innerVector.add(new Vertex<String, VertexValue>("1",  new VertexValue("blue",0f)));
+		innerVector.add(new Vertex<String, VertexValue>("3", new VertexValue("blue",0.6f)));
+		innerVector.add(new Vertex<String, VertexValue>("8", new VertexValue("green",0.6f)));
+		innerVector.add(new Vertex<String, VertexValue>("9", new VertexValue("green",0.7f)));
+		innerVector.add(new Vertex<String, VertexValue>("10", new VertexValue("orange",0.65f)));
+		innerVector.add(new Vertex<String, VertexValue>("11", new VertexValue("orange",0.8f)));
+		innerVector.add(new Vertex<String, VertexValue>("12", new VertexValue("orange",0.2f)));
+		innerVector.add(new Vertex<String, VertexValue>("13", new VertexValue("orange",0.4f)));
 		prVectors.put("3", innerVector);
-		innerVector = new HashMap<String, Float>();
-		innerVector.put("1", 0f);
-		innerVector.put("3", 0.6f);
-		innerVector.put("8", 0.6f);
-		innerVector.put("9", 0.7f);
-		innerVector.put("10", 0.65f);
-		innerVector.put("11", 0.8f);
-		innerVector.put("12", 0f);
-		innerVector.put("13", 0.8f);
+		innerVector = new ArrayList<Vertex<String, VertexValue>>();
+		innerVector.add(new Vertex<String, VertexValue>("1",  new VertexValue("blue",0f)));
+		innerVector.add(new Vertex<String, VertexValue>("3", new VertexValue("blue",0.6f)));
+		innerVector.add(new Vertex<String, VertexValue>("8", new VertexValue("green",0.6f)));
+		innerVector.add(new Vertex<String, VertexValue>("9", new VertexValue("green",0.7f)));
+		innerVector.add(new Vertex<String, VertexValue>("10", new VertexValue("orange",0.65f)));
+		innerVector.add(new Vertex<String, VertexValue>("11", new VertexValue("orange",0.8f)));
+		innerVector.add(new Vertex<String, VertexValue>("12", new VertexValue("orange",0f)));
+		innerVector.add(new Vertex<String, VertexValue>("13", new VertexValue("orange",0.8f)));
 		prVectors.put("8", innerVector);
 		
-		prEval = new PersonalizedPageRankEvaluation();
-		prEval.setEvalDataOld(component, prVectors);
+		prEval = new PPREvaluation();
+		prEval.setEvalData(component, prVectors);
 		
 	}
 
 	@Test
 	public void testGetBestFriends() {
-		Map<String, Set<Tuple2<String,Float>>> expectedResult = new HashMap<String, Set<Tuple2<String,Float>>>();
-		Set<Tuple2<String,Float>> bestsOfX = new HashSet<Tuple2<String,Float>>();
+		Map<String, Set<Tuple2<String,VertexValue>>> expectedResult = new HashMap<String, Set<Tuple2<String,VertexValue>>>();
+		Set<Tuple2<String,VertexValue>> bestsOfX = new HashSet<Tuple2<String,VertexValue>>();
 		
-		Tuple2<String,Float> bestFriend = new Tuple2<String, Float>("1",1f);
+		Tuple2<String,VertexValue> bestFriend = new Tuple2<String,VertexValue>("1",new VertexValue("blue",1f));
 		bestsOfX.add(bestFriend);
 		expectedResult.put("1", bestsOfX);
 		
-		bestsOfX = new HashSet<Tuple2<String,Float>>();
-		bestFriend = new Tuple2<String, Float>("11",0.8f);
+		bestsOfX = new HashSet<Tuple2<String,VertexValue>>();
+		bestFriend = new Tuple2<String, VertexValue>("11",new VertexValue("orange",0.8f));
 		bestsOfX.add(bestFriend);
 		expectedResult.put("3", bestsOfX);
 		
-		bestsOfX = new HashSet<Tuple2<String,Float>>();
-		bestFriend = new Tuple2<String, Float>("13",0.8f);
+		bestsOfX = new HashSet<Tuple2<String,VertexValue>>();
+		bestFriend = new Tuple2<String, VertexValue>("11",new VertexValue("orange",0.8f));
 		bestsOfX.add(bestFriend);
-		bestFriend = new Tuple2<String, Float>("11",0.8f);
+		bestFriend = new Tuple2<String, VertexValue>("13",new VertexValue("orange",0.8f));
 		bestsOfX.add(bestFriend);
 		expectedResult.put("8", bestsOfX);		
 		
