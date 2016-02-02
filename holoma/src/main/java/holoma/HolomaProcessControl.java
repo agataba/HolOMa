@@ -1,4 +1,5 @@
 package holoma;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -6,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.graph.Graph;
+import org.apache.flink.graph.Vertex;
 import org.apache.log4j.Logger;
 
 import holoma.complexDatatypes.VertexValue;
@@ -13,6 +15,8 @@ import holoma.connComp.ConnCompCalculation;
 import holoma.connComp.ConnCompEnrichment;
 import holoma.graph.GraphCreationPoint;
 import holoma.graph.GraphVisualisation;
+import holoma.ppr.PersonalizedPageRank;
+import holoma.ppr.PersonalizedPageRankEvaluation;
 import tools.io.InputFromConsole;
 import tools.io.OutputToFile;
 
@@ -47,7 +51,7 @@ public class HolomaProcessControl {
 		System.out.println("edge file location:            "+HolomaConstants.EDGE_FILE_LOC);
 		System.out.println("vertex file location:          "+HolomaConstants.VERTEX_FILE_LOC);
 		System.out.println("connected components location: "+HolomaConstants.CONNCOMP_FILE_LOC);
-		System.out.println("analysis of conn comp location:"+HolomaConstants.ANALYSIS_1_FILE_LOC);
+		System.out.println("analysis of conn comp location:"+HolomaConstants.ANALYSIS_CC_FILE_LOC);
 		System.out.println("optimistic preprocessor:       "+HolomaConstants.IS_OPTIM_PREPR);
 		System.out.println("printing invalid edges:        "+HolomaConstants.IS_PRINTING_INVALID_EDG);
 		System.out.println("printing valid edges/ vertices:"+HolomaConstants.IS_PRINTING_VALID_EDGVERT);
@@ -90,30 +94,37 @@ public class HolomaProcessControl {
 		// #3: Analyzing connected components
 		System.out.println("\nAnalysing connected components ... ");
 		String analysisResult = connCompCalc.analyseConnComponents();
-		OutputToFile out = new OutputToFile(100, HolomaConstants.ANALYSIS_1_FILE_LOC);
+		OutputToFile out = new OutputToFile(100, HolomaConstants.ANALYSIS_CC_FILE_LOC);
 		out.addToBuff(analysisResult); out.close();		
 		
 		// #4: Enriching connected components
 		System.out.println("\nEnriching connected components ... ");
 		ConnCompEnrichment enr = 
 				new ConnCompEnrichment(HolomaConstants.ENR_DEPTH, graph, HolomaConstants.MAP_WEIGHT, ENV);
-		String vis = "";
+		PersonalizedPageRank pageRank = new PersonalizedPageRank();
+		// iterate over each connected component
 		for (long key : connCompts.keySet()) { 
 			Set<String> connComp = connCompts.get(key);
 			int connComptSize = connComp.size();
 			// check whether component has critical size
 			if (connComptSize >= HolomaConstants.MIN_CC_SIZE && connComptSize <= HolomaConstants.MAX_CC_SIZE) {
-				Graph<String, VertexValue, Float> g = enr.getEnrichedConnComp(connComp);
-				// print enriched connected components
-/*				String path = "./src/main/resources/output/";
-				System.out.println("printing to \t"+path+key+"_edges.txt \n\t and \t"+path+key+"_vertices.txt");
-				GraphVisualisation.printGraph(g, path+key+"_edges.txt", path+key+"_vertices.txt");
-*/				vis += "----------\n"+GraphVisualisation.showEdgesVertices(g);
-				
-			}
-		}
+				// get enriched connected component
+				Graph<String, VertexValue, Float> enrConnComp = enr.getEnrichedConnComp(connComp);
+				try {
+					//calculate page rank
+					pageRank.setEnrConnComp(enrConnComp);
+					pageRank.start();
+					Map<String, List<Vertex<String, VertexValue>>> prVectors = pageRank.getMapCalcPageRanks();
+					PersonalizedPageRankEvaluation prEval = new PersonalizedPageRankEvaluation();
+					prEval.setEvalData(enrConnComp, prVectors);
+					System.out.println(prEval.showPrVectors());
+				} catch (Exception e) {
+					System.err.println("Exception during page rank calculation.");
+					e.printStackTrace();
+				}				
+			} // end 'if' of critical component size
+		} // end 'for' of iteration over connected components 
 		
-		System.out.println(vis);
 		
 		
 		

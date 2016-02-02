@@ -18,11 +18,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import holoma.complexDatatypes.VertexValue;
-import holoma.ppr.PageRankEvaluation;
+import holoma.ppr.PersonalizedPageRankEvaluation;
 
 public class PageRankEvaluationTest {
 
-	PageRankEvaluation prEval;
+	PersonalizedPageRankEvaluation prEval;
 	
 	@Before
 	public void setUp() {		
@@ -86,8 +86,8 @@ public class PageRankEvaluationTest {
 		innerVector.put("13", 0.8f);
 		prVectors.put("8", innerVector);
 		
-		prEval = new PageRankEvaluation();
-		prEval.setEvalData(component, prVectors);
+		prEval = new PersonalizedPageRankEvaluation();
+		prEval.setEvalDataOld(component, prVectors);
 		
 	}
 

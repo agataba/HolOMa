@@ -46,7 +46,7 @@ public class PersonalizedPageRank {
 	
 	/**
 	 * Starts the computation of pagerank for all sources.
-	 * @throws Exception
+	 * @throws Exception Exception during Messaging.
 	 */
 	public void start () throws Exception {		
 		

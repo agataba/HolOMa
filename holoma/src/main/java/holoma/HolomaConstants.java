@@ -20,7 +20,10 @@ public abstract class HolomaConstants {
 	public static final String CONNCOMP_FILE_LOC = "./src/main/resources/connectedComponents.csv";
 	
 	/** Where to print the analysis of the connected components. */
-	public static final String ANALYSIS_1_FILE_LOC = "./src/main/resources/analysis_1.txt";
+	public static final String ANALYSIS_CC_FILE_LOC = "./src/main/resources/analysis_CC.txt";
+	
+	/** Where to print the analysis of the connected components. */
+	public static final String ANALYSIS_PPR_FILE_LOC = "./src/main/resources/analysis_PPR.txt";
 	
 	
 	/** Path of the ontology and mapping files. */

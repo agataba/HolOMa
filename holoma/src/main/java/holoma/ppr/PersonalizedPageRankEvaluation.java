@@ -2,11 +2,13 @@ package holoma.ppr;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.graph.Graph;
+import org.apache.flink.graph.Vertex;
 
 import holoma.complexDatatypes.VertexValue;
 
@@ -16,7 +18,7 @@ import holoma.complexDatatypes.VertexValue;
  * @author max
  *
  */
-public class PageRankEvaluation {
+public class PersonalizedPageRankEvaluation {
 	
 	/** The underlying structure, the enriched connected component. */
 	private Graph<String, VertexValue, Float> component = null;
@@ -29,7 +31,7 @@ public class PageRankEvaluation {
 	
 	
 	/**  Constructor. */
-	public PageRankEvaluation () { }
+	public PersonalizedPageRankEvaluation () { }
 	
 	
 	/**
@@ -37,7 +39,25 @@ public class PageRankEvaluation {
 	 * @param component The underlying structure, the enriched connected component.
 	 * @param prVectors The result vectors.
 	 */
-	public void setEvalData (Graph<String, VertexValue, Float> component, Map<String, Map<String, Float>> prVectors) {
+	public void setEvalData (Graph<String, VertexValue, Float> component, Map<String, List<Vertex<String, VertexValue>>> prVectors) {
+		this.component=component;
+		Map<String, Map<String, Float>> mOuter = new HashMap<String, Map<String, Float>>();
+		for (String s : prVectors.keySet()) {
+			Map<String, Float> mInner = new HashMap<String, Float>();
+			for (Vertex<String, VertexValue> t : prVectors.get(s))
+				mInner.put(t.f0, t.f1.pr);
+			mOuter.put(s, mInner);			
+		}
+		this.prVectors=mOuter;
+	}
+	
+	
+	/**
+	 * Sets the data that are necessary for evaluation.
+	 * @param component The underlying structure, the enriched connected component.
+	 * @param prVectors The result vectors.
+	 */
+	public void setEvalDataOld (Graph<String, VertexValue, Float> component, Map<String, Map<String, Float>> prVectors) {
 		this.component=component;
 		this.prVectors=prVectors;
 	}
