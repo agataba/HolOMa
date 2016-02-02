@@ -30,7 +30,7 @@ public class VertexValue implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "["+ontName+", "+Math.round((pr*100)/100.0)+"]";
+		return "["+ontName+", "+(Math.round(pr*100)/100.0)+"]";
 	}
 	
 	@Override

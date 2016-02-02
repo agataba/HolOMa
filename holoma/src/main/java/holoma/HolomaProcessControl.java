@@ -123,16 +123,16 @@ public class HolomaProcessControl {
 					pageRank.setEnrConnComp(enrConnComp);
 					pageRank.start();
 					Map<String, List<Vertex<String, VertexValue>>> prVectors = pageRank.getMapCalcPageRanks();
-					PPREvaluation prEval = new PPREvaluation();
-					prEval.setEvalData(enrConnComp, prVectors);
-					out.addToBuff(prEval.showPrVectors());
-					Map<String, Set<Tuple2<String, VertexValue>>> bestFriends = prEval.getBestFriends();
+					PPREvaluation pprEval = new PPREvaluation();
+					pprEval.setEvalData(enrConnComp, prVectors);
+					out.addToBuff(pprEval.showPrVectors());
+					Map<String, Set<Tuple2<String, VertexValue>>> bestFriends = pprEval.getBestFriends();
 					out.addToBuff("\nbest friends:");
 					for (String src : bestFriends.keySet()) {
 						for (Tuple2<String, VertexValue> trg : bestFriends.get(src))
 							out.addToBuff("  src: "+src+" \t trg: "+trg.f0+" \t "+trg.f1);
 					}
-					Map<String, Set<Tuple2<String, VertexValue>>> worstFriends = prEval.getWorstFriends();
+					Map<String, Set<Tuple2<String, VertexValue>>> worstFriends = pprEval.getWorstFriends();
 					out.addToBuff("\nworst friends:");
 					for (String src : worstFriends.keySet()) {
 						for (Tuple2<String, VertexValue> trg : worstFriends.get(src))
