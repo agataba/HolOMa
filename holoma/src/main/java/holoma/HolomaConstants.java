@@ -1,5 +1,8 @@
 package holoma;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Manages all constants which are relevant for HolOMa.
  * @author max
