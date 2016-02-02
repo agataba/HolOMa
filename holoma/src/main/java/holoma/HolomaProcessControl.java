@@ -99,34 +99,42 @@ public class HolomaProcessControl {
 		OutputToFile out = new OutputToFile(100, HolomaConstants.ANALYSIS_CC_FILE_LOC);
 		out.addToBuff(analysisResult); out.close();		
 		
-		// #4: Enriching connected components
+		// #4: Determine PageRank
 		System.out.println("\nEnriching connected components ... ");
-		ConnCompEnrichment enr = 
-				new ConnCompEnrichment(HolomaConstants.ENR_DEPTH, graph, HolomaConstants.MAP_WEIGHT, ENV);
-		PersonalizedPageRank pageRank = new PersonalizedPageRank();
-		// iterate over each connected component
+		
 		out = new OutputToFile(100, HolomaConstants.ANALYSIS_PPR_FILE_LOC);
 		out.addToBuff("depth: "+HolomaConstants.ENR_DEPTH+
 				", #Iter: "+HolomaConstants.MAX_ITER_PPR+
 				", teleportProb: "+HolomaConstants.TELEPORT_PROB);
-		for (long key : connCompts.keySet()) { 
+		// iterate over each connected component
+		for (long key : connCompts.keySet()) {
+			ConnCompEnrichment enr = 
+					new ConnCompEnrichment(HolomaConstants.ENR_DEPTH, graph, HolomaConstants.MAP_WEIGHT, ENV);
+			PersonalizedPageRank pageRank = new PersonalizedPageRank();
 			Set<String> connComp = connCompts.get(key);
 			int connComptSize = connComp.size();
 			// check whether component has critical size
 			if (connComptSize >= HolomaConstants.MIN_CC_SIZE && connComptSize <= HolomaConstants.MAX_CC_SIZE) {
-				// get enriched connected component
+				
+				// #4.1: get enriched connected component
 				Graph<String, VertexValue, EdgeValue> enrConnComp = enr.getEnrichedConnComp(connComp);
 				out.addToBuff("\n--------\nenriched component:");
 				out.addToBuff(GraphVisualisation.showEdgesVertices(enrConnComp));
 				try {
-					//calculate page rank
+					// #4.2: calculate page rank
 					pageRank.setEnrConnComp(enrConnComp);
 					pageRank.start();
 					Map<String, List<Vertex<String, VertexValue>>> prVectors = pageRank.getMapCalcPageRanks();
-					PPREvaluation pprEval = new PPREvaluation();
-					pprEval.setEvalData(enrConnComp, prVectors);
-					out.addToBuff(pprEval.showPrVectors());
-					Map<String, Set<Tuple2<String, VertexValue>>> bestFriends = pprEval.getBestFriends();
+					
+					// #4.3: evaluate the page-ranked component
+					PPREvaluation pprEval = new PPREvaluation(enrConnComp, prVectors);
+					out.addToBuff(pprEval.getPrVectorsAsString());
+					Map<String, Float> statistMeans = pprEval.getStatistMeans();
+					out.addToBuff("\nstatistic means:");
+					for (String source : statistMeans.keySet()) {
+						out.addToBuff("  source: "+source+" \t page rank mean: "+statistMeans.get(source));
+					}
+					Map<String, Set<Tuple2<String, VertexValue>>> bestFriends = pprEval.getTrueBestFriends();
 					out.addToBuff("\nbest friends:");
 					for (String src : bestFriends.keySet()) {
 						for (Tuple2<String, VertexValue> trg : bestFriends.get(src))
@@ -152,7 +160,6 @@ public class HolomaProcessControl {
 		printTime();
 		System.out.println("\n--- End ---");
 	}
-	
 	
 	
 	

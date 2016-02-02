@@ -87,8 +87,7 @@ public class PageRankEvaluationTest {
 		innerVector.add(new Vertex<String, VertexValue>("13", new VertexValue("orange",0.8f)));
 		prVectors.put("8", innerVector);
 		
-		prEval = new PPREvaluation();
-		prEval.setEvalData(component, prVectors);
+		prEval = new PPREvaluation(component, prVectors);
 		
 	}
 
