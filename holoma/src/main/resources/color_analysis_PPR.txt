@@ -1,375 +1,466 @@
-prVectors (size: 8):
-3=(3,0.527786)
-3=(10,0.07104666)
-3=(1,0.123386234)
-3=(9,0.19443288)
-3=(8,0.013893021)
-3=(13,0.0)
-3=(11,0.027786043)
-3=(12,0.027786043)
-1=(3,0.0)
-1=(10,0.3330078)
-1=(1,0.6669922)
-1=(9,0.0)
-1=(8,0.0)
-1=(13,0.0)
-1=(11,0.0)
-1=(12,0.0)
-10=(3,0.0)
-10=(10,0.6669922)
-10=(1,0.3330078)
-10=(9,0.0)
-10=(8,0.0)
-10=(13,0.0)
-10=(11,0.0)
-10=(12,0.0)
-9=(3,0.08332838)
-9=(10,0.046361476)
-9=(1,0.03696691)
-9=(9,0.5833581)
-9=(8,0.04166419)
-9=(13,0.0)
-9=(11,0.08332838)
-9=(12,0.08332838)
-8=(3,0.0)
-8=(10,0.0)
-8=(1,0.0)
-8=(9,0.0)
-8=(8,0.5)
-8=(13,0.0)
-8=(11,0.0)
-8=(12,0.0)
-13=(3,0.0)
-13=(10,5.840214E-4)
-13=(1,1.2925029E-4)
-13=(9,6.9415546E-5)
-13=(8,0.0)
-13=(13,1.0)
-13=(11,0.0)
-13=(12,0.0)
-11=(3,0.02778604)
-11=(10,0.1263852)
-11=(1,0.06804769)
-11=(9,0.1944329)
-11=(8,0.01389302)
-11=(13,0.0)
-11=(11,0.527786)
-11=(12,0.02778604)
-12=(3,0.027786043)
-12=(10,0.1263852)
-12=(1,0.06804769)
-12=(9,0.19443288)
-12=(8,0.013893021)
-12=(13,0.0)
-12=(11,0.027786043)
-12=(12,0.527786)
+depth: 1, #Iter: 10, teleportProb: 0.15
 
-prVectors (size: 12):
-3=(3,0.527786)
-3=(10,0.07104666)
-3=(1,0.123386234)
-3=(9,0.19443288)
-3=(8,0.013893021)
-3=(13,0.0)
-3=(11,0.027786043)
-3=(12,0.027786043)
-2=(2,0.54545635)
-2=(1,0.09090873)
-2=(7,0.18181746)
-2=(6,0.022728186)
-2=(4,0.0)
-2=(8,0.022728186)
-1=(2,0.0)
-1=(1,0.5)
-1=(7,0.0)
-1=(6,0.0)
-1=(4,0.0)
-1=(8,0.0)
-10=(3,0.0)
-10=(10,0.6669922)
-10=(1,0.3330078)
-10=(9,0.0)
-10=(8,0.0)
-10=(13,0.0)
-10=(11,0.0)
-10=(12,0.0)
-7=(2,0.13636309)
-7=(1,0.022728186)
-7=(7,0.54545635)
-7=(6,0.068181545)
-7=(4,0.0)
-7=(8,0.068181545)
-6=(2,0.0)
-6=(1,0.0)
-6=(7,0.0)
-6=(6,0.5)
-6=(4,0.0)
-6=(8,0.0)
-4=(2,0.0)
-4=(1,4.0187765E-6)
-4=(7,8.037553E-6)
-4=(6,0.0)
-4=(4,1.0)
-4=(8,0.0)
-9=(3,0.08332838)
-9=(10,0.046361476)
-9=(1,0.03696691)
-9=(9,0.5833581)
-9=(8,0.04166419)
-9=(13,0.0)
-9=(11,0.08332838)
-9=(12,0.08332838)
-8=(2,0.0)
-8=(1,0.0)
-8=(7,0.0)
-8=(6,0.0)
-8=(4,0.0)
-8=(8,0.5)
-13=(3,0.0)
-13=(10,5.840214E-4)
-13=(1,1.2925029E-4)
-13=(9,6.9415546E-5)
-13=(8,0.0)
-13=(13,1.0)
-13=(11,0.0)
-13=(12,0.0)
-11=(3,0.02778604)
-11=(10,0.1263852)
-11=(1,0.06804769)
-11=(9,0.1944329)
-11=(8,0.01389302)
-11=(13,0.0)
-11=(11,0.527786)
-11=(12,0.02778604)
-12=(3,0.027786043)
-12=(10,0.1263852)
-12=(1,0.06804769)
-12=(9,0.19443288)
-12=(8,0.013893021)
-12=(13,0.0)
-12=(11,0.027786043)
-12=(12,0.527786)
+--------
+enriched component:
+Edges:
+ (13,12,[1, 0.5])
+ (9,12,[0, 1.0])
+ (3,1,[1, 0.5])
+ (10,1,[0, 1.0])
+ (11,9,[0, 1.0])
+ (3,9,[0, 1.0])
+ (12,9,[0, 1.0])
+ (11,10,[1, 0.5])
+ (12,10,[1, 0.5])
+ (1,10,[0, 1.0])
+ (9,3,[0, 1.0])
+ (9,11,[0, 1.0])
+ (9,8,[1, 0.5])
 
-prVectors (size: 13):
-3=(3,1.0)
-3=(2,0.0)
-3=(10,3.2615662E-4)
-3=(1,3.2424927E-4)
-3=(6,0.0)
-3=(5,3.2615662E-4)
-3=(8,0.0)
-3=(11,0.0)
-3=(12,0.0)
-2=(3,0.0)
-2=(2,1.0)
-2=(10,3.2615662E-4)
-2=(1,3.2424927E-4)
-2=(6,0.0)
-2=(5,3.2615662E-4)
-2=(8,0.0)
-2=(11,0.0)
-2=(12,0.0)
-1=(3,0.0)
-1=(2,0.0)
-1=(10,0.19999981)
-1=(1,0.6000004)
-1=(6,0.0)
-1=(5,0.19999981)
-1=(8,0.0)
-1=(11,0.0)
-1=(12,0.0)
-10=(3,0.0)
-10=(2,0.0)
-10=(10,0.6000004)
-10=(1,0.19999981)
-10=(6,0.0)
-10=(5,0.19999981)
-10=(8,0.0)
-10=(11,0.0)
-10=(12,0.0)
-7=(2,0.13636309)
-7=(1,0.022728186)
-7=(7,0.54545635)
-7=(6,0.068181545)
-7=(4,0.0)
-7=(8,0.068181545)
-6=(3,0.0)
-6=(2,0.0)
-6=(10,3.2615662E-4)
-6=(1,3.2615662E-4)
-6=(6,1.0)
-6=(5,3.2424927E-4)
-6=(8,0.0)
-6=(11,0.0)
-6=(12,0.0)
-5=(3,0.0)
-5=(2,0.0)
-5=(10,0.19999981)
-5=(1,0.19999981)
-5=(6,0.0)
-5=(5,0.6000004)
-5=(8,0.0)
-5=(11,0.0)
-5=(12,0.0)
-4=(2,0.0)
-4=(1,4.0187765E-6)
-4=(7,8.037553E-6)
-4=(6,0.0)
-4=(4,1.0)
-4=(8,0.0)
-9=(3,0.08332838)
-9=(10,0.046361476)
-9=(1,0.03696691)
-9=(9,0.5833581)
-9=(8,0.04166419)
-9=(13,0.0)
-9=(11,0.08332838)
-9=(12,0.08332838)
-8=(3,0.0)
-8=(2,0.0)
-8=(10,3.2615662E-4)
-8=(1,3.2615662E-4)
-8=(6,0.0)
-8=(5,3.2424927E-4)
-8=(8,1.0)
-8=(11,0.0)
-8=(12,0.0)
-13=(3,0.0)
-13=(10,5.840214E-4)
-13=(1,1.2925029E-4)
-13=(9,6.9415546E-5)
-13=(8,0.0)
-13=(13,1.0)
-13=(11,0.0)
-13=(12,0.0)
-11=(3,0.0)
-11=(2,0.0)
-11=(10,3.2424927E-4)
-11=(1,3.2615662E-4)
-11=(6,0.0)
-11=(5,3.2615662E-4)
-11=(8,0.0)
-11=(11,1.0)
-11=(12,0.0)
-12=(3,0.0)
-12=(2,0.0)
-12=(10,3.2424927E-4)
-12=(1,3.2615662E-4)
-12=(6,0.0)
-12=(5,3.2615662E-4)
-12=(8,0.0)
-12=(11,0.0)
-12=(12,1.0)
+Vertices:
+ (3,[blue, 0.0])
+ (12,[orange, 0.0])
+ (11,[orange, 0.0])
+ (1,[blue, 0.0])
+ (13,[orange, 0.0])
+ (9,[green, 0.0])
+ (8,[green, 0.0])
+ (10,[orange, 0.0])
 
-prVectors (size: 15):
-3=(3,1.0)
-3=(2,0.0)
-3=(10,3.2615662E-4)
-3=(1,3.2424927E-4)
-3=(6,0.0)
-3=(5,3.2615662E-4)
-3=(8,0.0)
-3=(11,0.0)
-3=(12,0.0)
-2=(3,0.0)
-2=(2,1.0)
-2=(10,3.2615662E-4)
-2=(1,3.2424927E-4)
-2=(6,0.0)
-2=(5,3.2615662E-4)
-2=(8,0.0)
-2=(11,0.0)
-2=(12,0.0)
-1=(3,0.0)
-1=(2,0.0)
-1=(10,0.19999981)
-1=(1,0.6000004)
-1=(6,0.0)
-1=(5,0.19999981)
-1=(8,0.0)
-1=(11,0.0)
-1=(12,0.0)
-10=(3,0.0)
-10=(2,0.0)
-10=(10,0.6000004)
-10=(1,0.19999981)
-10=(6,0.0)
-10=(5,0.19999981)
-10=(8,0.0)
-10=(11,0.0)
-10=(12,0.0)
-0=(0,0.60005146)
-0=(13,0.050025724)
-0=(14,0.29996142)
-7=(2,0.13636309)
-7=(1,0.022728186)
-7=(7,0.54545635)
-7=(6,0.068181545)
-7=(4,0.0)
-7=(8,0.068181545)
-6=(3,0.0)
-6=(2,0.0)
-6=(10,3.2615662E-4)
-6=(1,3.2615662E-4)
-6=(6,1.0)
-6=(5,3.2424927E-4)
-6=(8,0.0)
-6=(11,0.0)
-6=(12,0.0)
-5=(3,0.0)
-5=(2,0.0)
-5=(10,0.19999981)
-5=(1,0.19999981)
-5=(6,0.0)
-5=(5,0.6000004)
-5=(8,0.0)
-5=(11,0.0)
-5=(12,0.0)
-4=(2,0.0)
-4=(1,4.0187765E-6)
-4=(7,8.037553E-6)
-4=(6,0.0)
-4=(4,1.0)
-4=(8,0.0)
-9=(3,0.08332838)
-9=(10,0.046361476)
-9=(1,0.03696691)
-9=(9,0.5833581)
-9=(8,0.04166419)
-9=(13,0.0)
-9=(11,0.08332838)
-9=(12,0.08332838)
-8=(3,0.0)
-8=(2,0.0)
-8=(10,3.2615662E-4)
-8=(1,3.2615662E-4)
-8=(6,0.0)
-8=(5,3.2424927E-4)
-8=(8,1.0)
-8=(11,0.0)
-8=(12,0.0)
-13=(0,0.0)
-13=(13,0.5)
-13=(14,0.0)
-14=(0,0.19997428)
-14=(13,0.09998714)
-14=(14,0.60005146)
-11=(3,0.0)
-11=(2,0.0)
-11=(10,3.2424927E-4)
-11=(1,3.2615662E-4)
-11=(6,0.0)
-11=(5,3.2615662E-4)
-11=(8,0.0)
-11=(11,1.0)
-11=(12,0.0)
-12=(3,0.0)
-12=(2,0.0)
-12=(10,3.2424927E-4)
-12=(1,3.2615662E-4)
-12=(6,0.0)
-12=(5,3.2615662E-4)
-12=(8,0.0)
-12=(11,0.0)
-12=(12,1.0)
+prVectors (enrConnComp size: 8):
+  src: 3 	 trg: 3 	 [blue, 0.19])
+  src: 3 	 trg: 10 	 [orange, 0.25])
+  src: 3 	 trg: 1 	 [blue, 0.23])
+  src: 3 	 trg: 9 	 [green, 0.14])
+  src: 3 	 trg: 8 	 [green, 0.02])
+  src: 3 	 trg: 13 	 [orange, 0.0])
+  src: 3 	 trg: 11 	 [orange, 0.04])
+  src: 3 	 trg: 12 	 [orange, 0.04])
+  src: 1 	 trg: 3 	 [blue, 0.0])
+  src: 1 	 trg: 10 	 [orange, 0.37])
+  src: 1 	 trg: 1 	 [blue, 0.63])
+  src: 1 	 trg: 9 	 [green, 0.0])
+  src: 1 	 trg: 8 	 [green, 0.0])
+  src: 1 	 trg: 13 	 [orange, 0.0])
+  src: 1 	 trg: 11 	 [orange, 0.0])
+  src: 1 	 trg: 12 	 [orange, 0.0])
+  src: 10 	 trg: 3 	 [blue, 0.0])
+  src: 10 	 trg: 10 	 [orange, 0.63])
+  src: 10 	 trg: 1 	 [blue, 0.37])
+  src: 10 	 trg: 9 	 [green, 0.0])
+  src: 10 	 trg: 8 	 [green, 0.0])
+  src: 10 	 trg: 13 	 [orange, 0.0])
+  src: 10 	 trg: 11 	 [orange, 0.0])
+  src: 10 	 trg: 12 	 [orange, 0.0])
+  src: 9 	 trg: 3 	 [blue, 0.06])
+  src: 9 	 trg: 10 	 [orange, 0.2])
+  src: 9 	 trg: 1 	 [blue, 0.15])
+  src: 9 	 trg: 9 	 [green, 0.26])
+  src: 9 	 trg: 8 	 [green, 0.03])
+  src: 9 	 trg: 13 	 [orange, 0.0])
+  src: 9 	 trg: 11 	 [orange, 0.06])
+  src: 9 	 trg: 12 	 [orange, 0.06])
+  src: 8 	 trg: 3 	 [blue, 0.0])
+  src: 8 	 trg: 10 	 [orange, 0.0])
+  src: 8 	 trg: 1 	 [blue, 0.0])
+  src: 8 	 trg: 9 	 [green, 0.0])
+  src: 8 	 trg: 8 	 [green, 0.15])
+  src: 8 	 trg: 13 	 [orange, 0.0])
+  src: 8 	 trg: 11 	 [orange, 0.0])
+  src: 8 	 trg: 12 	 [orange, 0.0])
+  src: 13 	 trg: 3 	 [blue, 0.0])
+  src: 13 	 trg: 10 	 [orange, 0.12])
+  src: 13 	 trg: 1 	 [blue, 0.03])
+  src: 13 	 trg: 9 	 [green, 0.01])
+  src: 13 	 trg: 8 	 [green, 0.0])
+  src: 13 	 trg: 13 	 [orange, 1.0])
+  src: 13 	 trg: 11 	 [orange, 0.0])
+  src: 13 	 trg: 12 	 [orange, 0.0])
+  src: 11 	 trg: 3 	 [blue, 0.04])
+  src: 11 	 trg: 10 	 [orange, 0.21])
+  src: 11 	 trg: 1 	 [blue, 0.27])
+  src: 11 	 trg: 9 	 [green, 0.14])
+  src: 11 	 trg: 8 	 [green, 0.02])
+  src: 11 	 trg: 13 	 [orange, 0.0])
+  src: 11 	 trg: 11 	 [orange, 0.19])
+  src: 11 	 trg: 12 	 [orange, 0.04])
+  src: 12 	 trg: 3 	 [blue, 0.04])
+  src: 12 	 trg: 10 	 [orange, 0.21])
+  src: 12 	 trg: 1 	 [blue, 0.27])
+  src: 12 	 trg: 9 	 [green, 0.14])
+  src: 12 	 trg: 8 	 [green, 0.02])
+  src: 12 	 trg: 13 	 [orange, 0.0])
+  src: 12 	 trg: 11 	 [orange, 0.04])
+  src: 12 	 trg: 12 	 [orange, 0.19])
 
+
+statistic means:
+  source: 3 	 page rank mean: 0.11290994
+  source: 10 	 page rank mean: 0.12500001
+  source: 1 	 page rank mean: 0.12500001
+  source: 9 	 page rank mean: 0.10328975
+  source: 8 	 page rank mean: 0.01875
+  source: 13 	 page rank mean: 0.14472367
+  source: 11 	 page rank mean: 0.11290995
+  source: 12 	 page rank mean: 0.11290995
+
+best friends:
+  src: 3 	 trg: 10 	 [orange, 0.25]
+  src: 10 	 trg: 1 	 [blue, 0.37]
+  src: 1 	 trg: 10 	 [orange, 0.37]
+  src: 9 	 trg: 10 	 [orange, 0.2]
+  src: 13 	 trg: 10 	 [orange, 0.12]
+  src: 11 	 trg: 1 	 [blue, 0.27]
+  src: 12 	 trg: 1 	 [blue, 0.27]
+
+worst friends:
+  src: 3 	 trg: 13 	 [orange, 0.0]
+  src: 10 	 trg: 3 	 [blue, 0.0]
+  src: 10 	 trg: 11 	 [orange, 0.0]
+  src: 10 	 trg: 8 	 [green, 0.0]
+  src: 10 	 trg: 9 	 [green, 0.0]
+  src: 10 	 trg: 13 	 [orange, 0.0]
+  src: 10 	 trg: 12 	 [orange, 0.0]
+  src: 1 	 trg: 13 	 [orange, 0.0]
+  src: 1 	 trg: 11 	 [orange, 0.0]
+  src: 1 	 trg: 9 	 [green, 0.0]
+  src: 1 	 trg: 12 	 [orange, 0.0]
+  src: 1 	 trg: 8 	 [green, 0.0]
+  src: 1 	 trg: 3 	 [blue, 0.0]
+  src: 9 	 trg: 13 	 [orange, 0.0]
+  src: 8 	 trg: 12 	 [orange, 0.0]
+  src: 8 	 trg: 9 	 [green, 0.0]
+  src: 8 	 trg: 11 	 [orange, 0.0]
+  src: 8 	 trg: 13 	 [orange, 0.0]
+  src: 8 	 trg: 3 	 [blue, 0.0]
+  src: 8 	 trg: 10 	 [orange, 0.0]
+  src: 8 	 trg: 1 	 [blue, 0.0]
+  src: 13 	 trg: 12 	 [orange, 0.0]
+  src: 13 	 trg: 8 	 [green, 0.0]
+  src: 13 	 trg: 3 	 [blue, 0.0]
+  src: 13 	 trg: 11 	 [orange, 0.0]
+  src: 11 	 trg: 13 	 [orange, 0.0]
+  src: 12 	 trg: 13 	 [orange, 0.0]
+
+--------
+enriched component:
+Edges:
+ (2,1,[1, 0.5])
+ (2,7,[0, 1.0])
+ (7,2,[0, 1.0])
+ (4,2,[1, 0.5])
+ (7,6,[1, 0.5])
+ (7,8,[1, 0.5])
+
+Vertices:
+ (2,[blue, 0.0])
+ (1,[blue, 0.0])
+ (4,[blue, 0.0])
+ (6,[green, 0.0])
+ (8,[green, 0.0])
+ (7,[green, 0.0])
+
+prVectors (enrConnComp size: 6):
+  src: 2 	 trg: 2 	 [blue, 0.2])
+  src: 2 	 trg: 1 	 [blue, 0.06])
+  src: 2 	 trg: 7 	 [green, 0.11])
+  src: 2 	 trg: 6 	 [green, 0.02])
+  src: 2 	 trg: 4 	 [blue, 0.0])
+  src: 2 	 trg: 8 	 [green, 0.02])
+  src: 1 	 trg: 2 	 [blue, 0.0])
+  src: 1 	 trg: 1 	 [blue, 0.15])
+  src: 1 	 trg: 7 	 [green, 0.0])
+  src: 1 	 trg: 6 	 [green, 0.0])
+  src: 1 	 trg: 4 	 [blue, 0.0])
+  src: 1 	 trg: 8 	 [green, 0.0])
+  src: 7 	 trg: 2 	 [blue, 0.08])
+  src: 7 	 trg: 1 	 [blue, 0.02])
+  src: 7 	 trg: 7 	 [green, 0.2])
+  src: 7 	 trg: 6 	 [green, 0.04])
+  src: 7 	 trg: 4 	 [blue, 0.0])
+  src: 7 	 trg: 8 	 [green, 0.04])
+  src: 6 	 trg: 2 	 [blue, 0.0])
+  src: 6 	 trg: 1 	 [blue, 0.0])
+  src: 6 	 trg: 7 	 [green, 0.0])
+  src: 6 	 trg: 6 	 [green, 0.15])
+  src: 6 	 trg: 4 	 [blue, 0.0])
+  src: 6 	 trg: 8 	 [green, 0.0])
+  src: 4 	 trg: 2 	 [blue, 0.0])
+  src: 4 	 trg: 1 	 [blue, 0.0])
+  src: 4 	 trg: 7 	 [green, 0.0])
+  src: 4 	 trg: 6 	 [green, 0.0])
+  src: 4 	 trg: 4 	 [blue, 1.0])
+  src: 4 	 trg: 8 	 [green, 0.0])
+  src: 8 	 trg: 2 	 [blue, 0.0])
+  src: 8 	 trg: 1 	 [blue, 0.0])
+  src: 8 	 trg: 7 	 [green, 0.0])
+  src: 8 	 trg: 6 	 [green, 0.0])
+  src: 8 	 trg: 4 	 [blue, 0.0])
+  src: 8 	 trg: 8 	 [green, 0.15])
+
+
+statistic means:
+  source: 2 	 page rank mean: 0.06904694
+  source: 1 	 page rank mean: 0.025
+  source: 7 	 page rank mean: 0.06502734
+  source: 6 	 page rank mean: 0.025
+  source: 4 	 page rank mean: 0.16707176
+  source: 8 	 page rank mean: 0.025
+
+best friends:
+  src: 2 	 trg: 7 	 [green, 0.11]
+  src: 7 	 trg: 2 	 [blue, 0.08]
+  src: 4 	 trg: 7 	 [green, 0.0]
+
+worst friends:
+  src: 2 	 trg: 4 	 [blue, 0.0]
+  src: 1 	 trg: 2 	 [blue, 0.0]
+  src: 1 	 trg: 8 	 [green, 0.0]
+  src: 1 	 trg: 6 	 [green, 0.0]
+  src: 1 	 trg: 4 	 [blue, 0.0]
+  src: 1 	 trg: 7 	 [green, 0.0]
+  src: 7 	 trg: 4 	 [blue, 0.0]
+  src: 6 	 trg: 2 	 [blue, 0.0]
+  src: 6 	 trg: 4 	 [blue, 0.0]
+  src: 6 	 trg: 1 	 [blue, 0.0]
+  src: 6 	 trg: 8 	 [green, 0.0]
+  src: 6 	 trg: 7 	 [green, 0.0]
+  src: 4 	 trg: 2 	 [blue, 0.0]
+  src: 4 	 trg: 6 	 [green, 0.0]
+  src: 4 	 trg: 8 	 [green, 0.0]
+  src: 8 	 trg: 6 	 [green, 0.0]
+  src: 8 	 trg: 4 	 [blue, 0.0]
+  src: 8 	 trg: 7 	 [green, 0.0]
+  src: 8 	 trg: 1 	 [blue, 0.0]
+  src: 8 	 trg: 2 	 [blue, 0.0]
+
+--------
+enriched component:
+Edges:
+ (10,1,[0, 1.0])
+ (2,1,[1, 0.5])
+ (5,1,[0, 1.0])
+ (3,1,[1, 0.5])
+ (6,5,[1, 0.5])
+ (10,5,[0, 1.0])
+ (8,5,[1, 0.5])
+ (1,5,[0, 1.0])
+ (5,10,[0, 1.0])
+ (11,10,[1, 0.5])
+ (12,10,[1, 0.5])
+ (1,10,[0, 1.0])
+
+Vertices:
+ (2,[blue, 0.0])
+ (3,[blue, 0.0])
+ (12,[orange, 0.0])
+ (11,[orange, 0.0])
+ (1,[blue, 0.0])
+ (6,[green, 0.0])
+ (8,[green, 0.0])
+ (5,[green, 0.0])
+ (10,[orange, 0.0])
+
+prVectors (enrConnComp size: 9):
+  src: 3 	 trg: 3 	 [blue, 1.0])
+  src: 3 	 trg: 2 	 [blue, 0.0])
+  src: 3 	 trg: 10 	 [orange, 0.07])
+  src: 3 	 trg: 1 	 [blue, 0.07])
+  src: 3 	 trg: 6 	 [green, 0.0])
+  src: 3 	 trg: 5 	 [green, 0.07])
+  src: 3 	 trg: 8 	 [green, 0.0])
+  src: 3 	 trg: 11 	 [orange, 0.0])
+  src: 3 	 trg: 12 	 [orange, 0.0])
+  src: 2 	 trg: 3 	 [blue, 0.0])
+  src: 2 	 trg: 2 	 [blue, 1.0])
+  src: 2 	 trg: 10 	 [orange, 0.07])
+  src: 2 	 trg: 1 	 [blue, 0.07])
+  src: 2 	 trg: 6 	 [green, 0.0])
+  src: 2 	 trg: 5 	 [green, 0.07])
+  src: 2 	 trg: 8 	 [green, 0.0])
+  src: 2 	 trg: 11 	 [orange, 0.0])
+  src: 2 	 trg: 12 	 [orange, 0.0])
+  src: 1 	 trg: 3 	 [blue, 0.0])
+  src: 1 	 trg: 2 	 [blue, 0.0])
+  src: 1 	 trg: 10 	 [orange, 0.3])
+  src: 1 	 trg: 1 	 [blue, 0.4])
+  src: 1 	 trg: 6 	 [green, 0.0])
+  src: 1 	 trg: 5 	 [green, 0.3])
+  src: 1 	 trg: 8 	 [green, 0.0])
+  src: 1 	 trg: 11 	 [orange, 0.0])
+  src: 1 	 trg: 12 	 [orange, 0.0])
+  src: 10 	 trg: 3 	 [blue, 0.0])
+  src: 10 	 trg: 2 	 [blue, 0.0])
+  src: 10 	 trg: 10 	 [orange, 0.4])
+  src: 10 	 trg: 1 	 [blue, 0.3])
+  src: 10 	 trg: 6 	 [green, 0.0])
+  src: 10 	 trg: 5 	 [green, 0.3])
+  src: 10 	 trg: 8 	 [green, 0.0])
+  src: 10 	 trg: 11 	 [orange, 0.0])
+  src: 10 	 trg: 12 	 [orange, 0.0])
+  src: 6 	 trg: 3 	 [blue, 0.0])
+  src: 6 	 trg: 2 	 [blue, 0.0])
+  src: 6 	 trg: 10 	 [orange, 0.07])
+  src: 6 	 trg: 1 	 [blue, 0.07])
+  src: 6 	 trg: 6 	 [green, 1.0])
+  src: 6 	 trg: 5 	 [green, 0.07])
+  src: 6 	 trg: 8 	 [green, 0.0])
+  src: 6 	 trg: 11 	 [orange, 0.0])
+  src: 6 	 trg: 12 	 [orange, 0.0])
+  src: 5 	 trg: 3 	 [blue, 0.0])
+  src: 5 	 trg: 2 	 [blue, 0.0])
+  src: 5 	 trg: 10 	 [orange, 0.3])
+  src: 5 	 trg: 1 	 [blue, 0.3])
+  src: 5 	 trg: 6 	 [green, 0.0])
+  src: 5 	 trg: 5 	 [green, 0.4])
+  src: 5 	 trg: 8 	 [green, 0.0])
+  src: 5 	 trg: 11 	 [orange, 0.0])
+  src: 5 	 trg: 12 	 [orange, 0.0])
+  src: 8 	 trg: 3 	 [blue, 0.0])
+  src: 8 	 trg: 2 	 [blue, 0.0])
+  src: 8 	 trg: 10 	 [orange, 0.07])
+  src: 8 	 trg: 1 	 [blue, 0.07])
+  src: 8 	 trg: 6 	 [green, 0.0])
+  src: 8 	 trg: 5 	 [green, 0.07])
+  src: 8 	 trg: 8 	 [green, 1.0])
+  src: 8 	 trg: 11 	 [orange, 0.0])
+  src: 8 	 trg: 12 	 [orange, 0.0])
+  src: 11 	 trg: 3 	 [blue, 0.0])
+  src: 11 	 trg: 2 	 [blue, 0.0])
+  src: 11 	 trg: 10 	 [orange, 0.07])
+  src: 11 	 trg: 1 	 [blue, 0.07])
+  src: 11 	 trg: 6 	 [green, 0.0])
+  src: 11 	 trg: 5 	 [green, 0.07])
+  src: 11 	 trg: 8 	 [green, 0.0])
+  src: 11 	 trg: 11 	 [orange, 1.0])
+  src: 11 	 trg: 12 	 [orange, 0.0])
+  src: 12 	 trg: 3 	 [blue, 0.0])
+  src: 12 	 trg: 2 	 [blue, 0.0])
+  src: 12 	 trg: 10 	 [orange, 0.07])
+  src: 12 	 trg: 1 	 [blue, 0.07])
+  src: 12 	 trg: 6 	 [green, 0.0])
+  src: 12 	 trg: 5 	 [green, 0.07])
+  src: 12 	 trg: 8 	 [green, 0.0])
+  src: 12 	 trg: 11 	 [orange, 0.0])
+  src: 12 	 trg: 12 	 [orange, 1.0])
+
+
+statistic means:
+  source: 3 	 page rank mean: 0.13298604
+  source: 2 	 page rank mean: 0.13298604
+  source: 10 	 page rank mean: 0.11111113
+  source: 1 	 page rank mean: 0.11111113
+  source: 6 	 page rank mean: 0.13298604
+  source: 5 	 page rank mean: 0.11111113
+  source: 8 	 page rank mean: 0.13298604
+  source: 11 	 page rank mean: 0.13298604
+  source: 12 	 page rank mean: 0.13298604
+
+best friends:
+  src: 3 	 trg: 5 	 [green, 0.07]
+  src: 3 	 trg: 10 	 [orange, 0.07]
+  src: 2 	 trg: 5 	 [green, 0.07]
+  src: 2 	 trg: 10 	 [orange, 0.07]
+  src: 10 	 trg: 1 	 [blue, 0.3]
+  src: 10 	 trg: 5 	 [green, 0.3]
+  src: 1 	 trg: 5 	 [green, 0.3]
+  src: 1 	 trg: 10 	 [orange, 0.3]
+  src: 6 	 trg: 1 	 [blue, 0.07]
+  src: 6 	 trg: 10 	 [orange, 0.07]
+  src: 5 	 trg: 10 	 [orange, 0.3]
+  src: 5 	 trg: 1 	 [blue, 0.3]
+  src: 8 	 trg: 10 	 [orange, 0.07]
+  src: 8 	 trg: 1 	 [blue, 0.07]
+  src: 11 	 trg: 1 	 [blue, 0.07]
+  src: 11 	 trg: 5 	 [green, 0.07]
+  src: 12 	 trg: 5 	 [green, 0.07]
+  src: 12 	 trg: 1 	 [blue, 0.07]
+
+worst friends:
+  src: 3 	 trg: 12 	 [orange, 0.0]
+  src: 3 	 trg: 6 	 [green, 0.0]
+  src: 3 	 trg: 2 	 [blue, 0.0]
+  src: 3 	 trg: 8 	 [green, 0.0]
+  src: 3 	 trg: 11 	 [orange, 0.0]
+  src: 2 	 trg: 12 	 [orange, 0.0]
+  src: 2 	 trg: 3 	 [blue, 0.0]
+  src: 2 	 trg: 8 	 [green, 0.0]
+  src: 2 	 trg: 6 	 [green, 0.0]
+  src: 2 	 trg: 11 	 [orange, 0.0]
+  src: 10 	 trg: 3 	 [blue, 0.0]
+  src: 10 	 trg: 2 	 [blue, 0.0]
+  src: 10 	 trg: 11 	 [orange, 0.0]
+  src: 10 	 trg: 12 	 [orange, 0.0]
+  src: 10 	 trg: 6 	 [green, 0.0]
+  src: 10 	 trg: 8 	 [green, 0.0]
+  src: 1 	 trg: 3 	 [blue, 0.0]
+  src: 1 	 trg: 2 	 [blue, 0.0]
+  src: 1 	 trg: 12 	 [orange, 0.0]
+  src: 1 	 trg: 11 	 [orange, 0.0]
+  src: 1 	 trg: 6 	 [green, 0.0]
+  src: 1 	 trg: 8 	 [green, 0.0]
+  src: 6 	 trg: 2 	 [blue, 0.0]
+  src: 6 	 trg: 3 	 [blue, 0.0]
+  src: 6 	 trg: 11 	 [orange, 0.0]
+  src: 6 	 trg: 8 	 [green, 0.0]
+  src: 6 	 trg: 12 	 [orange, 0.0]
+  src: 5 	 trg: 2 	 [blue, 0.0]
+  src: 5 	 trg: 3 	 [blue, 0.0]
+  src: 5 	 trg: 6 	 [green, 0.0]
+  src: 5 	 trg: 12 	 [orange, 0.0]
+  src: 5 	 trg: 11 	 [orange, 0.0]
+  src: 5 	 trg: 8 	 [green, 0.0]
+  src: 8 	 trg: 6 	 [green, 0.0]
+  src: 8 	 trg: 11 	 [orange, 0.0]
+  src: 8 	 trg: 2 	 [blue, 0.0]
+  src: 8 	 trg: 3 	 [blue, 0.0]
+  src: 8 	 trg: 12 	 [orange, 0.0]
+  src: 11 	 trg: 3 	 [blue, 0.0]
+  src: 11 	 trg: 6 	 [green, 0.0]
+  src: 11 	 trg: 2 	 [blue, 0.0]
+  src: 11 	 trg: 12 	 [orange, 0.0]
+  src: 11 	 trg: 8 	 [green, 0.0]
+  src: 12 	 trg: 8 	 [green, 0.0]
+  src: 12 	 trg: 11 	 [orange, 0.0]
+  src: 12 	 trg: 6 	 [green, 0.0]
+  src: 12 	 trg: 2 	 [blue, 0.0]
+  src: 12 	 trg: 3 	 [blue, 0.0]
+
+--------
+enriched component:
+Edges:
+ (0,14,[0, 1.0])
+ (14,0,[0, 1.0])
+ (14,13,[1, 0.5])
+
+Vertices:
+ (14,[orange, 0.0])
+ (13,[orange, 0.0])
+ (0,[blue, 0.0])
+
+prVectors (enrConnComp size: 3):
+  src: 0 	 trg: 0 	 [blue, 0.31])
+  src: 0 	 trg: 13 	 [orange, 0.08])
+  src: 0 	 trg: 14 	 [orange, 0.24])
+  src: 13 	 trg: 0 	 [blue, 0.0])
+  src: 13 	 trg: 13 	 [orange, 0.15])
+  src: 13 	 trg: 14 	 [orange, 0.0])
+  src: 14 	 trg: 0 	 [blue, 0.16])
+  src: 14 	 trg: 13 	 [orange, 0.08])
+  src: 14 	 trg: 14 	 [orange, 0.31])
+
+
+statistic means:
+  source: 0 	 page rank mean: 0.20877397
+  source: 13 	 page rank mean: 0.05
+  source: 14 	 page rank mean: 0.18247193
+
+best friends:
+  src: 0 	 trg: 14 	 [orange, 0.24]
+  src: 14 	 trg: 0 	 [blue, 0.16]
+
+worst friends:
+  src: 0 	 trg: 13 	 [orange, 0.08]
+  src: 13 	 trg: 14 	 [orange, 0.0]
+  src: 13 	 trg: 0 	 [blue, 0.0]
+  src: 14 	 trg: 13 	 [orange, 0.08]
