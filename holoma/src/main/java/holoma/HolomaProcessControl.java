@@ -1,26 +1,64 @@
 package holoma;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-//
-import org.apache.commons.lang.time.StopWatch;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.graph.Graph;
-import org.apache.flink.graph.Vertex;
-import org.apache.log4j.Logger;
-
 import holoma.complexDatatypes.EdgeValue;
+import holoma.complexDatatypes.Vertex2RankMap;
 import holoma.complexDatatypes.VertexValue;
 import holoma.connComp.ConnCompCalculation;
 import holoma.connComp.ConnCompEnrichment;
 import holoma.graph.GraphCreationPoint;
-import holoma.graph.GraphVisualisation;
 import holoma.ppr.PersonalizedPageRank;
-import holoma.ppr.PPREvaluation;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.GroupReduceFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.LocalEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.graph.Graph;
+import org.apache.flink.graph.Vertex;
+import org.apache.flink.graph.VertexJoinFunction;
+import org.apache.flink.util.Collector;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import tools.io.InputFromConsole;
-import tools.io.OutputToFile;
 
 /**
  * This class manages the overall workflow 
@@ -37,15 +75,23 @@ public class HolomaProcessControl {
 	private static final StopWatch stopWatch = new StopWatch();	
 
 	
+	
 	/** Context in which the program is currently executed. */
-	static final ExecutionEnvironment ENV = ExecutionEnvironment.getExecutionEnvironment();
 	
 	
 	//##################################################################
 	//############### main #############################################
 	//##################################################################
 	public static void main(String[] args) {
+		ExecutionEnvironment ENV;
+		//ENV= ExecutionEnvironment.getExecutionEnvironment();
+		 Configuration conf = new Configuration();
+		  conf.setLong("taskmanager.network.numberOfBuffers", 60000L);
+		  conf.setBoolean("taskmanager.debug.memory.startLogThread", true);
+		  conf.setLong("taskmanager.network.bufferSizeInBytes", 60000L);
+		  ENV =  new LocalEnvironment(conf); 
 		
+		//PropertyConfigurator.configure("log4j.properties");
 		// #0: Showing settings
 		System.out.println("HolOMa (Holistic Ontology Mapping)");
 		System.out.println("-------------------------------------------------------------");		
@@ -60,18 +106,22 @@ public class HolomaProcessControl {
 		System.out.println("max. iterations:               "+HolomaConstants.MAX_ITER);
 		System.out.println("no singleton components:       "+HolomaConstants.NO_SINGLETON_CONNCOMP);
 		System.out.println("-------------------------------------------------------------\n");
+		String path = null;
+		if (args.length==1){
+			path = args[0];
+		}
+	
 		
-		startTime();
 		
 		
 		// #1: Creating the graph
 		GraphCreationPoint creation = new GraphCreationPoint(ENV);
-		Graph<String, String, Integer> graph = null;
+		Graph<String, VertexValue, EdgeValue> graph;
 		
 		while (true) {
 			char c = InputFromConsole.readChar("Load graph from ontology files ('o') or from existing edge and vertex file ('e')? \n >> ");
-			if (c=='o') { 
-				graph = creation.getGraphFromOntologyFiles();
+			if (c=='o'&&path!=null) { 
+				graph = creation.getGraphFromOntologyFiles(path);
 				break;
 			}
 			if (c=='e') {
@@ -79,84 +129,75 @@ public class HolomaProcessControl {
 				break;
 			}
 		}
-		
+		startTime();
 		// #2 Calculating connected components
 		System.out.println("\nCalculating Connected Components ... ");
-		ConnCompCalculation connCompCalc = new ConnCompCalculation(graph);
-		Map<Long, Set<String>> connCompts = connCompCalc.calculateConnComp_naive(); 		
-		if (connCompts==null || connCompts.size()==0) {
-			System.out.println("No connected components.");
-			System.out.println("\n--- End ---");
-			System.exit(0);
-		}		
-		// save connected components
-		System.out.println("printing to "+HolomaConstants.CONNCOMP_FILE_LOC+" ... ");
-		GraphVisualisation.printConnectedComponents(connCompts);
-		
-		// #3: Analyzing connected components
-		System.out.println("\nAnalysing connected components ... ");
-		String analysisResult = connCompCalc.analyseConnComponents();
-		OutputToFile out = new OutputToFile(100, HolomaConstants.ANALYSIS_CC_FILE_LOC);
-		out.addToBuff(analysisResult); out.close();		
-		
-		// #4: Determine PageRank
-		System.out.println("\nEnriching connected components ... ");
-		
-		out = new OutputToFile(100, HolomaConstants.ANALYSIS_PPR_FILE_LOC);
-		out.addToBuff("depth: "+HolomaConstants.ENR_DEPTH+
-				", #Iter: "+HolomaConstants.MAX_ITER_PPR+
-				", teleportProb: "+HolomaConstants.TELEPORT_PROB);
-		// iterate over each connected component
-		for (long key : connCompts.keySet()) {
-			ConnCompEnrichment enr = 
-					new ConnCompEnrichment(HolomaConstants.ENR_DEPTH, graph, HolomaConstants.MAP_WEIGHT, ENV);
-			PersonalizedPageRank pageRank = new PersonalizedPageRank();
-			Set<String> connComp = connCompts.get(key);
-			int connComptSize = connComp.size();
-			// check whether component has critical size
-			if (connComptSize >= HolomaConstants.MIN_CC_SIZE && connComptSize <= HolomaConstants.MAX_CC_SIZE) {
-				
-				// #4.1: get enriched connected component
-				Graph<String, VertexValue, EdgeValue> enrConnComp = enr.getEnrichedConnComp(connComp);
-				out.addToBuff("\n--------\nenriched component:");
-				out.addToBuff(GraphVisualisation.showEdgesVertices(enrConnComp));
-				try {
-					// #4.2: calculate page rank
-					pageRank.setEnrConnComp(enrConnComp);
-					pageRank.start();
-					Map<String, List<Vertex<String, VertexValue>>> prVectors = pageRank.getMapCalcPageRanks();
-					
-					// #4.3: evaluate the page-ranked component
-					PPREvaluation pprEval = new PPREvaluation(enrConnComp, prVectors);
-					out.addToBuff(pprEval.getPrVectorsAsString());
-					Map<String, Float> statistMeans = pprEval.getStatistMeans();
-					out.addToBuff("\nstatistic means:");
-					for (String source : statistMeans.keySet()) {
-						out.addToBuff("  source: "+source+" \t page rank mean: "+statistMeans.get(source));
+		ConnCompCalculation connCompCalc = new ConnCompCalculation(graph,ENV);	
+		DataSet<Vertex<String, Long>> comComptsDataset = connCompCalc.calculateConnComp();
+		//transformation necessary to join with graph vertices
+		DataSet<Tuple2<String,VertexValue>> compDataSet = comComptsDataset.map(new MapFunction<Vertex<String,Long>,
+				Tuple2<String,VertexValue>>(){
+					private static final long serialVersionUID = -7970584938311634001L;
+
+					@Override
+					public Tuple2<String, VertexValue> map(
+							Vertex<String, Long> value) throws Exception {
+						// TODO Auto-generated method stub
+						VertexValue vv = new VertexValue();
+						vv.setConComponent(value.getValue());
+						return new Tuple2<String,VertexValue>(value.f0,vv);
 					}
-					Map<String, Set<Tuple2<String, VertexValue>>> bestFriends = pprEval.getTrueBestFriends();
-					out.addToBuff("\nbest friends:");
-					for (String src : bestFriends.keySet()) {
-						for (Tuple2<String, VertexValue> trg : bestFriends.get(src))
-							out.addToBuff("  src: "+src+" \t trg: "+trg.f0+" \t "+trg.f1);
-					}
-					Map<String, Set<Tuple2<String, VertexValue>>> worstFriends = pprEval.getWorstFriends();
-					out.addToBuff("\nworst friends:");
-					for (String src : worstFriends.keySet()) {
-						for (Tuple2<String, VertexValue> trg : worstFriends.get(src))
-							out.addToBuff("  src: "+src+" \t trg: "+trg.f0+" \t "+trg.f1);
-					}
-				} catch (Exception e) {
-					System.err.println("Exception during page rank calculation.");
-					e.printStackTrace();
-				}				
-			} // end 'if' of critical component size
-		} // end 'for' of iteration over connected components
-		// save pagerank results
-		out.close();
+			
+		});
+		// join with vertices to add the set of component ids for each vertex
+		graph = graph.joinWithVertices(compDataSet, new VertexJoinFunction<VertexValue, VertexValue>(){
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public VertexValue vertexJoin(VertexValue vertexValue,
+					VertexValue inputValue) throws Exception {
+				// TODO Auto-generated method stub
+				vertexValue.getCompIds().add(inputValue.getConComponent());
+				return vertexValue;
+			}
+			
+		});
 		
+		//propagate the component ids of a vertex in a component to the vertices in the neighborhood 
+		ConnCompEnrichment enr = new ConnCompEnrichment();
+		//vertex centric iteration 
+		Graph <String,VertexValue,EdgeValue> graph2 = enr.enrichConnectedComponent(HolomaConstants.ENR_DEPTH, graph,ENV);	
+	
 		
-		
+		PersonalizedPageRank pageRank = new PersonalizedPageRank();
+		DataSet<Tuple4<Long,String,String,Float>> result = pageRank.calculatePPrForEachCompAndSource(graph2);
+		Map<Long,Map<String,Vertex2RankMap>> resultMap = new HashMap<Long,Map<String,Vertex2RankMap>>();
+		try {
+			List<Tuple4<Long,String,String,Float>> list = result.collect();
+			for (Tuple4<Long,String,String,Float> t : list){
+				Map<String,Vertex2RankMap> vMap = resultMap.get(t.f0);
+				if (vMap ==null){
+					 vMap = new HashMap<String,Vertex2RankMap>();
+					resultMap.put(t.f0, vMap);
+				}
+				Vertex2RankMap verMap = vMap.get(t.f2);
+				if (verMap==null){
+					verMap = new Vertex2RankMap();
+					vMap.put(t.f2, verMap);
+				}
+				verMap.addRankForVertex(t.f1, t.f3);
+			}
+			
+			for (Entry<Long,Map<String,Vertex2RankMap>>e:resultMap.entrySet()){
+				log.info("component:"+e.getKey());
+				for (Entry<String,Vertex2RankMap>v: e.getValue().entrySet())
+					log.info(v.toString());
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		printTime();
 		System.out.println("\n--- End ---");
 	}

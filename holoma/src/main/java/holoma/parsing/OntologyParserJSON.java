@@ -1,5 +1,8 @@
 package holoma.parsing;
 
+import holoma.complexDatatypes.EdgeValue;
+import holoma.complexDatatypes.VertexValue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,9 +29,9 @@ public class OntologyParserJSON {
 	/** The name of the current ontology which is being parsed. */
 	private final String ONT_NAME;
 	/** The set of the edges. */
-	private Set<Edge<String, Integer>> edgeSet = new HashSet<Edge<String, Integer>>();
+	private Set<Edge<String, EdgeValue>> edgeSet = new HashSet<Edge<String, EdgeValue>>();
 	/** The set of the vertices. */
-	private Set<Vertex<String, String>> vertexSet = new HashSet<Vertex<String, String>>();
+	private Set<Vertex<String, VertexValue>> vertexSet = new HashSet<Vertex<String, VertexValue>>();
 	
 	
 	
@@ -46,15 +49,15 @@ public class OntologyParserJSON {
 	 * Get the set of edges.
 	 * @return Edges.
 	 */
-	public Set<Edge<String, Integer>> getEdgeSet ( ) { return this.edgeSet; }
+	public Set<Edge<String, EdgeValue>> getEdgeSet ( ) { return this.edgeSet; }
 	
 	/**
 	 * Get the set of vertices.
 	 * @return Vertices.
 	 */
-	public Set<Vertex<String, String>> getVertexSet ( ) { return this.vertexSet; }
+	public Set<Vertex<String, VertexValue>> getVertexSet ( ) { return this.vertexSet; }
 	
-	
+	static Long component_id =0l;
 	
 	/** Parses a JSON file which contains ontological information. */
 	public void doParsing () {
@@ -78,7 +81,8 @@ public class OntologyParserJSON {
 					String graphID = graph_dependency_object.get("@id").toString();
 					graphID = enrichShortHandNode(graphID);
 			
-					Vertex<String, String> vertex = new Vertex<String, String>(graphID, this.ONT_NAME);
+					Vertex<String, VertexValue> vertex = new Vertex<String, VertexValue>(graphID,new VertexValue(this.ONT_NAME,0));
+					vertex.f1.setConComponent(component_id++);
 					this.vertexSet.add(vertex);
 					
 					// get subclasses
@@ -88,7 +92,10 @@ public class OntologyParserJSON {
 						String subclass = enrichShortHandNode(graph_dependency_object.get("subClassOf").toString());
 						// blank nodes are ignored
 						if (!subclass.startsWith("_:")) {
-							Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
+							Edge<String, EdgeValue> edge = new Edge<String, EdgeValue>(graphID, subclass, new EdgeValue(1,0.5f,this.ONT_NAME));
+							//TODO check if it works
+							Edge<String, EdgeValue> revEdge = new Edge<String, EdgeValue>(subclass, graphID, new EdgeValue(2,0.5f,this.ONT_NAME));
+							edgeSet.add(revEdge);
 							this.edgeSet.add(edge);
 						}
 					}
@@ -99,8 +106,11 @@ public class OntologyParserJSON {
 							String subclass = enrichShortHandNode(jArray.getString(j));
 							// blank nodes are ignored
 							if (!subclass.startsWith("_:")) {
-								Edge<String, Integer> edge = new Edge<String, Integer>(graphID, subclass, 1);
+								Edge<String, EdgeValue> edge = new Edge<String, EdgeValue>(graphID, subclass,  new EdgeValue(1,0.5f,this.ONT_NAME));
+		//TODO check if it works
+								Edge<String,EdgeValue> revEdge = new Edge<String,EdgeValue>(subclass,graphID,new EdgeValue(2,0.5f,this.ONT_NAME));
 								this.edgeSet.add(edge);
+								this.edgeSet.add(revEdge);
 							} // end if
 						} // end for j
 					} // end else

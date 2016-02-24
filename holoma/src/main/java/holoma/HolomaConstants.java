@@ -31,6 +31,9 @@ public abstract class HolomaConstants {
 	
 	/** Name of the mapping file (same path as ontology files). */
 	public static final String MAPPING_FILE_UNCOLOR = "mapping.csv";
+	public static final String MAPPING_OAEI = "mapping_oaei.csv";
+	public static final String MAPPING_OAEI_SMALL = "mapping_oaei_small.csv";
+	public static final String MAPPING_OAEI_WO_UBERON = "mapping_oaei_wo_uberon.csv";
 	public static final String MAPPING_FILE = "mapping_color.csv"; // for testing
 	
 	
@@ -46,6 +49,11 @@ public abstract class HolomaConstants {
 		"chebi.owljsonLD.json",
 		"fma.owljsonLD.json",
 		"NCITNCBO.ttljsonLD.json"
+	};
+	public static final String[] ONTOLOGY_FILES_OAEI = {
+		"oaei2012_FMA_whole_ontology.owljsonLD.json",
+		"oaei2012_NCI_whole_ontology.owljsonLD.json",
+		"oaei2012_SNOMED_extended_overlapping_fma_nci.owljsonLD.json"
 	};
 	
 	public static final String[] ONTOLOGY_FILES = { // for testing
@@ -69,13 +77,13 @@ public abstract class HolomaConstants {
 	public static final boolean IS_PRINTING_VALID_EDGVERT = false;
 	
 	/** Maximum number of iteration steps for connected components. */
-	public static final int MAX_ITER = 10;
+	public static final int MAX_ITER = 1000;
 	
 	/** Singletons of connected components are eliminated iff 'true'. */
 	public static final boolean NO_SINGLETON_CONNCOMP = true;
 	
 	/** Depth of the enrichment of connected components. */
-	public static final int ENR_DEPTH = 1;
+	public static final int ENR_DEPTH = 2;
 	
 	/** Weights for is-a ('1') and same-as ('0') edges. */
 	public static final Map<Integer, Float> MAP_WEIGHT = new HashMap<Integer, Float>();
@@ -94,7 +102,7 @@ public abstract class HolomaConstants {
 	public static final float TELEPORT_PROB = 0.15f;
 	
 	/** Maximum number of iteration steps for personalized pagerank. */
-	public static final int MAX_ITER_PPR = 10;
+	public static final int MAX_ITER_PPR = 100;
 	
 
 }

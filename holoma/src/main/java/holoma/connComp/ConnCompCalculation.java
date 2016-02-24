@@ -7,15 +7,24 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.FlatJoinFunction;
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.Vertex;
+import org.apache.flink.graph.VertexJoinFunction;
 import org.apache.flink.graph.library.ConnectedComponents;
 import org.apache.flink.graph.spargel.VertexCentricConfiguration;
+import org.apache.flink.util.Collector;
+import org.apache.log4j.Logger;
 
 import holoma.HolomaConstants;
+import holoma.complexDatatypes.EdgeValue;
+import holoma.complexDatatypes.VertexValue;
 
 /**
  * This class provides methods for 
@@ -23,32 +32,41 @@ import holoma.HolomaConstants;
  * @author max
  *
  */
-@SuppressWarnings("serial")
-public class ConnCompCalculation implements Serializable {
+
+public class ConnCompCalculation  implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7414570588346708760L;
+	transient Logger log = Logger.getLogger(getClass());
 	/** The graph. */
-	transient private final Graph<String, String, Integer> GRAPH;	
+	private  transient  Graph<String, VertexValue, EdgeValue> GRAPH;	
 	/** Graph for calculating connected components. */
-	transient private Graph<String, Long, Integer> componentGraph; 
+	private  transient Graph<String, Long, EdgeValue> componentGraph; 
 	/** Map from component ID to its set of vertex IDs.*/
 	private Map<Long, Set<String>> connCompts = new HashMap<Long, Set<String>>();
 	
+	private ExecutionEnvironment env;
+	private 	DataSet<Vertex<String, Long>> comComptsDataset;
 	
-	/**
-	 * Constructor.
-	 * @param graph The graph which shall be evaluated.
-	 */
-	public ConnCompCalculation (Graph<String, String, Integer> graph) {
-		this.GRAPH = graph;
+	
+	
+	
+	
+	
+	public ConnCompCalculation(Graph<String, VertexValue, EdgeValue> graph2, ExecutionEnvironment env) {
+		this.GRAPH = graph2;
+		this.env =env;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Returns the graph on which the connected components are calculated.
 	 * @return Graph for connected components calculation.
 	 */
-	public Graph<String, Long, Integer> getComponentGraph () { return this.componentGraph; }
+	public Graph<String, Long, EdgeValue> getComponentGraph () { return this.componentGraph; }
 	
 		
 	
@@ -60,6 +78,7 @@ public class ConnCompCalculation implements Serializable {
 		try {
 			// exactly one ontology: no connected components
 			connCompts = (HolomaConstants.ONTOLOGY_FILES.length<=1) ? null : getSortedConnComp ();
+			
 		} catch (Exception e){
 			System.err.println("Error while calculating connected components.");
 			e.printStackTrace();
@@ -68,6 +87,21 @@ public class ConnCompCalculation implements Serializable {
 		}
 		
 		return connCompts;				
+	}
+	
+	public DataSet<Vertex<String, Long>> calculateConnComp () {
+		try {
+			// exactly one ontology: no connected components
+			this.comComptsDataset = this.getConnectedComponents();
+			
+		} catch (Exception e){
+			System.err.println("Error while calculating connected components.");
+			e.printStackTrace();
+			System.out.println("\nQuit program ... ");
+			System.exit(1);
+		}
+		
+		return comComptsDataset;				
 	}
 	
 	
@@ -95,33 +129,79 @@ public class ConnCompCalculation implements Serializable {
 		
 		DataSet<Vertex<String, Long>> verticesWithComponents = null;		
 		
-		// #1: Initialize each vertex value with its own and unique component ID
-		this.componentGraph = this.GRAPH.mapVertices(
-				new MapFunction<Vertex<String, String>, Long>() {
-					public Long map (Vertex<String, String> value) {
-						// the component ID is the hashCode of the key
-						return (long) value.getId().hashCode();
-					}
-				});	
-				
-		// #2: create subgraph: only edges with value "equal"
-		this.componentGraph = this.componentGraph.filterOnEdges(
-				new FilterFunction<Edge<String, Integer>>() {
-					public boolean filter(Edge<String, Integer> edge) {
+		this.GRAPH = this.GRAPH.filterOnEdges(
+				new FilterFunction<Edge<String, EdgeValue>>() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1505232572947290638L;
+
+					public boolean filter(Edge<String, EdgeValue> edge) {
 						// keep only edges that denotes an equal relation
-						return (edge.getValue() == 0);
+						return (edge.getValue().type == 0);
 					}
 				});
+		
+		// #1: Initialize each vertex value with its own and unique component ID
+		
+		System.setProperty("sun.io.serialization.extendedDebugInfo","true");
+		DataSet<Edge<String,EdgeValue>> filteredEdges = GRAPH.getEdges().filter(new FilterFunction<Edge<String,EdgeValue>>(){
+
+			@Override
+			public boolean filter(Edge<String, EdgeValue> value)
+					throws Exception {
+				// TODO Auto-generated method stub
+				return value.getValue().getType()==0;
+			}
+			
+		});
+		DataSet<Vertex<String,Long>> corNodes = GRAPH.getVertices().join(GRAPH.getEdgeIds()).where(0).
+				equalTo(0).with(new FlatJoinFunction<Vertex<String,VertexValue>,Tuple2<String,String>,Vertex<String,Long>>(){
+
+					@Override
+					public void join(Vertex<String, VertexValue> first,
+							Tuple2<String, String> second,
+							Collector<Vertex<String, Long>> out)
+							throws Exception {
+						Vertex<String,Long> v = new Vertex <String,Long> ();
+						v.f0 = first.f0;
+						v.f1 = (long) first.f1.getConComponent();
+						out.collect(v);
+					}
+					
+				}).distinct().union(GRAPH.getVertices().join(GRAPH.getEdgeIds()).where(0).
+						equalTo(1).with(new FlatJoinFunction<Vertex<String,VertexValue>,Tuple2<String,String>,Vertex<String,Long>>(){
+
+							@Override
+							public void join(Vertex<String, VertexValue> first,
+									Tuple2<String, String> second,
+									Collector<Vertex<String, Long>> out)
+									throws Exception {
+								Vertex<String,Long> v = new Vertex <String,Long> ();
+								v.f0 = first.f0;
+								v.f1 = (long) first.f1.getConComponent();
+								out.collect(v);
+								
+							}
+							
+						}).distinct());
+		
+		
+		componentGraph = Graph.fromDataSet(corNodes, filteredEdges, env);
+		
+		
+		//this.GRAPH.joinWithVertices(inputDataSet, vertexJoinFunction)		
+		// #2: create subgraph: only edges with value "equal"
+		
 
 		// #3: calculate the connected components
 		try {
 			verticesWithComponents = this.componentGraph.run(
-					new ConnectedComponents<String, Integer>(HolomaConstants.MAX_ITER)
+					new ConnectedComponents<String, EdgeValue>(HolomaConstants.MAX_ITER)
 					);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
-		
 		return verticesWithComponents;
 	}
 	
@@ -139,6 +219,7 @@ public class ConnCompCalculation implements Serializable {
 		
 		try {
 			for (Vertex<String, Long> vertex : verticesWithComponents.collect()) {
+				
 				// component has already occurred: add entry to existing hash map
 				if (connCompts.keySet().contains(vertex.f1))
 					connCompts.get(vertex.f1).add(vertex.f0);

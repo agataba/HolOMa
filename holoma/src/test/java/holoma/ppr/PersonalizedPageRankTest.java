@@ -50,7 +50,7 @@ public class PersonalizedPageRankTest {
 		
 		Graph<String, VertexValue, EdgeValue> component = Graph.fromCollection(vertexList, edgeList, env);
 		
-		this.ppr.setEnrConnComp(component);
+		//this.ppr.setEnrConnComp(component);
 	}
 
 	@Test
@@ -62,19 +62,19 @@ public class PersonalizedPageRankTest {
 	public void testCalculateOneSource() {
 		Vertex<String, VertexValue> source = new Vertex<String, VertexValue>("9", new VertexValue("green", 0f));
 		
-		try {
-			this.ppr.calculateOneSource(source);
-			Map<String, List<Vertex<String, VertexValue>>> map = this.ppr.getMapCalcPageRanks();
-			for (String src : map.keySet()) {
-				System.out.println("source: "+src);
-				for (Vertex<String, VertexValue> trg : map.get(src)) {
-					System.out.println("  target: "+trg.f0+": "+trg.f1.toString());
-				}
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			//this.ppr.calculateOneSource(source);
+//			Map<String, List<Vertex<String, VertexValue>>> map = this.ppr.getMapCalcPageRanks();
+//			for (String src : map.keySet()) {
+//				System.out.println("source: "+src);
+//				for (Vertex<String, VertexValue> trg : map.get(src)) {
+//					System.out.println("  target: "+trg.f0+": "+trg.f1.toString());
+//				}
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		fail("Not yet implemented");
 	}
