@@ -72,7 +72,7 @@ public class GraphCreationPoint {
 		
 		 // #1: Creating the graph		 
 		Graph<String, VertexValue, EdgeValue> graph = createGraph(edges, vertices);
-		
+		//pp.clear();
 		return graph;
 	}
 	

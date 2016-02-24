@@ -40,6 +40,7 @@ import java.util.Set;
 
 
 
+
 //
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -91,7 +92,7 @@ public class HolomaProcessControl {
 		  conf.setLong("taskmanager.network.bufferSizeInBytes", 60000L);
 		  ENV =  new LocalEnvironment(conf); 
 		
-		//PropertyConfigurator.configure("log4j.properties");
+		PropertyConfigurator.configure("log4j.properties");
 		// #0: Showing settings
 		System.out.println("HolOMa (Holistic Ontology Mapping)");
 		System.out.println("-------------------------------------------------------------");		
@@ -132,6 +133,7 @@ public class HolomaProcessControl {
 		startTime();
 		// #2 Calculating connected components
 		System.out.println("\nCalculating Connected Components ... ");
+		
 		ConnCompCalculation connCompCalc = new ConnCompCalculation(graph,ENV);	
 		DataSet<Vertex<String, Long>> comComptsDataset = connCompCalc.calculateConnComp();
 		//transformation necessary to join with graph vertices

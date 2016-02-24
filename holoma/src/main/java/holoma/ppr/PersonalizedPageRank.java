@@ -88,7 +88,6 @@ public class PersonalizedPageRank implements Serializable{
 
 			
 		});
-		
 		/*
 		 * Initialize the result map by setting the probability for the considered vertex to 1
 		 */
@@ -115,7 +114,7 @@ public class PersonalizedPageRank implements Serializable{
 		
 		
 		Graph<String,Map<Long,Vertex2RankMap>,EdgeValue> overallPagerankGraph = perReducedGraph.runVertexCentricIteration(new VertexPageRankUpdaterAll(HolomaConstants.TELEPORT_PROB),
-				new PageRankMessengerAll(), HolomaConstants.MAX_ITER_PPR);
+				new PageRankMessengerAll(), 10);
 		DataSet<Tuple4<Long,String,String,Float>> output = overallPagerankGraph.getVertices().flatMap(
 				new FlatMapFunction<Vertex<String,Map<Long,Vertex2RankMap>>,Tuple4<Long,String,String,Float>>(){
 			private static final long serialVersionUID = 1L;
