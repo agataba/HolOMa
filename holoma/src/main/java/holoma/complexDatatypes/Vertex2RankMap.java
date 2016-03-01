@@ -15,27 +15,28 @@ public class Vertex2RankMap implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -9000514950957147137L;
-	private Map<String,Float> ranking;
+	
+	private Map<Long,Float> ranking;
 	
 	public Vertex2RankMap (){
-		this.ranking = new HashMap<String,Float> ();
+		this.ranking = new HashMap<Long,Float> ();
 		
 	}
 	
-	public void addRankForVertex (String vid, Float rank){
+	public void addRankForVertex (Long vid, Float rank){
 		this.ranking.put(vid, rank);
 	}
 	
-	public Map<String,Float> getRankings(){
+	public Map<Long,Float> getRankings(){
 		return this.ranking;
 	}
 	
-	public void setRanking (Map<String,Float> map){
+	public void setRanking (Map<Long,Float> map){
 		this.ranking = map;
 	}
-	public Map<String,Float> copy(){
-		Map<String,Float> copy = new HashMap<String,Float>();
-		for (Entry<String,Float> e: this.ranking.entrySet()){
+	public Map<Long,Float> copy(){
+		Map<Long,Float> copy = new HashMap<Long,Float>();
+		for (Entry<Long,Float> e: this.ranking.entrySet()){
 			copy.put(e.getKey(), e.getValue());
 		}
 		return copy;

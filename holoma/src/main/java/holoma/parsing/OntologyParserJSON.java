@@ -29,9 +29,9 @@ public class OntologyParserJSON {
 	/** The name of the current ontology which is being parsed. */
 	private final String ONT_NAME;
 	/** The set of the edges. */
-	private Set<Edge<String, EdgeValue>> edgeSet = new HashSet<Edge<String, EdgeValue>>();
+	private Set<Edge<Long, Float>> edgeSet = new HashSet<Edge<Long, Float>>();
 	/** The set of the vertices. */
-	private Set<Vertex<String, VertexValue>> vertexSet = new HashSet<Vertex<String, VertexValue>>();
+	private Set<Vertex<Long, VertexValue>> vertexSet = new HashSet<Vertex<Long, VertexValue>>();
 	
 	
 	
@@ -49,13 +49,13 @@ public class OntologyParserJSON {
 	 * Get the set of edges.
 	 * @return Edges.
 	 */
-	public Set<Edge<String, EdgeValue>> getEdgeSet ( ) { return this.edgeSet; }
+	public Set<Edge<Long, Float>> getEdgeSet ( ) { return this.edgeSet; }
 	
 	/**
 	 * Get the set of vertices.
 	 * @return Vertices.
 	 */
-	public Set<Vertex<String, VertexValue>> getVertexSet ( ) { return this.vertexSet; }
+	public Set<Vertex<Long, VertexValue>> getVertexSet ( ) { return this.vertexSet; }
 	
 	static Long component_id =0l;
 	
@@ -80,8 +80,8 @@ public class OntologyParserJSON {
 					// get id
 					String graphID = graph_dependency_object.get("@id").toString();
 					graphID = enrichShortHandNode(graphID);
-			
-					Vertex<String, VertexValue> vertex = new Vertex<String, VertexValue>(graphID,new VertexValue(this.ONT_NAME,0));
+					long id = Dictionary.getInstance().getId(graphID);
+					Vertex<Long, VertexValue> vertex = new Vertex<Long, VertexValue>(id,new VertexValue(this.ONT_NAME,0));
 					vertex.f1.setConComponent(component_id++);
 					this.vertexSet.add(vertex);
 					
@@ -90,11 +90,12 @@ public class OntologyParserJSON {
 					// only one parent: field is a string
 					if (typeSubclassField.equals("java.lang.String")) {
 						String subclass = enrichShortHandNode(graph_dependency_object.get("subClassOf").toString());
+						long subId = Dictionary.getInstance().getId(subclass);
 						// blank nodes are ignored
 						if (!subclass.startsWith("_:")) {
-							Edge<String, EdgeValue> edge = new Edge<String, EdgeValue>(graphID, subclass, new EdgeValue(1,0.5f,this.ONT_NAME));
+							Edge<Long, Float> edge = new Edge<Long, Float>(id, subId,0.5f);
 							//TODO check if it works
-							Edge<String, EdgeValue> revEdge = new Edge<String, EdgeValue>(subclass, graphID, new EdgeValue(2,0.5f,this.ONT_NAME));
+							Edge<Long, Float> revEdge = new Edge<Long, Float>(subId, id, 0.5f);
 							edgeSet.add(revEdge);
 							this.edgeSet.add(edge);
 						}
@@ -104,11 +105,12 @@ public class OntologyParserJSON {
 						JSONArray jArray = graph_dependency_object.getJSONArray("subClassOf");
 						for (int j=0; j<jArray.length(); j++){
 							String subclass = enrichShortHandNode(jArray.getString(j));
+							long subId = Dictionary.getInstance().getId(subclass);
 							// blank nodes are ignored
 							if (!subclass.startsWith("_:")) {
-								Edge<String, EdgeValue> edge = new Edge<String, EdgeValue>(graphID, subclass,  new EdgeValue(1,0.5f,this.ONT_NAME));
+								Edge<Long, Float> edge = new Edge<Long, Float>(id, subId, 0.5f);
 		//TODO check if it works
-								Edge<String,EdgeValue> revEdge = new Edge<String,EdgeValue>(subclass,graphID,new EdgeValue(2,0.5f,this.ONT_NAME));
+								Edge<Long,Float> revEdge = new Edge<Long,Float>(subId,id,0.5f);
 								this.edgeSet.add(edge);
 								this.edgeSet.add(revEdge);
 							} // end if

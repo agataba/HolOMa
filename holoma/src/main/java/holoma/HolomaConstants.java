@@ -47,8 +47,8 @@ public abstract class HolomaConstants {
 		"OMIM.ttljsonLD.json",
 		"Radlex_3.12.owljsonLD.json",
 		"chebi.owljsonLD.json",
-		"fma.owljsonLD.json",
-		"NCITNCBO.ttljsonLD.json"
+		"fma.owljsonLD.json"
+		//"NCITNCBO.ttljsonLD.json"
 	};
 	public static final String[] ONTOLOGY_FILES_OAEI = {
 		"oaei2012_FMA_whole_ontology.owljsonLD.json",
@@ -77,7 +77,7 @@ public abstract class HolomaConstants {
 	public static final boolean IS_PRINTING_VALID_EDGVERT = false;
 	
 	/** Maximum number of iteration steps for connected components. */
-	public static final int MAX_ITER = 1000;
+	public static final int MAX_ITER = 100;
 	
 	/** Singletons of connected components are eliminated iff 'true'. */
 	public static final boolean NO_SINGLETON_CONNCOMP = true;
@@ -93,16 +93,16 @@ public abstract class HolomaConstants {
 	}
 	
 	/** The minimal size of a connected component such that it is enriched and page-ranked.*/
-	public static final int MIN_CC_SIZE = 2;
+	public static final int MIN_CC_SIZE =1000;
 	
 	/** The minimal size of a connected component such that it is enriched and page-ranked.*/
-	public static final int MAX_CC_SIZE = 100;
+	public static final int MAX_CC_SIZE = 1500;
 
 	/** Teleportation probability. */
-	public static final float TELEPORT_PROB = 0.15f;
+	public static final float TELEPORT_PROB = 0.2f;
 	
 	/** Maximum number of iteration steps for personalized pagerank. */
-	public static final int MAX_ITER_PPR = 100;
+	public static final int MAX_ITER_PPR = 20;
 	
 
 }

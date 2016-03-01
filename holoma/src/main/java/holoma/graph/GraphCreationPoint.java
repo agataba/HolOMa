@@ -16,6 +16,7 @@ import org.apache.flink.util.Collector;
 import holoma.HolomaConstants;
 import holoma.complexDatatypes.EdgeValue;
 import holoma.complexDatatypes.VertexValue;
+import holoma.parsing.Dictionary;
 import holoma.parsing.ParsingPoint;
 
 /**
@@ -57,13 +58,13 @@ public class GraphCreationPoint {
 	 * @param vertexFileLoc Where to print the vertex file.
 	 * @return The created graph.
 	 */
-	public Graph<String, VertexValue, EdgeValue> getGraphFromOntologyFiles (String path) {
+	public Graph<Long, VertexValue, Float> getGraphFromOntologyFiles (String path) {
 		// #0: Load vertices and edges	 
 		ParsingPoint pp = new ParsingPoint ();		
 		if (HolomaConstants.IS_PRINTING_VALID_EDGVERT)
 			pp.printEdgeVertexToFile(path);
-		Set<Edge<String, EdgeValue>> edges = pp.getEdges(path);
-		Set<Vertex<String, VertexValue>> vertices = pp.getVertices(path);
+		Set<Edge<Long, Float>> edges = pp.getEdges(path);
+		Set<Vertex<Long, VertexValue>> vertices = pp.getVertices(path);
 		if (HolomaConstants.IS_PRINTING_VALID_EDGVERT) {
 			System.out.println();
 			System.out.println("Printing "+edges.size()+" edges to file  ... ");
@@ -71,7 +72,7 @@ public class GraphCreationPoint {
 		}
 		
 		 // #1: Creating the graph		 
-		Graph<String, VertexValue, EdgeValue> graph = createGraph(edges, vertices);
+		Graph<Long, VertexValue, Float> graph = createGraph(edges, vertices);
 		//pp.clear();
 		return graph;
 	}
@@ -83,8 +84,8 @@ public class GraphCreationPoint {
 	 * @param vertices Set of vertices.
 	 * @return The graph.
 	 */
-	private Graph<String, VertexValue, EdgeValue> createGraph (Set<Edge<String, EdgeValue>> edges, Set<Vertex<String, VertexValue>> vertices) {
-		Graph<String, VertexValue, EdgeValue> graph = Graph.fromCollection(vertices, edges, env);
+	private Graph<Long, VertexValue, Float> createGraph (Set<Edge<Long, Float>> edges, Set<Vertex<Long, VertexValue>> vertices) {
+		Graph<Long, VertexValue, Float> graph = Graph.fromCollection(vertices, edges, env);
 		return graph;
 	}
 	
@@ -94,12 +95,12 @@ public class GraphCreationPoint {
 	 * Manages the creation of the graph.
 	 * @return The created graph.
 	 */
-	public Graph<String, VertexValue, EdgeValue> getGraphFromEdgeVertexFile () {
+	public Graph<Long, VertexValue, Float> getGraphFromEdgeVertexFile () {
 		// load vertices and edges
-		DataSet<Tuple2<String, VertexValue>> vertices = loadVertices(HolomaConstants.VERTEX_FILE_LOC);
-		DataSet<Tuple3<String, String, EdgeValue>> edges = loadEdges(HolomaConstants.EDGE_FILE_LOC);
+		DataSet<Tuple2<Long, VertexValue>> vertices = loadVertices(HolomaConstants.VERTEX_FILE_LOC);
+		DataSet<Tuple3<Long, Long, Float>> edges = loadEdges(HolomaConstants.EDGE_FILE_LOC);
 		// create graph with vertex ID type, vertex value type, and edge value type
-		Graph<String, VertexValue, EdgeValue> graph = Graph.fromTupleDataSet(vertices, edges, env);
+		Graph<Long, VertexValue, Float> graph = Graph.fromTupleDataSet(vertices, edges, env);
 		return graph;
 		
 	}
@@ -109,12 +110,12 @@ public class GraphCreationPoint {
 	 * @param vertexFileLocation Location of the vertex file.
 	 * @return The vertices of the graph. Format: (url, ont)
 	 */
-	public DataSet<Tuple2<String, VertexValue>> loadVertices(String vertexFileLocation) {
+	public DataSet<Tuple2<Long, VertexValue>> loadVertices(String vertexFileLocation) {
 		DataSet<Tuple2<String, String>> vertexTuples = env.readCsvFile(vertexFileLocation)
 				.fieldDelimiter("\t")  // configures the delimiter ("\t") that separates the fields within a row.
 				.ignoreComments("#")  // configures the string ('#') that starts comments
 				.types(String.class, String.class); // specifies the types for the CSV fields
-		DataSet<Tuple2<String, VertexValue>> transformedVertex = vertexTuples.map(new MapFunction<Tuple2<String,String>,Tuple2<String,VertexValue>>(){
+		DataSet<Tuple2<Long, VertexValue>> transformedVertex = vertexTuples.map(new MapFunction<Tuple2<String,String>,Tuple2<Long,VertexValue>>(){
 
 			/**
 			 * 
@@ -122,10 +123,10 @@ public class GraphCreationPoint {
 			private static final long serialVersionUID = -2321185312262652017L;
 
 			@Override
-			public Tuple2<String, VertexValue> map(Tuple2<String, String> value)
+			public Tuple2<Long, VertexValue> map(Tuple2<String, String> value)
 					throws Exception {
 				// TODO Auto-generated method stub
-				return new Tuple2<String,VertexValue> (value.f0,new VertexValue(value.f1,0));
+				return new Tuple2<Long,VertexValue> (Dictionary.getInstance().getId(value.f0),new VertexValue(value.f1,0));
 			}
 		});
 				
@@ -139,13 +140,13 @@ public class GraphCreationPoint {
 	 * @param edgeFileLocation Location of the edge file.
 	 * @return The edges of the graph. Format: (src, trg, type)
 	 */
-	public DataSet<Tuple3<String, String, EdgeValue>> loadEdges(final String edgeFileLocation) {		
+	public DataSet<Tuple3<Long, Long, Float>> loadEdges(final String edgeFileLocation) {		
 		DataSet<Tuple3<String, String, Integer>> edgeTuples = env.readCsvFile(edgeFileLocation)
 				.fieldDelimiter("\t")  // configures the delimiter ("\t") that separates the fields within a row.
 	            .ignoreComments("#")  // configures the string ('#') that starts comments
 	            .types(String.class, String.class, Integer.class); // specifies the types for the CSV fields
-		DataSet<Tuple3<String, String, EdgeValue>> customEdges = edgeTuples.map(new MapFunction<Tuple3<String, String, Integer>,
-				Tuple3<String,String,EdgeValue>> (){
+		DataSet<Tuple3<Long, Long, Float>> customEdges = edgeTuples.map(new MapFunction<Tuple3<String, String, Integer>,
+				Tuple3<Long,Long,Float>> (){
 
 					/**
 					 * 
@@ -153,18 +154,18 @@ public class GraphCreationPoint {
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public Tuple3<String, String, EdgeValue> map(
+					public Tuple3<Long, Long, Float> map(
 							Tuple3<String, String, Integer> arg0)
 							throws Exception {
-						Tuple3 <String, String,EdgeValue> tt = new Tuple3<String,String,EdgeValue>();
-						tt.f0 = arg0.f0;
-						tt.f1 = arg0.f1;
+						Tuple3 <Long, Long,Float> tt = new Tuple3<Long,Long,Float>();
+						tt.f0 = Dictionary.getInstance().getId(arg0.f0);
+						tt.f1 = Dictionary.getInstance().getId(arg0.f1);
 						if (arg0.f2 == 1 ||arg0.f2 ==2){
-							EdgeValue ev= new EdgeValue(arg0.f2, 0.5f, edgeFileLocation);
-							tt.f2 = ev;
+							
+							tt.f2 = 0.5f;
 						}else {
-							EdgeValue ev= new EdgeValue(arg0.f2, 1f, edgeFileLocation);
-							tt.f2 = ev;
+						
+							tt.f2 = 1f;
 						}
 						
 						return tt;

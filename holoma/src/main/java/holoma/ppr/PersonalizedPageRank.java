@@ -1,9 +1,9 @@
 package holoma.ppr;
 
 import holoma.HolomaConstants;
-import holoma.complexDatatypes.EdgeValue;
 import holoma.complexDatatypes.Vertex2RankMap;
 import holoma.complexDatatypes.VertexValue;
+import holoma.parsing.Dictionary;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -18,8 +18,10 @@ import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.graph.Edge;
+import org.apache.flink.graph.EdgeDirection;
 import org.apache.flink.graph.EdgeJoinFunction;
 import org.apache.flink.graph.Graph;
+import org.apache.flink.graph.ReduceEdgesFunction;
 import org.apache.flink.graph.Vertex;
 import org.apache.flink.graph.spargel.MessageIterator;
 import org.apache.flink.graph.spargel.MessagingFunction;
@@ -40,22 +42,22 @@ public class PersonalizedPageRank implements Serializable{
 	 * Map<Long,Vertex2RangeMap> store the vector of rankings w.r.t the different components of the considered vertex
 	 * Vertex2RangeMap := Map <String,Float> store the probability of presence for the considered vertex 
 	 * by starting from the vertex that is the key in the map 
-	 * @param graph
+	 * @param graph2
 	 * @return
 	 */
-	public DataSet<Tuple4<Long,String,String,Float>> calculatePPrForEachCompAndSource (Graph<String,VertexValue,EdgeValue> graph){
+	public DataSet<Tuple4<Long,Long,Long,Float>> calculatePPrForEachCompAndSource (Graph<Long, VertexValue, Map<Long,Float>> graph2){
 		
 		/*
 		 * consider only the vertices and edges that exist at least in one component
 		 */
-		Graph<String, VertexValue,EdgeValue> reducedGraph = graph.filterOnVertices(new FilterFunction <Vertex<String,VertexValue>>(){
+		Graph<Long, VertexValue,Map<Long,Float>> reducedGraph = graph2.filterOnVertices(new FilterFunction <Vertex<Long,VertexValue>>(){
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = -3693194847465381033L;
 
 			@Override
-			public boolean filter(Vertex<String, VertexValue> value)
+			public boolean filter(Vertex<Long, VertexValue> value)
 					throws Exception {
 				if (value.getValue().getCompIds().isEmpty()){
 					return false;
@@ -67,31 +69,66 @@ public class PersonalizedPageRank implements Serializable{
 		/*
 		 * compute the sum of weights for the outgoing edges
 		 */
-		OverallSumCalculator sum = new OverallSumCalculator();
-		DataSet<Tuple2<String,Map<Long,Float>>> is_aSum = sum.getOverallSumDataSet(false, reducedGraph);
+//		OverallSumCalculator sum = new OverallSumCalculator();
+//		DataSet<Tuple2<Long,Map<Long,Float>>> is_aSum = sum.getOverallSumDataSet(false, reducedGraph);
 		
+	
+//		DataSet<Tuple2<Long,Float>> is_aSum = reducedGraph.reduceOnEdges(new ReduceEdgesFunction<Float> (){
+//		
+//			@Override
+//			public Float reduceEdges(Float value1, Float value2) {
+//				// TODO Auto-generated method stub
+//				return value1+value2;
+//			}
+//			
+//		}, EdgeDirection.OUT);
 		/*
 		 * insert the edge weights  
 		 */
-		reducedGraph = reducedGraph.joinWithEdgesOnSource(is_aSum, new EdgeJoinFunction<EdgeValue,Map<Long,Float>>(){
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1768058051277440628L;
-			@Override
-			public EdgeValue edgeJoin(EdgeValue edgeValue,
-					Map<Long, Float> inputValue) throws Exception {
-				edgeValue.setComponent2OverallIsA(inputValue);
-				return edgeValue;
-			}
-
-			
-		});
+//		Graph <Long,VertexValue,Map<Long,Float>>sumReducedGraph = reducedGraph.mapEdges(new MapFunction<Edge<Long,Float>,Map<Long,Float>>(){
+//
+//			@Override
+//			public Map<Long, Float> map(Edge<Long, Float> value)
+//					throws Exception {
+//				// TODO Auto-generated method stub
+//				Map<Long,Float> v =new HashMap<Long,Float>();
+//				v.put(1l, value.f2);
+//				return v;
+//			}
+//			
+//		});
+//		sumReducedGraph = sumReducedGraph.joinWithEdgesOnSource(is_aSum, new EdgeJoinFunction<Map<Long,Float>,Map<Long,Float>>(){
+//
+//			/**
+//			 * 
+//			 */
+//			private static final long serialVersionUID = 1768058051277440628L;
+//			@Override
+//			public Map<Long, Float> edgeJoin(Map<Long,Float> edgeValue,
+//					Map<Long, Float> inputValue) throws Exception {
+//				Map<Long,Float> v =new HashMap<Long,Float>();
+//				for (Long cid: inputValue.keySet()){
+//					v.put(cid, edgeValue.get(1l)/inputValue.get(cid));
+//				}
+//				return v;
+//			}
+//
+//			
+//		});
+		
+//		reducedGraph = reducedGraph.joinWithEdgesOnSource(is_aSum, new EdgeJoinFunction<Float,Float>(){
+//
+//			@Override
+//			public Float edgeJoin(Float edgeValue, Float inputValue)
+//					throws Exception {
+//				// TODO Auto-generated method stub
+//				return edgeValue/inputValue;
+//			}
+//		});
 		/*
 		 * Initialize the result map by setting the probability for the considered vertex to 1
 		 */
-		Graph<String,Map<Long,Vertex2RankMap>,EdgeValue> perReducedGraph = reducedGraph.mapVertices(new MapFunction<Vertex<String,VertexValue>,Map<Long,Vertex2RankMap>>(){
+		Graph<Long,Map<Long,Vertex2RankMap>,Map<Long,Float>> perReducedGraph = graph2.mapVertices(new MapFunction<Vertex<Long,VertexValue>,Map<Long,Vertex2RankMap>>(){
 		
 			/**
 			 * 
@@ -100,7 +137,7 @@ public class PersonalizedPageRank implements Serializable{
 
 			@Override
 			public  Map<Long,Vertex2RankMap> map(
-					Vertex<String, VertexValue> value) throws Exception {
+					Vertex<Long, VertexValue> value) throws Exception {
 				Map<Long,Vertex2RankMap> comp2Map = new HashMap<Long,Vertex2RankMap>();
 				for (Long id :value.f1.getCompIds()){
 					Vertex2RankMap compToRank = new Vertex2RankMap();
@@ -113,19 +150,19 @@ public class PersonalizedPageRank implements Serializable{
 		});
 		
 		
-		Graph<String,Map<Long,Vertex2RankMap>,EdgeValue> overallPagerankGraph = perReducedGraph.runVertexCentricIteration(new VertexPageRankUpdaterAll(HolomaConstants.TELEPORT_PROB),
-				new PageRankMessengerAll(), 10);
-		DataSet<Tuple4<Long,String,String,Float>> output = overallPagerankGraph.getVertices().flatMap(
-				new FlatMapFunction<Vertex<String,Map<Long,Vertex2RankMap>>,Tuple4<Long,String,String,Float>>(){
+		Graph<Long,Map<Long,Vertex2RankMap>,Map<Long,Float>> overallPagerankGraph = perReducedGraph.runVertexCentricIteration(new VertexPageRankUpdaterAll(HolomaConstants.TELEPORT_PROB),
+				new PageRankMessengerAll(), HolomaConstants.MAX_ITER_PPR);
+		DataSet<Tuple4<Long,Long,Long,Float>> output = overallPagerankGraph.getVertices().flatMap(
+				new FlatMapFunction<Vertex<Long,Map<Long,Vertex2RankMap>>,Tuple4<Long,Long,Long,Float>>(){
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void flatMap(Vertex<String, Map<Long,Vertex2RankMap>> value,
-					Collector<Tuple4<Long, String, String, Float>> out)
+			public void flatMap(Vertex<Long, Map<Long,Vertex2RankMap>> value,
+					Collector<Tuple4<Long, Long, Long, Float>> out)
 					throws Exception {
 				for (Entry<Long,Vertex2RankMap> e: value.f1.entrySet()){
-					for (Entry<String,Float> e2: e.getValue().getRankings().entrySet()){
-						Tuple4<Long,String,String,Float> t = new Tuple4<Long,String,String,Float>(e.getKey(),value.f0,e2.getKey(),e2.getValue());
+					for (Entry<Long,Float> e2: e.getValue().getRankings().entrySet()){
+						Tuple4<Long,Long,Long,Float> t = new Tuple4<Long,Long,Long,Float>(e.getKey(),value.f0,e2.getKey(),e2.getValue());
 						out.collect(t);
 					}
 				}
@@ -135,9 +172,12 @@ public class PersonalizedPageRank implements Serializable{
 	}
 	
 	
+	
+	
+	
 	@SuppressWarnings("serial")
 	private class VertexPageRankUpdaterAll
-	extends VertexUpdateFunction<String, Map<Long,Vertex2RankMap>, Map<Long,Vertex2RankMap>> {
+	extends VertexUpdateFunction<Long, Map<Long,Vertex2RankMap>, Map<Long,Vertex2RankMap>> {
 		private float teleportProb;
 		public VertexPageRankUpdaterAll(float teleportProb) {
 		this.teleportProb = teleportProb;
@@ -146,7 +186,7 @@ public class PersonalizedPageRank implements Serializable{
 
 		
 		@Override
-		public void updateVertex(Vertex<String, Map<Long,Vertex2RankMap>> vertex,
+		public void updateVertex(Vertex<Long, Map<Long,Vertex2RankMap>> vertex,
 				MessageIterator<Map<Long, Vertex2RankMap>> inMessages)
 				throws Exception {
 			Map <Long,Vertex2RankMap> ownMap = vertex.getValue();
@@ -164,7 +204,7 @@ public class PersonalizedPageRank implements Serializable{
  						updatedComponentMap.put(includedComponent, sumMap);
  					}
 					Vertex2RankMap receivedRankingMap = recCompToRankMap.get(includedComponent);
-					for (Entry<String,Float> entry: receivedRankingMap.getRankings().entrySet()){
+					for (Entry<Long,Float> entry: receivedRankingMap.getRankings().entrySet()){
 						if (sumMap.getRankings().get(entry.getKey())==null){
 							sumMap.addRankForVertex(entry.getKey(), entry.getValue());
 						}else{
@@ -174,13 +214,14 @@ public class PersonalizedPageRank implements Serializable{
 					}
 				}	
 			}
-			//Map<Long,Vertex2RankMap> updatedComponentMap2 = new HashMap<Long,Vertex2RankMap>();
-			Map<Long,Vertex2RankMap> updatedComponentMap2 = vertex.getValue();
+			Map<Long,Vertex2RankMap> updatedComponentMap2 = new HashMap<Long,Vertex2RankMap>();
+			//Map<Long,Vertex2RankMap> updatedComponentMap2 = vertex.getValue();
 			for (Entry<Long,Vertex2RankMap> e:updatedComponentMap.entrySet()){
-				Vertex2RankMap updatedMap =updatedComponentMap2.get(e.getKey());
+				
+				Vertex2RankMap updatedMap = new Vertex2RankMap();
 				updatedComponentMap2.put(e.getKey(), updatedMap);
 				 Vertex2RankMap oldMap = vertex.getValue().get(e.getKey());
-				for (Entry<String,Float> entry: e.getValue().getRankings().entrySet()){
+				for (Entry<Long,Float> entry: e.getValue().getRankings().entrySet()){
 					float pr = (1-this.teleportProb)*entry.getValue();
 					
 					Float oldppr ;
@@ -206,7 +247,6 @@ public class PersonalizedPageRank implements Serializable{
 				if (updatedMap.getRankings().containsKey(vertex.f0)){
 					 pr = updatedMap.getRankings().get(vertex.f0)+
 							this.teleportProb*1f;
-					updatedMap.addRankForVertex(vertex.f0,pr);
 				}else {
 					pr = this.teleportProb*1f;
 				}
@@ -217,7 +257,6 @@ public class PersonalizedPageRank implements Serializable{
  			if (aggregatedDelta>0.001){
  				setNewVertexValue(updatedComponentMap2);
  			}else {
- 				log.info("deactivate node "+aggregatedDelta);
  			}
 		}
 	}	
@@ -225,7 +264,7 @@ public class PersonalizedPageRank implements Serializable{
 	
 	
 	@SuppressWarnings("serial")
-	private class PageRankMessengerAll extends MessagingFunction<String, Map<Long,Vertex2RankMap>, Map<Long,Vertex2RankMap>, EdgeValue>{		
+	private class PageRankMessengerAll extends MessagingFunction<Long, Map<Long,Vertex2RankMap>, Map<Long,Vertex2RankMap>, Map<Long,Float>>{		
 		public PageRankMessengerAll (){
 		
 		}
@@ -235,70 +274,28 @@ public class PersonalizedPageRank implements Serializable{
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void sendMessages(Vertex<String, Map<Long,Vertex2RankMap>> vertex)
+		public void sendMessages(Vertex<Long, Map<Long,Vertex2RankMap>> vertex)
 				throws Exception {
 			
-			for (Edge<String, EdgeValue> edge : getEdges()){
+			for (Edge<Long, Map<Long,Float>> edge : getEdges()){
 				
 				float value = 0;
 				Map<Long,Vertex2RankMap> prMapPerVertex = new HashMap<Long,Vertex2RankMap>();
 				for (Entry<Long,Vertex2RankMap> w: vertex.f1.entrySet()){
 					Vertex2RankMap sendingMap = new Vertex2RankMap ();
-					for (Entry<String,Float> rankPerVertex : w.getValue().getRankings().entrySet()){
-						float nominator = edge.f2.getComponent2OverallIsA().get(w.getKey());
-						value = rankPerVertex.getValue()*(edge.getValue().weight/nominator);
-						sendingMap.addRankForVertex(rankPerVertex.getKey(), value);
+					for (Entry<Long,Float> rankPerVertex : w.getValue().getRankings().entrySet()){
+						if (edge.f2.get(w.getKey())!=null){
+							float nominator = edge.f2.get(w.getKey());
+							value = rankPerVertex.getValue()*nominator;
+							if (value>0.005)
+							sendingMap.addRankForVertex(rankPerVertex.getKey(), value);
+						}
 					}
-					prMapPerVertex.put(w.getKey(), sendingMap);
+					if(!sendingMap.getRankings().isEmpty())
+						prMapPerVertex.put(w.getKey(), sendingMap);
 				}
-				sendMessageTo(edge.getTarget(),prMapPerVertex);
-				
-				
-//				if (vertex.f1.getOntName().equals(edge.getValue().getOnt_type())&&
-//						edge.getValue().getType() ==1){
-//					Map<Long,Vertex2RankMap> prMapPerVertex = new HashMap<Long,Vertex2RankMap>();
-//					for (Entry<Long,Vertex2RankMap> w: vertex.f1.getComponentToRank().entrySet()){
-//						Vertex2RankMap sendingMap = new Vertex2RankMap ();
-//						for (Entry<String,Float> rankPerVertex : w.getValue().getRankings().entrySet()){
-//							float nominator = edge.f2.getComponent2OverallInverse().get(w.getKey());
-//							value = rankPerVertex.getValue()*(edge.getValue().weight/nominator);
-//							if (edge.getValue().weight>nominator)
-//								log.warn(edge.toString());
-//							sendingMap.addRankForVertex(rankPerVertex.getKey(), value);
-//						}
-//						prMapPerVertex.put(w.getKey(), sendingMap);
-//					}
-//					sendMessageTo(edge.getTarget(),prMapPerVertex);
-//				}else if (!vertex.f1.getOntName().equals(edge.getValue().getOnt_type())&&
-//						edge.getValue().getType() ==2){
-//					Map<Long,Vertex2RankMap> prMapPerVertex = new HashMap<Long,Vertex2RankMap>();
-//					for (Entry<Long,Vertex2RankMap> w: vertex.f1.getComponentToRank().entrySet()){
-//						Vertex2RankMap sendingMap = new Vertex2RankMap ();
-//						for (Entry<String,Float> rankPerVertex : w.getValue().getRankings().entrySet()){
-//							value = rankPerVertex.getValue()*(edge.getValue().weight/edge.f2.getOverall_inverse_weight());
-//							if (edge.getValue().weight>edge.f2.getOverall_inverse_weight())
-//								log.warn(edge.toString());
-//							sendingMap.addRankForVertex(rankPerVertex.getKey(), value);
-//						}
-//						prMapPerVertex.put(w.getKey(), sendingMap);
-//					}
-//					sendMessageTo(edge.getTarget(),prMapPerVertex);
-//				}else if (edge.getValue().getType() ==0){
-//					 if (!vertex.f1.getOntName().equals(edge.getValue().getOnt_type())){
-//						Map<Long,Vertex2RankMap> prMapPerVertex = new HashMap<Long,Vertex2RankMap>();
-//						for (Entry<Long,Vertex2RankMap> w: vertex.f1.getComponentToRank().entrySet()){
-//							Vertex2RankMap sendingMap = new Vertex2RankMap ();
-//							for (Entry<String,Float> rankPerVertex : w.getValue().getRankings().entrySet()){
-//								value = rankPerVertex.getValue()*(edge.getValue().weight/edge.f2.getOverall_isA_weight());
-//								if (edge.getValue().weight>edge.f2.getOverall_isA_weight())
-//									log.warn(edge.toString());
-//								sendingMap.addRankForVertex(rankPerVertex.getKey(), value);
-//							}
-//							prMapPerVertex.put(w.getKey(), sendingMap);
-//						}
-//						sendMessageTo(edge.getTarget(),prMapPerVertex);
-//					}	
-//				}
+				if(!prMapPerVertex.isEmpty())
+					sendMessageTo(edge.getTarget(),prMapPerVertex);
 			}	
 		}
 	}

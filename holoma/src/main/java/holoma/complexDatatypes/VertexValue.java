@@ -12,6 +12,7 @@ public class VertexValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private long id ;
 	public String ontName;
+	private boolean isConsidered ;
 	private Map<Long,Vertex2RankMap> componentToRank; 
 	public String getOntName() {
 		return ontName;
@@ -149,5 +150,15 @@ public class VertexValue implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+
+	public boolean isConsidered() {
+		return isConsidered;
+	}
+
+
+	public void setConsidered(boolean isConsidered) {
+		this.isConsidered = isConsidered;
 	}
 }

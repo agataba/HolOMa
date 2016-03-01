@@ -23,9 +23,9 @@ import tools.io.OutputToFile;
 public class ParsingPoint {
 
 	/** Edges of the graph. */
-	private Set<Edge<String, EdgeValue>> edges = new HashSet<Edge<String, EdgeValue>>();
+	private Set<Edge<Long, Float>> edges = new HashSet<Edge<Long, Float>>();
 	/** Vertices of the graph. */
-	private Set<Vertex<String, VertexValue>> vertices = new HashSet<Vertex<String, VertexValue>>();
+	private Set<Vertex<Long, VertexValue>> vertices = new HashSet<Vertex<Long, VertexValue>>();
 	
 
 	/** Constructor. */
@@ -38,7 +38,7 @@ public class ParsingPoint {
 	 * Gets the edges within the specified ontology files.
 	 * @return Edges of all ontologies.
 	 */
-	public Set<Edge<String, EdgeValue>> getEdges (String path) {
+	public Set<Edge<Long, Float>> getEdges (String path) {
 		if (this.edges.isEmpty())
 			parseEdgesVertices(path);
 		return this.edges;
@@ -49,7 +49,7 @@ public class ParsingPoint {
 	 * Gets the vertices within the specified ontology files.
 	 * @return Vertices of all ontologies.
 	 */
-	public Set<Vertex<String, VertexValue>> getVertices (String path) {
+	public Set<Vertex<Long, VertexValue>> getVertices (String path) {
 		if (this.vertices.isEmpty())
 			parseEdgesVertices(path);
 		return this.vertices;
@@ -70,14 +70,14 @@ public class ParsingPoint {
 		
 		// print edges
 		OutputToFile out = new OutputToFile (800, HolomaConstants.EDGE_FILE_LOC);
-		for (Edge<String, EdgeValue> edge : this.edges) {
+		for (Edge<Long, Float> edge : this.edges) {
 			String line = edge.f0+"\t"+edge.f1+"\t"+edge.f2;
 			out.addToBuff(line);
 		}
 		out.close();
 		// print vertices
 		out = new OutputToFile (800, HolomaConstants.VERTEX_FILE_LOC);
-		for (Vertex<String, VertexValue> vert : this.vertices) {
+		for (Vertex<Long, VertexValue> vert : this.vertices) {
 			String line = vert.f0+"\t"+vert.f1;
 			out.addToBuff(line);
 		}
@@ -98,7 +98,7 @@ public class ParsingPoint {
 	 */
 	private void parseEdgesVertices (String path) throws IllegalArgumentException {
 		// #1: parse each ontology
-		for (String ontology : HolomaConstants.ONTOLOGY_FILES) {
+		for (String ontology : HolomaConstants.ONTOLOGY_FILES_UNCOLOR) {
 			System.out.println("Parsing "+HolomaConstants.PATH+ontology+" ... ");
 			File fileOntology = new File (path+File.separator+ontology);
 			String ontName = getOntologyName(ontology);
@@ -118,7 +118,7 @@ public class ParsingPoint {
 		System.out.println("\nReading "+path+File.separator+HolomaConstants.MAPPING_FILE+" ... ");
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader ( new FileReader(path+File.separator+HolomaConstants.MAPPING_FILE));
+			reader = new BufferedReader ( new FileReader(path+File.separator+HolomaConstants.MAPPING_FILE_UNCOLOR));
 			String line;
 			while ( (line = reader.readLine()) != null ) {
 				String[] fields = line.split(",");
@@ -127,19 +127,21 @@ public class ParsingPoint {
 					reader.close();
 					throw new IllegalArgumentException("Mapping file has "+fields.length+" columns. 7 expected!");
 				}
-				Edge<String, EdgeValue> edge = new Edge<String, EdgeValue>(fields[0],fields[1],new EdgeValue(0, 1f, fields[3]));
-				Edge<String, EdgeValue> revEdge = new Edge<String, EdgeValue>(fields[1],fields[0],new EdgeValue(0, 1f, fields[2]));
+				long src = Dictionary.getInstance().getId(fields[0]);
+				long target = Dictionary.getInstance().getId(fields[1]);
+				Edge<Long, Float> edge = new Edge<Long, Float>(src,target,1f);
+				Edge<Long, Float> revEdge = new Edge<Long, Float>(target,src,1f);
 				if (fields.length==7){
 					Float sim = Float.parseFloat(fields[6]);
-					edge.f2.setWeight(sim);
-					revEdge.f2.setWeight(sim);
+					edge.setValue(sim);
+					revEdge.setValue(sim);
 				}
 				
 				this.edges.add(edge);
 				this.edges.add(revEdge);
-				Vertex<String, VertexValue> v1 = new Vertex<String, VertexValue>(fields[0],new VertexValue(fields[2].toLowerCase(), 0));
+				Vertex<Long, VertexValue> v1 = new Vertex<Long, VertexValue>(src,new VertexValue(fields[2].toLowerCase(), 0));
 				v1.f1.setConComponent(OntologyParserJSON.component_id++);
-				Vertex<String, VertexValue> v2 = new Vertex<String, VertexValue>(fields[1],new VertexValue(fields[3].toLowerCase(), 0));
+				Vertex<Long, VertexValue> v2 = new Vertex<Long, VertexValue>(target,new VertexValue(fields[3].toLowerCase(), 0));
 				v2.f1.setConComponent(OntologyParserJSON.component_id++);
 				this.vertices.add(v1);
 				this.vertices.add(v2);
@@ -157,7 +159,7 @@ public class ParsingPoint {
 	 * @param edges Set of edges.
 	 * @param ontName Abbreviated name of the ontology.
 	 */
-	private void doOptimPreprocessing (Set<Vertex<String, VertexValue>> vertices, Set<Edge<String, EdgeValue>> edges, String ontName) {
+	private void doOptimPreprocessing (Set<Vertex<Long, VertexValue>> vertices, Set<Edge<Long, Float>> edges, String ontName) {
 		this.edges.addAll(edges);
 		this.vertices.addAll(Preprocessor.addMissingVertices(vertices, edges, ontName));
 	}
@@ -170,7 +172,7 @@ public class ParsingPoint {
 	 * @param edges Set of edges.
 	 * @param ontName Abbreviated name of the ontology.
 	 */
-	private void doPessimPreprocessing (Set<Vertex<String, VertexValue>> set, Set<Edge<String, EdgeValue>> edges, String ontName) {
+	private void doPessimPreprocessing (Set<Vertex<Long, VertexValue>> set, Set<Edge<Long, Float>> edges, String ontName) {
 		this.edges.addAll(Preprocessor.removeInvalidEdges(set, edges, ontName));
 		this.vertices.addAll(set);
 	}

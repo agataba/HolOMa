@@ -28,24 +28,24 @@ public class Preprocessor {
 	 * @param ontName Abbreviated name of the ontology.
 	 * @return Expanded and thus valid set of vertices.
 	 */
-	public static Set<Vertex<String, VertexValue>> addMissingVertices (Set<Vertex<String, VertexValue>> vertices, Set<Edge<String, EdgeValue>> edges, String ontName) {
-		Set<Vertex<String, VertexValue>> validVertices = new HashSet<Vertex<String, VertexValue>>();
+	public static Set<Vertex<Long, VertexValue>> addMissingVertices (Set<Vertex<Long, VertexValue>> vertices, Set<Edge<Long, Float>> edges, String ontName) {
+		Set<Vertex<Long, VertexValue>> validVertices = new HashSet<Vertex<Long, VertexValue>>();
 		validVertices.addAll(vertices);
 		
-		Set<String> vertexNames = new HashSet<String>();
-		for (Vertex<String, VertexValue> v : vertices)
+		Set<Long> vertexNames = new HashSet<Long>();
+		for (Vertex<Long, VertexValue> v : vertices)
 			vertexNames.add(v.getId());
 	
-		for (Edge<String, EdgeValue> e : edges) {
-			String srcName = e.getSource();
-			String trgName = e.getTarget();
+		for (Edge<Long, Float> e : edges) {
+			Long srcName = e.getSource();
+			Long trgName = e.getTarget();
 			if (! vertexNames.contains(srcName)) {
-				Vertex<String, VertexValue> v = new Vertex<String, VertexValue>(srcName, new VertexValue(ontName,0));
+				Vertex<Long, VertexValue> v = new Vertex<Long, VertexValue>(srcName, new VertexValue(ontName,0));
 				v.f1.setConComponent(OntologyParserJSON.component_id++);
 				validVertices.add(v);
 			}
 			if (! vertexNames.contains(trgName)) {
-				Vertex<String, VertexValue> v = new Vertex<String, VertexValue>(trgName, new VertexValue(ontName,0));
+				Vertex<Long, VertexValue> v = new Vertex<Long, VertexValue>(trgName, new VertexValue(ontName,0));
 				v.f1.setConComponent(OntologyParserJSON.component_id++);
 				validVertices.add(v);
 			}
@@ -62,21 +62,21 @@ public class Preprocessor {
 	 * @param ontName Name of the ontology.
 	 * @return Set of valid edges.
 	 */
-	public static Set<Edge<String, EdgeValue>> removeInvalidEdges (Set<Vertex<String, VertexValue>> set, 
-			Set<Edge<String, EdgeValue>> edges, String ontName) {
-		Set<Edge<String, EdgeValue>> validEdges = new HashSet<Edge<String, EdgeValue>>();
+	public static Set<Edge<Long, Float>> removeInvalidEdges (Set<Vertex<Long, VertexValue>> set, 
+			Set<Edge<Long, Float>> edges, String ontName) {
+		Set<Edge<Long, Float>> validEdges = new HashSet<Edge<Long, Float>>();
 		// a vertex' name is its identifier, thus the set of vertex names is calculated
-		Set<String> vertexNames = new HashSet<String>();
-		for (Vertex<String, VertexValue> v : set)
+		Set<Long> vertexNames = new HashSet<Long>();
+		for (Vertex<Long, VertexValue> v : set)
 			vertexNames.add(v.getId());
 		
 		OutputToFile out = null;
 		if (HolomaConstants.IS_PRINTING_INVALID_EDG)
 			out = new OutputToFile (500, "./src/main/resources/invalidEdges_"+ontName+".csv");
 		
-		for (Edge<String, EdgeValue> e : edges) {
-			String srcName = e.getSource();
-			String trgName = e.getTarget();
+		for (Edge<Long, Float> e : edges) {
+			Long srcName = e.getSource();
+			Long trgName = e.getTarget();
 			if (vertexNames.contains(srcName) && vertexNames.contains(trgName))
 				validEdges.add(e);
 			else {
