@@ -97,7 +97,7 @@ public class PPREvaluation {
 	
 	/**
 	 * Returns for each vertex its best friend(s), i.e., the vertex with the highest pagerank.
-	 * The vertex must be a true friend, i.e., you cannot be befriend with yourself.
+	 * The vertex must be a true friend, i.e., you cannot be befriend with yourself and its pagerank must be greater than zero.
 	 * @return Best friend(s) for each vertex.
 	 */
 	public Map<String, Set<Tuple2<String, VertexValue>>> getTrueBestFriends () {
@@ -108,21 +108,24 @@ public class PPREvaluation {
 			Set<Tuple2<String, VertexValue>> bestsOfX = new HashSet<Tuple2<String, VertexValue>>();
 			Tuple2<String, VertexValue> bestFriend = new Tuple2<String, VertexValue>("", new VertexValue("",-1f));
 			Map<String, VertexValue> prVector = this.prVectors.get(vertexId);
-			for (String friendId : prVector.keySet()) {	
-				if (prVector.get(friendId).pr > bestFriend.f1.pr) {	
-					// there is an even better friend
-					if (!vertexId.equals(friendId)) {
-						// ... it is not the source vertex
-						bestFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
-						bestsOfX.clear();
-						bestsOfX.add(bestFriend);
-					}
-				} else if (Math.abs(prVector.get(friendId).pr - bestFriend.f1.pr) < 0.000000001f) {
-					// there is a friend as good as the current best friend
-					if (!vertexId.equals(friendId)) {
-						// ... it is not the source vertex
-						Tuple2<String, VertexValue> furtherBestFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
-						bestsOfX.add(furtherBestFriend);
+			for (String friendId : prVector.keySet()) {
+				float friendPr = prVector.get(friendId).pr;
+				if (Math.abs(friendPr-0f) > 0.000000001f) {
+					if (friendPr > bestFriend.f1.pr) {	
+						// there is an even better friend
+						if (!vertexId.equals(friendId)) {
+							// ... it is not the source vertex
+							bestFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
+							bestsOfX.clear();
+							bestsOfX.add(bestFriend);
+						}
+					} else if (Math.abs(friendPr - bestFriend.f1.pr) < 0.000000001f) {
+						// there is a friend as good as the current best friend
+						if (!vertexId.equals(friendId)) {
+							// ... it is not the source vertex
+							Tuple2<String, VertexValue> furtherBestFriend = new Tuple2<String, VertexValue>(friendId, prVector.get(friendId));
+							bestsOfX.add(furtherBestFriend);
+						}
 					}
 				}
 			}

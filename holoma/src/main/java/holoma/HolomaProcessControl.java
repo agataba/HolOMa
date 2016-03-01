@@ -63,51 +63,67 @@ public class HolomaProcessControl {
 		
 		startTime();
 		
+		OutputToFile log = new OutputToFile(1, "./holoma_log.txt"); log.addToBuff("start time: "+System.currentTimeMillis());
 		
 		// #1: Creating the graph
+		log.addToBuff("#1 Creating the graph");
 		GraphCreationPoint creation = new GraphCreationPoint(ENV);
 		Graph<String, String, Integer> graph = null;
+		graph = creation.getGraphFromOntologyFiles(); log.addToBuff("  load graph from ontology files");
 		
-		while (true) {
+		try {
+			log.addToBuff("  #edges: "+graph.numberOfEdges()+"\n  #nodes: "+graph.numberOfVertices());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+/*		while (true) {
 			char c = InputFromConsole.readChar("Load graph from ontology files ('o') or from existing edge and vertex file ('e')? \n >> ");
 			if (c=='o') { 
-				graph = creation.getGraphFromOntologyFiles();
+				graph = creation.getGraphFromOntologyFiles(); log.addToBuff(" load graph from ontology files");
 				break;
 			}
 			if (c=='e') {
-				graph = creation.getGraphFromEdgeVertexFile();
+				graph = creation.getGraphFromEdgeVertexFile(); log.addToBuff(" load graph from existing edege, vertex files");
 				break;
 			}
 		}
-		
+*/		
 		// #2 Calculating connected components
-		System.out.println("\nCalculating Connected Components ... ");
+		log.addToBuff("#2 Calculating connected components");
+		log.addToBuff("  time before: "+System.currentTimeMillis());
 		ConnCompCalculation connCompCalc = new ConnCompCalculation(graph);
 		Map<Long, Set<String>> connCompts = connCompCalc.calculateConnComp_naive(); 		
 		if (connCompts==null || connCompts.size()==0) {
-			System.out.println("No connected components.");
+			log.addToBuff("No connected components.");
 			System.out.println("\n--- End ---");
 			System.exit(0);
 		}		
 		// save connected components
-		System.out.println("printing to "+HolomaConstants.CONNCOMP_FILE_LOC+" ... ");
+		log.addToBuff("  time after:  "+System.currentTimeMillis());
+		log.addToBuff("  printing connected components to "+HolomaConstants.CONNCOMP_FILE_LOC+" ... ");
 		GraphVisualisation.printConnectedComponents(connCompts);
 		
 		// #3: Analyzing connected components
-		System.out.println("\nAnalysing connected components ... ");
+		log.addToBuff("\nAnalysing connected components ... ");
 		String analysisResult = connCompCalc.analyseConnComponents();
 		OutputToFile out = new OutputToFile(100, HolomaConstants.ANALYSIS_CC_FILE_LOC);
-		out.addToBuff(analysisResult); out.close();		
+		out.addToBuff(analysisResult); out.close();	
+		log.addToBuff("  printing analysis of connected components to "+HolomaConstants.ANALYSIS_CC_FILE_LOC);
+		
 		
 		// #4: Determine PageRank
-		System.out.println("\nEnriching connected components ... ");
-		
+		log.addToBuff("\nDetermine PageRank ... ");
+		log.addToBuff("  time: "+System.currentTimeMillis());
 		out = new OutputToFile(100, HolomaConstants.ANALYSIS_PPR_FILE_LOC);
-		out.addToBuff("depth: "+HolomaConstants.ENR_DEPTH+
+		out.addToBuff("  depth: "+HolomaConstants.ENR_DEPTH+
 				", #Iter: "+HolomaConstants.MAX_ITER_PPR+
 				", teleportProb: "+HolomaConstants.TELEPORT_PROB);
+		
+		int numComp = 0;
 		// iterate over each connected component
 		for (long key : connCompts.keySet()) {
+			log.addToBuff("\n  connected component with id "+key);
 			ConnCompEnrichment enr = 
 					new ConnCompEnrichment(HolomaConstants.ENR_DEPTH, graph, HolomaConstants.MAP_WEIGHT, ENV);
 			PersonalizedPageRank pageRank = new PersonalizedPageRank();
@@ -115,18 +131,32 @@ public class HolomaProcessControl {
 			int connComptSize = connComp.size();
 			// check whether component has critical size
 			if (connComptSize >= HolomaConstants.MIN_CC_SIZE && connComptSize <= HolomaConstants.MAX_CC_SIZE) {
-				
+				log.addToBuff(" this copmonent has critical size");
 				// #4.1: get enriched connected component
+				log.addToBuff("  #4.1: get enriched connected component");
+				log.addToBuff("  time before: "+System.currentTimeMillis());
 				Graph<String, VertexValue, EdgeValue> enrConnComp = enr.getEnrichedConnComp(connComp);
-				out.addToBuff("\n--------\nenriched component:");
+				log.addToBuff("  time after:  "+System.currentTimeMillis());
+				out.addToBuff("\n--------\nenriched component (id:"+key+"):");
 				out.addToBuff(GraphVisualisation.showEdgesVertices(enrConnComp));
 				try {
+					log.addToBuff("  #edges: "+enrConnComp.numberOfEdges()+"\n  #nodes: "+enrConnComp.numberOfVertices());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				
+/*				try {
 					// #4.2: calculate page rank
+					log.addToBuff("  #4.2: calculate page rank");
+					log.addToBuff("  time before: "+System.currentTimeMillis());
 					pageRank.setEnrConnComp(enrConnComp);
 					pageRank.start();
 					Map<String, List<Vertex<String, VertexValue>>> prVectors = pageRank.getMapCalcPageRanks();
+					log.addToBuff("  time after: "+System.currentTimeMillis());
 					
 					// #4.3: evaluate the page-ranked component
+					log.addToBuff("  #4.3: evaluate the page-ranked component");
+					log.addToBuff("  time before: "+System.currentTimeMillis());
 					PPREvaluation pprEval = new PPREvaluation(enrConnComp, prVectors);
 					out.addToBuff(pprEval.getPrVectorsAsString());
 					Map<String, Float> statistMeans = pprEval.getStatistMeans();
@@ -146,17 +176,21 @@ public class HolomaProcessControl {
 						for (Tuple2<String, VertexValue> trg : worstFriends.get(src))
 							out.addToBuff("  src: "+src+" \t trg: "+trg.f0+" \t "+trg.f1);
 					}
+					log.addToBuff("  time after:  "+System.currentTimeMillis());
 				} catch (Exception e) {
 					System.err.println("Exception during page rank calculation.");
 					e.printStackTrace();
-				}				
+				}
+*/				// quit iteration if you have evaluated 'enough' components
+				numComp++;
+				if (numComp >= HolomaConstants.NUM_CC) break;
 			} // end 'if' of critical component size
 		} // end 'for' of iteration over connected components
 		// save pagerank results
 		out.close();
 		
 		
-		
+		log.close();
 		printTime();
 		System.out.println("\n--- End ---");
 	}
